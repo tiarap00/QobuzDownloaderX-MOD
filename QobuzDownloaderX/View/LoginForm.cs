@@ -324,6 +324,7 @@ namespace QobuzDownloaderX
                 System.IO.File.WriteAllText(errorLog, error);
                 loginButton.Invoke(new Action(() => loginButton.Enabled = true));
                 altLoginLabel.Invoke(new Action(() => altLoginLabel.Visible = true));
+                return;
             }
 
             if (!QobuzApiServiceManager.GetApiService().IsAppSecretValid())
@@ -334,6 +335,7 @@ namespace QobuzDownloaderX
                 System.IO.File.WriteAllText(errorLog, $"Retrieved app_secret: {QobuzApiServiceManager.GetApiService().AppSecret}\r\n");
                 loginButton.Invoke(new Action(() => loginButton.Enabled = true));
                 altLoginLabel.Invoke(new Action(() => altLoginLabel.Visible = true));
+                return;
             }
 
             loginText.Invoke(new Action(() => loginText.Text = "Login Successful! Launching QBDLX..."));
