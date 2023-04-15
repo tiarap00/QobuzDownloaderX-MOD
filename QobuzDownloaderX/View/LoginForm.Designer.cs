@@ -1,6 +1,6 @@
 ﻿namespace QobuzDownloaderX
 {
-    partial class LoginFrm
+    partial class LoginForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginFrm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
             this.panel1 = new System.Windows.Forms.Panel();
+            this.aboutLabel = new System.Windows.Forms.Label();
             this.disableLogin = new System.Windows.Forms.CheckBox();
             this.verNumLabel2 = new System.Windows.Forms.Label();
-            this.md5Button = new System.Windows.Forms.Button();
             this.exitLabel = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.userAuthTokenTextbox = new System.Windows.Forms.TextBox();
@@ -42,14 +42,12 @@
             this.emailTextbox = new System.Windows.Forms.TextBox();
             this.passwordTextbox = new System.Windows.Forms.TextBox();
             this.loginText = new System.Windows.Forms.Label();
-            this.getSecretBG = new System.ComponentModel.BackgroundWorker();
             this.loginBG = new System.ComponentModel.BackgroundWorker();
             this.visableCheckbox = new System.Windows.Forms.CheckBox();
             this.altLoginLabel = new System.Windows.Forms.Label();
             this.altLoginTutLabel = new System.Windows.Forms.Label();
             this.userIdTextbox = new System.Windows.Forms.TextBox();
-            this.altLoginBG = new System.ComponentModel.BackgroundWorker();
-            this.aboutLabel = new System.Windows.Forms.Label();
+            this.md5Button = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -68,7 +66,21 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(282, 175);
             this.panel1.TabIndex = 0;
-            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
+            this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Panel1_MouseMove);
+            // 
+            // aboutLabel
+            // 
+            this.aboutLabel.AutoSize = true;
+            this.aboutLabel.BackColor = System.Drawing.Color.Transparent;
+            this.aboutLabel.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.aboutLabel.ForeColor = System.Drawing.Color.Black;
+            this.aboutLabel.Location = new System.Drawing.Point(241, 0);
+            this.aboutLabel.Name = "aboutLabel";
+            this.aboutLabel.Size = new System.Drawing.Size(15, 23);
+            this.aboutLabel.TabIndex = 35;
+            this.aboutLabel.Text = "i";
+            this.aboutLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.aboutLabel.Click += new System.EventHandler(this.AboutLabel_Click);
             // 
             // disableLogin
             // 
@@ -93,24 +105,7 @@
             this.verNumLabel2.TabIndex = 32;
             this.verNumLabel2.Text = "#.#.#.#";
             this.verNumLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.verNumLabel2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.verNumLabel2_MouseMove);
-            // 
-            // md5Button
-            // 
-            this.md5Button.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(112)))), ((int)(((byte)(239)))));
-            this.md5Button.Enabled = false;
-            this.md5Button.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
-            this.md5Button.FlatAppearance.BorderSize = 2;
-            this.md5Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.md5Button.ForeColor = System.Drawing.Color.White;
-            this.md5Button.Location = new System.Drawing.Point(227, 122);
-            this.md5Button.Name = "md5Button";
-            this.md5Button.Size = new System.Drawing.Size(43, 27);
-            this.md5Button.TabIndex = 9;
-            this.md5Button.Text = "MD5";
-            this.md5Button.UseVisualStyleBackColor = false;
-            this.md5Button.Visible = false;
-            this.md5Button.Click += new System.EventHandler(this.md5Button_Click);
+            this.verNumLabel2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.VerNumLabel2_MouseMove);
             // 
             // exitLabel
             // 
@@ -124,7 +119,7 @@
             this.exitLabel.TabIndex = 9;
             this.exitLabel.Text = "X";
             this.exitLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.exitLabel.Click += new System.EventHandler(this.exitLabel_Click);
+            this.exitLabel.Click += new System.EventHandler(this.ExitLabel_Click);
             // 
             // pictureBox1
             // 
@@ -136,7 +131,7 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 29;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
+            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseMove);
             // 
             // userAuthTokenTextbox
             // 
@@ -151,8 +146,8 @@
             this.userAuthTokenTextbox.TabIndex = 35;
             this.userAuthTokenTextbox.Text = "user_auth_token";
             this.userAuthTokenTextbox.Visible = false;
-            this.userAuthTokenTextbox.Click += new System.EventHandler(this.userAuthTokenTextbox_Click);
-            this.userAuthTokenTextbox.Leave += new System.EventHandler(this.userAuthTokenTextbox_Leave);
+            this.userAuthTokenTextbox.Click += new System.EventHandler(this.UserAuthTokenTextbox_Click);
+            this.userAuthTokenTextbox.Leave += new System.EventHandler(this.UserAuthTokenTextbox_Leave);
             // 
             // loginButton
             // 
@@ -167,7 +162,7 @@
             this.loginButton.TabIndex = 2;
             this.loginButton.Text = "LOGIN";
             this.loginButton.UseVisualStyleBackColor = false;
-            this.loginButton.Click += new System.EventHandler(this.loginButton_Click);
+            this.loginButton.Click += new System.EventHandler(this.LoginButton_Click);
             // 
             // panel3
             // 
@@ -197,8 +192,8 @@
             this.emailTextbox.Size = new System.Drawing.Size(258, 23);
             this.emailTextbox.TabIndex = 7;
             this.emailTextbox.Text = "Email";
-            this.emailTextbox.Click += new System.EventHandler(this.emailTextbox_Click);
-            this.emailTextbox.Leave += new System.EventHandler(this.emailTextbox_Leave);
+            this.emailTextbox.Click += new System.EventHandler(this.EmailTextbox_Click);
+            this.emailTextbox.Leave += new System.EventHandler(this.EmailTextbox_Leave);
             // 
             // passwordTextbox
             // 
@@ -212,8 +207,9 @@
             this.passwordTextbox.Size = new System.Drawing.Size(237, 23);
             this.passwordTextbox.TabIndex = 8;
             this.passwordTextbox.Text = "Password";
-            this.passwordTextbox.Click += new System.EventHandler(this.passwordTextbox_Click);
-            this.passwordTextbox.Leave += new System.EventHandler(this.passwordTextbox_Leave);
+            this.passwordTextbox.Click += new System.EventHandler(this.PasswordTextbox_Click);
+            this.passwordTextbox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.PasswordTextbox_KeyDown);
+            this.passwordTextbox.Leave += new System.EventHandler(this.PasswordTextbox_Leave);
             // 
             // loginText
             // 
@@ -226,13 +222,9 @@
             this.loginText.Text = "Waiting for login...";
             this.loginText.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // getSecretBG
-            // 
-            this.getSecretBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.getSecretBG_DoWork);
-            // 
             // loginBG
             // 
-            this.loginBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.loginBG_DoWork);
+            this.loginBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.LoginBG_DoWork);
             // 
             // visableCheckbox
             // 
@@ -242,7 +234,7 @@
             this.visableCheckbox.Size = new System.Drawing.Size(15, 14);
             this.visableCheckbox.TabIndex = 31;
             this.visableCheckbox.UseVisualStyleBackColor = true;
-            this.visableCheckbox.CheckedChanged += new System.EventHandler(this.visableCheckbox_CheckedChanged);
+            this.visableCheckbox.CheckedChanged += new System.EventHandler(this.VisibleCheckbox_CheckedChanged);
             // 
             // altLoginLabel
             // 
@@ -254,7 +246,7 @@
             this.altLoginLabel.TabIndex = 32;
             this.altLoginLabel.Text = "Can\'t login? Click here";
             this.altLoginLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.altLoginLabel.Click += new System.EventHandler(this.altLoginLabel_Click);
+            this.altLoginLabel.Click += new System.EventHandler(this.AltLoginLabel_Click);
             // 
             // altLoginTutLabel
             // 
@@ -266,7 +258,7 @@
             this.altLoginTutLabel.TabIndex = 33;
             this.altLoginTutLabel.Text = "Click Here for Instructions";
             this.altLoginTutLabel.Visible = false;
-            this.altLoginTutLabel.Click += new System.EventHandler(this.altLoginTutLabel_Click);
+            this.altLoginTutLabel.Click += new System.EventHandler(this.AltLoginTutLabel_Click);
             // 
             // userIdTextbox
             // 
@@ -281,28 +273,27 @@
             this.userIdTextbox.TabIndex = 9;
             this.userIdTextbox.Text = "user_id";
             this.userIdTextbox.Visible = false;
-            this.userIdTextbox.Click += new System.EventHandler(this.userIdTextbox_Click);
-            this.userIdTextbox.Leave += new System.EventHandler(this.userIdTextbox_Leave);
+            this.userIdTextbox.Click += new System.EventHandler(this.UserIdTextbox_Click);
+            this.userIdTextbox.Leave += new System.EventHandler(this.UserIdTextbox_Leave);
             // 
-            // altLoginBG
+            // md5Button
             // 
-            this.altLoginBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.altLoginBG_DoWork);
+            this.md5Button.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(112)))), ((int)(((byte)(239)))));
+            this.md5Button.Enabled = false;
+            this.md5Button.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
+            this.md5Button.FlatAppearance.BorderSize = 2;
+            this.md5Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.md5Button.ForeColor = System.Drawing.Color.White;
+            this.md5Button.Location = new System.Drawing.Point(227, 122);
+            this.md5Button.Name = "md5Button";
+            this.md5Button.Size = new System.Drawing.Size(43, 27);
+            this.md5Button.TabIndex = 9;
+            this.md5Button.Text = "MD5";
+            this.md5Button.UseVisualStyleBackColor = false;
+            this.md5Button.Visible = false;
+            this.md5Button.Click += new System.EventHandler(this.Md5Button_Click);
             // 
-            // aboutLabel
-            // 
-            this.aboutLabel.AutoSize = true;
-            this.aboutLabel.BackColor = System.Drawing.Color.Transparent;
-            this.aboutLabel.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.aboutLabel.ForeColor = System.Drawing.Color.Black;
-            this.aboutLabel.Location = new System.Drawing.Point(241, 0);
-            this.aboutLabel.Name = "aboutLabel";
-            this.aboutLabel.Size = new System.Drawing.Size(15, 23);
-            this.aboutLabel.TabIndex = 35;
-            this.aboutLabel.Text = "i";
-            this.aboutLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.aboutLabel.Click += new System.EventHandler(this.aboutLabel_Click);
-            // 
-            // LoginFrm
+            // LoginForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -322,7 +313,7 @@
             this.Controls.Add(this.userAuthTokenTextbox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "LoginFrm";
+            this.Name = "LoginForm";
             this.Text = "QobuzDLX | Login";
             this.Load += new System.EventHandler(this.LoginFrm_Load);
             this.panel1.ResumeLayout(false);
@@ -343,9 +334,7 @@
         private System.Windows.Forms.TextBox emailTextbox;
         private System.Windows.Forms.TextBox passwordTextbox;
         private System.Windows.Forms.Label exitLabel;
-        private System.Windows.Forms.Button md5Button;
         private System.Windows.Forms.Label loginText;
-        private System.ComponentModel.BackgroundWorker getSecretBG;
         private System.ComponentModel.BackgroundWorker loginBG;
         private System.Windows.Forms.Label verNumLabel2;
         private System.Windows.Forms.CheckBox visableCheckbox;
@@ -354,7 +343,7 @@
         private System.Windows.Forms.Label altLoginLabel;
         private System.Windows.Forms.Label altLoginTutLabel;
         private System.Windows.Forms.TextBox userIdTextbox;
-        private System.ComponentModel.BackgroundWorker altLoginBG;
         private System.Windows.Forms.Label aboutLabel;
+        private System.Windows.Forms.Button md5Button;
     }
 }

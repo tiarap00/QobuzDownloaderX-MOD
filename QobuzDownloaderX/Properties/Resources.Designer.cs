@@ -61,6 +61,26 @@ namespace QobuzDownloaderX.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] HKGrotesk {
+            get {
+                object obj = ResourceManager.GetObject("HKGrotesk", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] HKGrotesk_Italic {
+            get {
+                object obj = ResourceManager.GetObject("HKGrotesk_Italic", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap login_frame {
@@ -96,6 +116,26 @@ namespace QobuzDownloaderX.Properties {
         internal static System.Drawing.Bitmap qbdlx_white {
             get {
                 object obj = ResourceManager.GetObject("qbdlx_white", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap qobuz_logo_store {
+            get {
+                object obj = ResourceManager.GetObject("qobuz_logo_store", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap smr_audio {
+            get {
+                object obj = ResourceManager.GetObject("smr_audio", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

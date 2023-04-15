@@ -118,6 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="HKGrotesk" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Fonts\HankenGrotesk-VariableFont_wght.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="HKGrotesk_Italic" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Fonts\HankenGrotesk-Italic-VariableFont_wght.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="login_frame" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\login-frame.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -129,5 +135,11 @@
   </data>
   <data name="qbdlx_white" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\qbdlx-white.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="qobuz_logo_store" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\qobuz_logo_store.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="smr_audio" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\smr-audio.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

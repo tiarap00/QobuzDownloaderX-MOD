@@ -1,16 +1,23 @@
 <p style="align:center;">
-  <a href="https://github.com/ImAiiR/QobuzDownloaderX">
-    <img src="https://github.com/ImAiiR/QobuzDownloaderX/raw/master/QobuzDownloaderX/Resources/qbdlx.png?raw=true" />
+  <a href="https://github.com/DJDoubleD/QobuzDownloaderX-MOD">
+    <img src="./QobuzDownloaderX/Resources/qbdlx.png?raw=true" />
   </a>
 </p>
-<center><a href="https://www.buymeacoffee.com/ImAiiR" target="_blank"><img src="https://i.imgur.com/H2hMOg6.png" alt="Buy Me A Coffee" style="height: 51px !important;width: 217px !important;" ></a></center>
 
+# This is a fork of [QobuzDownloaderX](https://github.com/ImAiiR/QobuzDownloaderX). 
+
+Initially fixed login problems due to several updates to Qobuz Web Player bundle.js but evolved into a full blown rework of the code for educational purposes.  
+Refactored code to drastically reduce duplicate code and isolated Qobuz API interaction in a separate library project [QobuzApiSharp](https://github.com/DJDoubleD/QobuzApiSharp).  
+Added some bugfixes and completely revamped search function.  
+Content below is from the original projects README.
+
+-----
 
 Inspired by Qo-DL by <a href="https://github.com/Sorrow446">Sorrow</a> & <a href="https://github.com/DashLt">Dash</a>
 
 <p style="align:center;">
-  <a href="https://github.com/ImAiiR/QobuzDownloaderX/blob/master/-assets/QBDLX2.png?raw=true">
-    <img src="https://github.com/ImAiiR/QobuzDownloaderX/blob/master/-assets/QBDLX2.png?raw=true" />
+  <a href="./-assets/QBDLX2.png?raw=true">
+    <img src="./-assets/QBDLX2.png?raw=true" />
   </a>
 </p>
 

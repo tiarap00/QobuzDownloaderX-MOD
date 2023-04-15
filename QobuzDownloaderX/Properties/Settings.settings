@@ -102,7 +102,7 @@
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="savedArtSize" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
+      <Value Profile="(Default)">2</Value>
     </Setting>
     <Setting Name="typeTag" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -114,7 +114,7 @@
       <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="savedFilenameTemplateString" Type="System.String" Scope="User">
-      <Value Profile="(Default)"> </Value>
+      <Value Profile="(Default)"> - </Value>
     </Setting>
   </Settings>
 </SettingsFile>

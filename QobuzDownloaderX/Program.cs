@@ -1,22 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using QobuzDownloaderX.Shared;
+using System;
+using System.Globalization;
 using System.Windows.Forms;
 
 namespace QobuzDownloaderX
 {
-    static class Program
+    internal static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        private static void Main()
         {
+            // Use en-US formatting everywhere for consistency
+            var culture = CultureInfo.GetCultureInfo("en-US");
+
+            //Culture for any thread
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+
+            //Culture for UI in any thread
+            CultureInfo.DefaultThreadCurrentUICulture = culture;
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new LoginFrm());
+
+            // Initialise forms
+            Globals.LoginForm = new LoginForm();
+            Globals.AboutForm = new AboutForm();
+
+            // Register EventHandler to release resources on exit
+            Application.ApplicationExit += ApplicationExit;
+
+            Application.Run(Globals.LoginForm);
+        }
+
+        private static void ApplicationExit(object sender, EventArgs e)
+        {
+            QobuzApiServiceManager.ReleaseApiService();
         }
     }
 }

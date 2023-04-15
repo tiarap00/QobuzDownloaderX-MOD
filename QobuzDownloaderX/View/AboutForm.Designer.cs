@@ -30,13 +30,14 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutForm));
             this.panel1 = new System.Windows.Forms.Panel();
-            this.verNumLabel2 = new System.Windows.Forms.Label();
             this.exitLabel = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.verNumLabel2 = new System.Windows.Forms.Label();
             this.devLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -53,19 +54,6 @@
             this.panel1.Size = new System.Drawing.Size(365, 95);
             this.panel1.TabIndex = 1;
             this.panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.panel1_MouseMove);
-            // 
-            // verNumLabel2
-            // 
-            this.verNumLabel2.BackColor = System.Drawing.Color.Transparent;
-            this.verNumLabel2.Font = new System.Drawing.Font("Trebuchet MS", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.verNumLabel2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.verNumLabel2.Location = new System.Drawing.Point(12, 98);
-            this.verNumLabel2.Name = "verNumLabel2";
-            this.verNumLabel2.Size = new System.Drawing.Size(341, 18);
-            this.verNumLabel2.TabIndex = 32;
-            this.verNumLabel2.Text = "#.#.#.#";
-            this.verNumLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.verNumLabel2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.verNumLabel2_MouseMove);
             // 
             // exitLabel
             // 
@@ -93,21 +81,34 @@
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
             // 
+            // verNumLabel2
+            // 
+            this.verNumLabel2.BackColor = System.Drawing.Color.Transparent;
+            this.verNumLabel2.Font = new System.Drawing.Font("Trebuchet MS", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.verNumLabel2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.verNumLabel2.Location = new System.Drawing.Point(12, 98);
+            this.verNumLabel2.Name = "verNumLabel2";
+            this.verNumLabel2.Size = new System.Drawing.Size(341, 18);
+            this.verNumLabel2.TabIndex = 32;
+            this.verNumLabel2.Text = "#.#.#.#";
+            this.verNumLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.verNumLabel2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.verNumLabel2_MouseMove);
+            // 
             // devLabel
             // 
             this.devLabel.AutoSize = true;
             this.devLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.devLabel.Location = new System.Drawing.Point(140, 131);
+            this.devLabel.Location = new System.Drawing.Point(121, 155);
             this.devLabel.Name = "devLabel";
-            this.devLabel.Size = new System.Drawing.Size(84, 13);
+            this.devLabel.Size = new System.Drawing.Size(122, 13);
             this.devLabel.TabIndex = 34;
-            this.devLabel.Text = "Developer - AiiR";
+            this.devLabel.Text = "Original Developer - AiiR";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.label1.Location = new System.Drawing.Point(79, 154);
+            this.label1.Location = new System.Drawing.Point(79, 178);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(207, 13);
             this.label1.TabIndex = 35;
@@ -118,7 +119,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.label2.Location = new System.Drawing.Point(47, 177);
+            this.label2.Location = new System.Drawing.Point(47, 201);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(271, 26);
             this.label2.TabIndex = 36;
@@ -137,12 +138,24 @@
     " FREE AND OPEN-SOURCE.";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.label4.Location = new System.Drawing.Point(110, 132);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(144, 13);
+            this.label4.TabIndex = 38;
+            this.label4.Text = "Mod Developer - DJDoubleD";
+            this.label4.Click += new System.EventHandler(this.label4_Click);
+            // 
             // AboutForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.ClientSize = new System.Drawing.Size(365, 289);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
@@ -174,5 +187,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
     }
 }
