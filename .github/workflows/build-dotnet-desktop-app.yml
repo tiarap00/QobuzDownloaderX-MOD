@@ -35,6 +35,6 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v3.1.2
       with:
-        name: QobuzDownloaderX-MOD
+        name: QBDLX-MOD
         path: QobuzDownloaderX\bin\Release
 
