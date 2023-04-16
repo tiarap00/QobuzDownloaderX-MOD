@@ -635,7 +635,12 @@ namespace QobuzDownloaderX
         {
             ClearTrackTaggingInfo();
 
-            performerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Performer.Name);
+            performerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Performer?.Name);
+            // If no performer name, use album artist
+            if (string.IsNullOrEmpty(performerName))
+            {
+                performerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Album?.Artist?.Name);
+            }
             composerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Composer?.Name);
             trackName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Title.Trim());
             trackVersionName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Version?.Trim());
@@ -778,9 +783,9 @@ namespace QobuzDownloaderX
             if (!IsStreamable(qobuzTrack)) return false;
 
             // If albumArtist, performerName or albumName goes over set MaxLength number of characters, limit them to the MaxLength
-            albumArtistPath = albumArtistPath.Substring(0, Math.Min(albumArtistPath.Length, MaxLength)).TrimEnd();
-            performerNamePath = performerNamePath.Substring(0, Math.Min(performerNamePath.Length, MaxLength)).TrimEnd();
-            albumNamePath = albumNamePath.Substring(0, Math.Min(albumNamePath.Length, MaxLength)).TrimEnd();
+            albumArtistPath = StringTools.TrimToMaxLength(albumArtistPath, MaxLength);
+            performerNamePath = StringTools.TrimToMaxLength(performerNamePath, MaxLength);
+            albumNamePath = StringTools.TrimToMaxLength(albumNamePath, MaxLength);
 
             // Create directories if they don't exist yet
             // Add Album ID to Album Path if requested (to avoid conflicts for similar albums with trimmed long names)
@@ -803,7 +808,7 @@ namespace QobuzDownloaderX
             }
 
             // Shorten full filename if over MaxLength to avoid errors with file names being too long
-            finalTrackNamePath = finalTrackNamePath.Substring(0, Math.Min(finalTrackNamePath.Length, MaxLength)).TrimEnd();
+            finalTrackNamePath = StringTools.TrimToMaxLength(finalTrackNamePath, MaxLength);
 
             // Notify UI of starting track download.
             output.Invoke(new Action(() => output.AppendText("Downloading - " + finalTrackNamePath + " ...... ")));
@@ -1231,7 +1236,7 @@ namespace QobuzDownloaderX
 
                 // Create Playlist root directory.
                 string playlistNamePath = StringTools.GetSafeFilename(StringTools.DecodeEncodedNonAsciiCharacters(qobuzPlaylist.Name));
-                playlistNamePath = playlistNamePath.Substring(0, Math.Min(playlistNamePath.Length, MaxLength)).TrimEnd();
+                playlistNamePath = StringTools.TrimToMaxLength(playlistNamePath, MaxLength);
                 playlistBasePath = Path.Combine(playlistBasePath, "- Playlists", playlistNamePath);
                 System.IO.Directory.CreateDirectory(playlistBasePath);
 

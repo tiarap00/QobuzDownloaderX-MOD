@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -35,6 +36,20 @@ namespace QobuzDownloaderX.Shared
             else
             {
                 return null;
+            }
+        }
+
+        // Nullsafe trimming of string to given max length with removal of leading and trailing spaces.
+        public static string TrimToMaxLength(string text, int maxLength = 36)
+        {
+            if (text != null)
+            {
+                string result = text.Trim();
+                return result.Substring(0, Math.Min(result.Length, maxLength));
+            }
+            else
+            {
+                return "";
             }
         }
 
