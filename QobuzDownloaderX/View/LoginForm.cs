@@ -4,6 +4,7 @@ using QobuzDownloaderX.Properties;
 using QobuzDownloaderX.Shared;
 using QobuzDownloaderX.View;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
@@ -25,7 +26,14 @@ namespace QobuzDownloaderX
         public LoginForm()
         {
             InitializeComponent();
+
+            // Delete previous login error log
+            if (System.IO.File.Exists(errorLog))
+            {
+                System.IO.File.Delete(errorLog);
+            }
         }
+
         private string AltLoginValue { get; set; }
 
         private void QobuzDownloaderX_FormClosing(Object sender, FormClosingEventArgs e)
@@ -318,10 +326,30 @@ namespace QobuzDownloaderX
             }
             catch (Exception ex)
             {
-                // If connection to API fails, show error info.
-                string error = ex.ToString();
+                // If connection to API fails, or something is incorrect, show error info + log details.
+                List<string> errorLines = new List<string>();
+
                 loginText.Invoke(new Action(() => loginText.Text = "Login Failed. Error Log saved"));
-                System.IO.File.WriteAllText(errorLog, error);
+
+                switch (ex)
+                {
+                    case ApiErrorResponseException erEx:
+                        errorLines.Add($"Failed API request: \r\n{erEx.RequestContent}");
+                        errorLines.Add($"Api response code: {erEx.ResponseStatusCode}");
+                        errorLines.Add($"Api response status: {erEx.ResponseStatus}");
+                        errorLines.Add($"Api response reason: {erEx.ResponseReason}");
+                        break;
+                    case ApiResponseParseErrorException pEx:
+                        errorLines.Add("Error parsing API response");
+                        errorLines.Add($"Api response content: {pEx.ResponseContent}");
+                        break;
+                    default:
+                        errorLines.Add($"{ex}");
+                        break;
+                }
+
+                // Write detailed info to log
+                System.IO.File.AppendAllLines(errorLog, errorLines);
                 loginButton.Invoke(new Action(() => loginButton.Enabled = true));
                 altLoginLabel.Invoke(new Action(() => altLoginLabel.Visible = true));
                 return;
