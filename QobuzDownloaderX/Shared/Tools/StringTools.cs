@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Eventing.Reader;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -8,17 +7,19 @@ namespace QobuzDownloaderX.Shared
 {
     internal static class StringTools
     {
+        /// <summary>
+        /// Decodes the encoded non ascii characters.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The decoded string.</returns>
         public static string DecodeEncodedNonAsciiCharacters(string value)
         {
             if (value != null)
             {
                 return Regex.Replace(
-                value,
-                @"\\u(?<Value>[a-zA-Z0-9]{4})",
-                m =>
-                {
-                    return ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString();
-                });
+                    value,
+                    @"\\u(?<Value>[a-zA-Z0-9]{4})",
+                    m => ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString());
             }
             else
             {

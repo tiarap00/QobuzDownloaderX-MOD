@@ -7,9 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -24,20 +22,14 @@ namespace QobuzDownloaderX
         public SearchForm()
         {
             InitializeComponent();
-            searchTypeSelect.SelectedItem = "Album";
-        }
 
-        /// <summary>
-        /// Decodes the encoded non ascii characters.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        /// <returns>The decoded string.</returns>
-        private static string DecodeEncodedNonAsciiCharacters(string value)
-        {
-            return Regex.Replace(
-                value,
-                @"\\u(?<Value>[a-zA-Z0-9]{4})",
-                m => ((char)int.Parse(m.Groups["Value"].Value, NumberStyles.HexNumber)).ToString());
+            // Remove previous search error log
+            if (System.IO.File.Exists(errorLog))
+            {
+                System.IO.File.Delete(errorLog);
+            }
+
+            searchTypeSelect.SelectedItem = "Album";
         }
 
         private void RemoveControls(Control userControl)
@@ -140,7 +132,7 @@ namespace QobuzDownloaderX
             {
                 ThumbnailUrl = album.Image.Thumbnail,
                 Artist = album.Artist.Name,
-                Title = DecodeEncodedNonAsciiCharacters(album.Version != null ? $"{album.Title.TrimEnd()} ({album.Version})" : album.Title.TrimEnd()),
+                Title = StringTools.DecodeEncodedNonAsciiCharacters(album.Version != null ? $"{album.Title.TrimEnd()} ({album.Version})" : album.Title.TrimEnd()),
                 FormattedDuration = StringTools.FormatDurationInSeconds(album.Duration.GetValueOrDefault()),
                 FormattedQuality = $"{album.MaximumBitDepth}-Bit / {album.MaximumSamplingRate} kHz",
                 WebPlayerUrl = $"{Globals.WEBPLAYER_BASE_URL}/album/{album.Id}",
@@ -157,7 +149,7 @@ namespace QobuzDownloaderX
             {
                 ThumbnailUrl = track.Album.Image.Thumbnail,
                 Artist = track.Performer.Name,
-                Title = DecodeEncodedNonAsciiCharacters(track.Version != null ? $"{track.Title.TrimEnd()} ({track.Version})" : track.Title.TrimEnd()),
+                Title = StringTools.DecodeEncodedNonAsciiCharacters(track.Version != null ? $"{track.Title.TrimEnd()} ({track.Version})" : track.Title.TrimEnd()),
                 FormattedDuration = StringTools.FormatDurationInSeconds(track.Duration.GetValueOrDefault()),
                 FormattedQuality = $"{track.MaximumBitDepth}-Bit / {track.MaximumSamplingRate} kHz",
                 WebPlayerUrl = $"{Globals.WEBPLAYER_BASE_URL}/track/{track.Id}",
@@ -406,12 +398,12 @@ namespace QobuzDownloaderX
             {
                 if (searchTypeSelect.Text == "Album")
                 {
-                    SearchResult albumsResult = QobuzApiServiceManager.GetApiService().SearchAlbums(searchQuery, 15);
+                    SearchResult albumsResult = QobuzApiServiceManager.GetApiService().SearchAlbums(searchQuery, 15, 0, true);
                     Fill_AlbumResultsTablePanel(albumsResult);
                 }
                 else if (searchTypeSelect.Text == "Track")
                 {
-                    SearchResult tracksResult = QobuzApiServiceManager.GetApiService().SearchTracks(searchQuery, 15);
+                    SearchResult tracksResult = QobuzApiServiceManager.GetApiService().SearchTracks(searchQuery, 15, 0, true);
                     Fill_TrackResultsTablePanel(tracksResult);
                 }
             }
@@ -419,7 +411,6 @@ namespace QobuzDownloaderX
             {
                 ShowAndLogSearchResultError(ex);
             }
-
         }
 
         private void SearchForm_FormClosed(object sender, FormClosedEventArgs e)

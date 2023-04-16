@@ -262,12 +262,13 @@ namespace QobuzDownloaderX
                 switch (ex)
                 {
                     case ApiErrorResponseException erEx:
-                        errorLines.Add($"Failed API request: {erEx.RequestContent}");
+                        errorLines.Add($"Failed API request: \r\n{erEx.RequestContent}");
                         errorLines.Add($"Api response code: {erEx.ResponseStatusCode}");
                         errorLines.Add($"Api response status: {erEx.ResponseStatus}");
                         errorLines.Add($"Api response reason: {erEx.ResponseReason}");
                         break;
                     case ApiResponseParseErrorException pEx:
+                        errorLines.Add("Error parsing API response");
                         errorLines.Add($"Api response content: {pEx.ResponseContent}");
                         break;
                     default:
