@@ -1,4 +1,4 @@
-name: Build .NET Core Desktop App
+name: Build QobuzDownloaderX-MOD
 
 on:
   workflow_dispatch:
