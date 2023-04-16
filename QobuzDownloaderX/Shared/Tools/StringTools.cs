@@ -31,7 +31,8 @@ namespace QobuzDownloaderX.Shared
         {
             if (filename != null)
             {
-                return string.Join("_", filename.Split(Path.GetInvalidFileNameChars())).Trim();
+                string result = filename.Trim().TrimEnd('.');
+                return string.Join("_", result.Split(Path.GetInvalidFileNameChars()));
             }
             else
             {
