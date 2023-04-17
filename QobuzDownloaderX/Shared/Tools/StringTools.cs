@@ -47,7 +47,7 @@ namespace QobuzDownloaderX.Shared
             if (text != null)
             {
                 string result = text.Trim();
-                return result.Substring(0, Math.Min(result.Length, maxLength));
+                return result.Substring(0, Math.Min(result.Length, maxLength)).Trim();
             }
             else
             {
