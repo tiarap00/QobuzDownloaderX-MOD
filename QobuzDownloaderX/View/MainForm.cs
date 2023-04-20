@@ -428,7 +428,7 @@ namespace QobuzDownloaderX
                 case ".mp3":
 
                     // For custom / troublesome tags.
-                    TagLib.Id3v2.Tag t = (TagLib.Id3v2.Tag)tfile.GetTag(TagLib.TagTypes.Id3v2);
+                    TagLib.Id3v2.Tag customId3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true);
 
                     // Saving cover art to file(s)
                     if (imageCheckbox.Checked)
@@ -494,13 +494,10 @@ namespace QobuzDownloaderX
                     if (copyrightCheckbox.Checked) { tfile.Tag.Copyright = copyright; }
 
                     // ISRC tag
-                    if (isrcCheckbox.Checked) { TagLib.Id3v2.Tag tag = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true); tag.SetTextFrame("TSRC", isrc); }
+                    if (isrcCheckbox.Checked) { customId3v2.SetTextFrame("TSRC", isrc); }
 
                     // Release Type tag
-                    if (type != null && typeCheckbox.Checked)
-                    {
-                        TagLib.Id3v2.Tag tag = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true); tag.SetTextFrame("TMED", type);
-                    }
+                    if (type != null && typeCheckbox.Checked) { customId3v2.SetTextFrame("TMED", type); }
 
                     // Save all selected tags to file
                     tfile.Save();
