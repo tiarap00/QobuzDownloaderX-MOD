@@ -21,17 +21,18 @@ namespace QobuzDownloaderX
     {
         private readonly string dllCheck = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "TagLibSharp.dll");
 
-        private readonly string errorLog = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Login_Errors.log");
+        private readonly string loginErrorLog = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Login_Errors.log");
+        private readonly string versionCheckErrorLog = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "VersionCheck_Errors.log");
 
         public LoginForm()
         {
             InitializeComponent();
 
             // Delete previous login error log
-            if (System.IO.File.Exists(errorLog))
-            {
-                System.IO.File.Delete(errorLog);
-            }
+            if (System.IO.File.Exists(loginErrorLog)) System.IO.File.Delete(loginErrorLog);
+            // Delete previous version check error log
+            if (System.IO.File.Exists(versionCheckErrorLog)) System.IO.File.Delete(versionCheckErrorLog);
+
         }
 
         private string AltLoginValue { get; set; }
@@ -193,8 +194,11 @@ namespace QobuzDownloaderX
                     // Do nothing. All is good.
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                // log the exeption details for info
+                System.IO.File.WriteAllText(versionCheckErrorLog, $"Failed to compare GitHub version, exception details below:\r\n{ex}");
+
                 DialogResult dialogResult = MessageBox.Show("Connection to GitHub to check for an update has failed.\r\nWould you like to check for an update manually?\r\n\r\nYour current version is " + Assembly.GetExecutingAssembly().GetName().Version.ToString(), "QBDLX | GitHub Connection Failed", MessageBoxButtons.YesNo);
                 if (dialogResult == DialogResult.Yes)
                 {
@@ -304,7 +308,7 @@ namespace QobuzDownloaderX
                 }
 
                 loginText.Invoke(new Action(() => loginText.Text = errorMessage));
-                System.IO.File.WriteAllText(errorLog, ex.ToString());
+                System.IO.File.WriteAllText(loginErrorLog, ex.ToString());
 
                 loginButton.Invoke(new Action(() => loginButton.Enabled = true));
                 altLoginLabel.Invoke(new Action(() => altLoginLabel.Visible = true));
@@ -349,7 +353,7 @@ namespace QobuzDownloaderX
                 }
 
                 // Write detailed info to log
-                System.IO.File.AppendAllLines(errorLog, errorLines);
+                System.IO.File.AppendAllLines(loginErrorLog, errorLines);
                 loginButton.Invoke(new Action(() => loginButton.Enabled = true));
                 altLoginLabel.Invoke(new Action(() => altLoginLabel.Visible = true));
                 return;
@@ -358,9 +362,9 @@ namespace QobuzDownloaderX
             if (!QobuzApiServiceManager.GetApiService().IsAppSecretValid())
             {
                 loginText.Invoke(new Action(() => loginText.Text = "Invalid App Credentials Obtained, Results logged."));
-                System.IO.File.WriteAllText(errorLog, "Test stream failed with obtained App data.\r\n");
-                System.IO.File.WriteAllText(errorLog, $"Retrieved app_id: {QobuzApiServiceManager.GetApiService().AppId}\r\n");
-                System.IO.File.WriteAllText(errorLog, $"Retrieved app_secret: {QobuzApiServiceManager.GetApiService().AppSecret}\r\n");
+                System.IO.File.AppendAllText(loginErrorLog, "Test stream failed with obtained App data.\r\n");
+                System.IO.File.AppendAllText(loginErrorLog, $"Retrieved app_id: {QobuzApiServiceManager.GetApiService().AppId}\r\n");
+                System.IO.File.AppendAllText(loginErrorLog, $"Retrieved app_secret: {QobuzApiServiceManager.GetApiService().AppSecret}\r\n");
                 loginButton.Invoke(new Action(() => loginButton.Enabled = true));
                 altLoginLabel.Invoke(new Action(() => altLoginLabel.Visible = true));
                 return;
