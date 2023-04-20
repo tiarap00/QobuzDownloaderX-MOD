@@ -428,7 +428,7 @@ namespace QobuzDownloaderX
                 case ".mp3":
 
                     // For custom / troublesome tags.
-                    TagLib.Id3v2.Tag t = (TagLib.Id3v2.Tag)tfile.GetTag(TagLib.TagTypes.Id3v2);
+                    TagLib.Id3v2.Tag customId3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true);
 
                     // Saving cover art to file(s)
                     if (imageCheckbox.Checked)
@@ -475,9 +475,6 @@ namespace QobuzDownloaderX
                     // Genre tag
                     if (genreCheckbox.Checked) { tfile.Tag.Genres = new string[] { genre }; }
 
-                    // Track Number tag
-                    if (trackNumberCheckbox.Checked) { tfile.Tag.Track = Convert.ToUInt32(trackNumber); }
-
                     // Disc Number tag
                     if (discNumberCheckbox.Checked) { tfile.Tag.Disc = Convert.ToUInt32(discNumber); }
 
@@ -487,6 +484,16 @@ namespace QobuzDownloaderX
                     // Total Tracks tag
                     if (trackTotalCheckbox.Checked) { tfile.Tag.TrackCount = Convert.ToUInt32(trackTotal); }
 
+                    // Track Number tag
+                    // !! Set Track Number after Total Tracks to prevent taglib-sharp from re-formatting the field to a "two-digit zero-filled value" !!
+                    if (trackNumberCheckbox.Checked)
+                    {
+                        // Set TRCK tag manually to prevent using "two-digit zero-filled value"
+                        // See https://github.com/mono/taglib-sharp/pull/240 where this change was introduced in taglib-sharp v2.3
+                        // Original command: tfile.Tag.Track = Convert.ToUInt32(trackNumber);
+                        customId3v2.SetNumberFrame("TRCK", Convert.ToUInt32(trackNumber), tfile.Tag.TrackCount);
+                    }
+
                     // Comment tag
                     if (commentCheckbox.Checked) { tfile.Tag.Comment = commentTextbox.Text; }
 
@@ -494,13 +501,10 @@ namespace QobuzDownloaderX
                     if (copyrightCheckbox.Checked) { tfile.Tag.Copyright = copyright; }
 
                     // ISRC tag
-                    if (isrcCheckbox.Checked) { TagLib.Id3v2.Tag tag = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true); tag.SetTextFrame("TSRC", isrc); }
+                    if (isrcCheckbox.Checked) { customId3v2.SetTextFrame("TSRC", isrc); }
 
                     // Release Type tag
-                    if (type != null && typeCheckbox.Checked)
-                    {
-                        TagLib.Id3v2.Tag tag = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true); tag.SetTextFrame("TMED", type);
-                    }
+                    if (type != null && typeCheckbox.Checked) { customId3v2.SetTextFrame("TMED", type); }
 
                     // Save all selected tags to file
                     tfile.Save();
@@ -510,7 +514,7 @@ namespace QobuzDownloaderX
                 case ".flac":
 
                     // For custom / troublesome tags.
-                    var custom = (TagLib.Ogg.XiphComment)tfile.GetTag(TagLib.TagTypes.Xiph);
+                    TagLib.Ogg.XiphComment custom = (TagLib.Ogg.XiphComment)tfile.GetTag(TagLib.TagTypes.Xiph);
 
                     // Saving cover art to file(s)
                     if (imageCheckbox.Checked)
@@ -558,7 +562,13 @@ namespace QobuzDownloaderX
                     if (genreCheckbox.Checked) { tfile.Tag.Genres = new string[] { genre }; }
 
                     // Track Number tag
-                    if (trackNumberCheckbox.Checked) { tfile.Tag.Track = Convert.ToUInt32(trackNumber); }
+                    if (trackNumberCheckbox.Checked)
+                    {
+                        tfile.Tag.Track = Convert.ToUInt32(trackNumber);
+                        // Override TRACKNUMBER tag again to prevent using "two-digit zero-filled value"
+                        // See https://github.com/mono/taglib-sharp/pull/240 where this change was introduced in taglib-sharp v2.3
+                        custom.SetField("TRACKNUMBER", Convert.ToUInt32(trackNumber));
+                    }
 
                     // Disc Number tag
                     if (discNumberCheckbox.Checked) { tfile.Tag.Disc = Convert.ToUInt32(discNumber); }
