@@ -981,7 +981,7 @@
             this.typeCheckbox.Name = "typeCheckbox";
             this.typeCheckbox.Size = new System.Drawing.Size(92, 17);
             this.typeCheckbox.TabIndex = 98;
-            this.typeCheckbox.Text = "Release ContentType";
+            this.typeCheckbox.Text = "Release Type";
             this.typeCheckbox.UseVisualStyleBackColor = true;
             this.typeCheckbox.CheckedChanged += new System.EventHandler(this.typeCheckbox_CheckedChanged);
             // 
