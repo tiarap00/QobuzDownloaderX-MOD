@@ -308,7 +308,7 @@ namespace QobuzDownloaderX
                 }
 
                 loginText.Invoke(new Action(() => loginText.Text = errorMessage));
-                System.IO.File.WriteAllText(loginErrorLog, ex.ToString());
+                System.IO.File.AppendAllText(loginErrorLog, ex.ToString());
 
                 loginButton.Invoke(new Action(() => loginButton.Enabled = true));
                 altLoginLabel.Invoke(new Action(() => altLoginLabel.Visible = true));
@@ -390,14 +390,14 @@ namespace QobuzDownloaderX
 
                     #region Check if textboxes are valid
 
-                    if (emailTextbox.Text == "Email" | emailTextbox.Text == null | emailTextbox.Text == "")
+                    if (emailTextbox.Text == "Email" || string.IsNullOrEmpty(emailTextbox.Text?.Trim()))
                     {
                         // If there's no email typed in.
                         loginText.Invoke(new Action(() => loginText.Text = "No email, please input email first."));
                         return;
                     }
 
-                    if (passwordTextbox.Text == "Password")
+                    if (passwordTextbox.Text == "Password" || string.IsNullOrEmpty(passwordTextbox.Text?.Trim()))
                     {
                         // If there's no password typed in.
                         loginText.Invoke(new Action(() => loginText.Text = "No password typed, please input password first."));
@@ -406,12 +406,16 @@ namespace QobuzDownloaderX
 
                     #endregion Check if textboxes are valid
 
+                    // Trim entered email and password to help copy/paste dummies...
+                    emailTextbox.Text = emailTextbox.Text.Trim();
+                    passwordTextbox.Text = passwordTextbox.Text.Trim();
+
                     string plainTextPW = passwordTextbox.Text;
 
                     var passMD5CheckLog = Regex.Match(plainTextPW, "(?<md5Test>^[0-9a-f]{32}$)").Groups;
                     var passMD5Check = passMD5CheckLog[1].Value;
 
-                    if (passMD5Check == null || passMD5Check == "")
+                    if (string.IsNullOrEmpty(passMD5Check))
                     {
                         // Generate the MD5 hash using the string created above.
                         using (MD5 md5PassHash = MD5.Create())
@@ -448,14 +452,14 @@ namespace QobuzDownloaderX
 
                     #region Check if textboxes are valid
 
-                    if (userIdTextbox.Text == "user_id" || userIdTextbox.Text == null || userIdTextbox.Text == "")
+                    if (userIdTextbox.Text == "user_id" || string.IsNullOrEmpty(userIdTextbox.Text?.Trim()))
                     {
                         // If there's no user_id  typed in.
                         loginText.Invoke(new Action(() => loginText.Text = "No user_id, please input user_id first."));
                         return;
                     }
 
-                    if (userAuthTokenTextbox.Text == "user_auth_token")
+                    if (userAuthTokenTextbox.Text == "user_auth_token" || string.IsNullOrEmpty(userAuthTokenTextbox.Text?.Trim()))
                     {
                         // If there's no password typed in.
                         loginText.Invoke(new Action(() => loginText.Text = "No user_auth_token typed, please input user_auth_token first."));
@@ -463,6 +467,10 @@ namespace QobuzDownloaderX
                     }
 
                     #endregion Check if textboxes are valid
+
+                    // Trim entered user_id and user_auth_token to help copy/paste dummies...
+                    userIdTextbox.Text = userIdTextbox.Text.Trim();
+                    userAuthTokenTextbox.Text = userAuthTokenTextbox.Text.Trim();
 
                     // Save info locally to be used on next launch.
                     Settings.Default.savedUserID = userIdTextbox.Text;
