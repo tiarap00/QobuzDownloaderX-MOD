@@ -1,5 +1,7 @@
-﻿using QobuzDownloaderX.View;
+﻿using QobuzDownloaderX.Shared;
+using QobuzDownloaderX.View;
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 
@@ -59,9 +61,14 @@ namespace QobuzDownloaderX
             }
         }
 
-        private void label4_Click(object sender, EventArgs e)
+        private void ModDevLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
+            Process.Start(Globals.GITHUB_REPO_URL);
+        }
 
+        private void OrigDevLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start(Globals.GITHUB_ImAiiR_REPO_URL);
         }
     }
 }

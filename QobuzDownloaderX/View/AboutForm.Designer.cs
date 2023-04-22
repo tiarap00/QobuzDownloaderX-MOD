@@ -33,11 +33,11 @@
             this.exitLabel = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.verNumLabel2 = new System.Windows.Forms.Label();
-            this.devLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.ModDevLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.OrigDevLinkLabel = new System.Windows.Forms.LinkLabel();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -89,20 +89,10 @@
             this.verNumLabel2.Location = new System.Drawing.Point(12, 98);
             this.verNumLabel2.Name = "verNumLabel2";
             this.verNumLabel2.Size = new System.Drawing.Size(341, 18);
-            this.verNumLabel2.TabIndex = 32;
+            this.verNumLabel2.TabIndex = 0;
             this.verNumLabel2.Text = "#.#.#.#";
             this.verNumLabel2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.verNumLabel2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.verNumLabel2_MouseMove);
-            // 
-            // devLabel
-            // 
-            this.devLabel.AutoSize = true;
-            this.devLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.devLabel.Location = new System.Drawing.Point(121, 155);
-            this.devLabel.Name = "devLabel";
-            this.devLabel.Size = new System.Drawing.Size(122, 13);
-            this.devLabel.TabIndex = 34;
-            this.devLabel.Text = "Original Developer - AiiR";
             // 
             // label1
             // 
@@ -138,16 +128,37 @@
     " FREE AND OPEN-SOURCE.";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // label4
+            // ModDevLinkLabel
             // 
-            this.label4.AutoSize = true;
-            this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.label4.Location = new System.Drawing.Point(110, 132);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(144, 13);
-            this.label4.TabIndex = 38;
-            this.label4.Text = "Mod Developer - DJDoubleD";
-            this.label4.Click += new System.EventHandler(this.label4_Click);
+            this.ModDevLinkLabel.ActiveLinkColor = System.Drawing.Color.DarkGray;
+            this.ModDevLinkLabel.AutoSize = true;
+            this.ModDevLinkLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.ModDevLinkLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
+            this.ModDevLinkLabel.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.ModDevLinkLabel.Location = new System.Drawing.Point(110, 132);
+            this.ModDevLinkLabel.Name = "ModDevLinkLabel";
+            this.ModDevLinkLabel.Size = new System.Drawing.Size(144, 13);
+            this.ModDevLinkLabel.TabIndex = 1;
+            this.ModDevLinkLabel.TabStop = true;
+            this.ModDevLinkLabel.Text = "Mod Developer - DJDoubleD";
+            this.ModDevLinkLabel.VisitedLinkColor = System.Drawing.Color.Gray;
+            this.ModDevLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ModDevLinkLabel_LinkClicked);
+            // 
+            // OrigDevLinkLabel
+            // 
+            this.OrigDevLinkLabel.ActiveLinkColor = System.Drawing.Color.DarkGray;
+            this.OrigDevLinkLabel.AutoSize = true;
+            this.OrigDevLinkLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.OrigDevLinkLabel.LinkBehavior = System.Windows.Forms.LinkBehavior.HoverUnderline;
+            this.OrigDevLinkLabel.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.OrigDevLinkLabel.Location = new System.Drawing.Point(121, 155);
+            this.OrigDevLinkLabel.Name = "OrigDevLinkLabel";
+            this.OrigDevLinkLabel.Size = new System.Drawing.Size(122, 13);
+            this.OrigDevLinkLabel.TabIndex = 38;
+            this.OrigDevLinkLabel.TabStop = true;
+            this.OrigDevLinkLabel.Text = "Original Developer - AiiR";
+            this.OrigDevLinkLabel.VisitedLinkColor = System.Drawing.Color.Gray;
+            this.OrigDevLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.OrigDevLinkLabel_LinkClicked);
             // 
             // AboutForm
             // 
@@ -155,11 +166,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.ClientSize = new System.Drawing.Size(365, 289);
-            this.Controls.Add(this.label4);
+            this.Controls.Add(this.OrigDevLinkLabel);
+            this.Controls.Add(this.ModDevLinkLabel);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.devLabel);
             this.Controls.Add(this.verNumLabel2);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
@@ -183,10 +194,10 @@
         private System.Windows.Forms.Label verNumLabel2;
         private System.Windows.Forms.Label exitLabel;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.Label devLabel;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.LinkLabel ModDevLinkLabel;
+        private System.Windows.Forms.LinkLabel OrigDevLinkLabel;
     }
 }

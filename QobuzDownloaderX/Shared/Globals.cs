@@ -6,6 +6,8 @@ namespace QobuzDownloaderX.Shared
     {
         public const string GITHUB_LATEST_VERSION_URL = "https://api.github.com/repos/DJDoubleD/QobuzDownloaderX-MOD/releases/latest";
         public const string GITHUB_LATEST_URL = "https://github.com/DJDoubleD/QobuzDownloaderX-MOD/releases/latest";
+        public const string GITHUB_REPO_URL = "https://github.com/DJDoubleD/QobuzDownloaderX-MOD";
+        public const string GITHUB_ImAiiR_REPO_URL = "https://github.com/ImAiiR/QobuzDownloaderX";
         public const string GITHUB_ALT_LOGIN_TUTORIAL_URL = "https://github.com/DJDoubleD/QobuzDownloaderX-MOD/wiki/Logging-In-(The-Alternate-Way)";
         public const string WEBPLAYER_BASE_URL = "https://play.qobuz.com";
         public const string USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0";
