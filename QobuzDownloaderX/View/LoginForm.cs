@@ -11,6 +11,7 @@ using System.Drawing;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Authentication;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -153,7 +154,8 @@ namespace QobuzDownloaderX
             try
             {
                 // Create HttpClient to grab version number from Github
-                var versionURLClient = new HttpClient();
+                // Force minimum TLS 1.2 as Github does not support TLS 1.1 and lower
+                var versionURLClient = new HttpClient(new HttpClientHandler { SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13});
                 // Set user-agent to Firefox.
                 versionURLClient.DefaultRequestHeaders.Add("User-Agent", Globals.USER_AGENT);
 
