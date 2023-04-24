@@ -274,15 +274,12 @@ namespace QobuzDownloaderX
             loginButton.Invoke(new Action(() => loginButton.Enabled = true));
             altLoginLabel.Invoke(new Action(() => altLoginLabel.Visible = true));
 
-            if (!disableLogin.Checked)
-            {
-                // Login successful, create main forms
-                Globals.QbdlxForm = new QobuzDownloaderX();
-                Globals.SearchForm = new SearchForm();
+            // Login successful, create main forms
+            Globals.QbdlxForm = new QobuzDownloaderX();
+            Globals.SearchForm = new SearchForm();
 
-                this.Invoke(new Action(() => this.Hide()));
-                Application.Run(Globals.QbdlxForm);
-            }
+            this.Invoke(new Action(() => this.Hide()));
+            Application.Run(Globals.QbdlxForm);
         }
 
         private void LoginBG_DoWork(object sender, DoWorkEventArgs e)
@@ -488,36 +485,6 @@ namespace QobuzDownloaderX
             loginButton.Enabled = false;
             loginText.Text = "Getting App ID and Secret...";
             loginBG.RunWorkerAsync();
-        }
-
-        private void Md5Button_Click(object sender, EventArgs e)
-        {
-            //if (passwordTextbox.Text == "Password")
-            //{
-            //    // If there's no password typed in.
-            //    loginText.Invoke(new Action(() => loginText.Text = "No password typed, please input password first."));
-            //    return;
-            //}
-
-            //string plainTextPW = passwordTextbox.Text;
-
-            //// Generate the MD5 hash using the string created above.
-            //using (MD5 md5PassHash = MD5.Create())
-            //{
-            //    string hashedPW = GetMd5Hash(md5PassHash, plainTextPW);
-
-            //    if (VerifyMd5Hash(md5PassHash, plainTextPW, hashedPW))
-            //    {
-            //        // If the MD5 hash is verified, proceed to get the streaming URL.
-            //        passwordTextbox.Text = hashedPW;
-            //    }
-            //    else
-            //    {
-            //        // If the hash can't be verified.
-            //        loginText.Invoke(new Action(() => loginText.Text = "Hashing failed. Please retry."));
-            //        return;
-            //    }
-            //}
         }
 
         private void Panel1_MouseMove(object sender, MouseEventArgs e)

@@ -31,7 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoginForm));
             this.panel1 = new System.Windows.Forms.Panel();
             this.aboutLabel = new System.Windows.Forms.Label();
-            this.disableLogin = new System.Windows.Forms.CheckBox();
             this.verNumLabel2 = new System.Windows.Forms.Label();
             this.exitLabel = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
@@ -47,7 +46,6 @@
             this.altLoginLabel = new System.Windows.Forms.Label();
             this.altLoginTutLabel = new System.Windows.Forms.Label();
             this.userIdTextbox = new System.Windows.Forms.TextBox();
-            this.md5Button = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -56,9 +54,7 @@
             // 
             this.panel1.BackgroundImage = global::QobuzDownloaderX.Properties.Resources.login_frame;
             this.panel1.Controls.Add(this.aboutLabel);
-            this.panel1.Controls.Add(this.disableLogin);
             this.panel1.Controls.Add(this.verNumLabel2);
-            this.panel1.Controls.Add(this.md5Button);
             this.panel1.Controls.Add(this.exitLabel);
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -81,18 +77,6 @@
             this.aboutLabel.Text = "i";
             this.aboutLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.aboutLabel.Click += new System.EventHandler(this.AboutLabel_Click);
-            // 
-            // disableLogin
-            // 
-            this.disableLogin.AutoSize = true;
-            this.disableLogin.ForeColor = System.Drawing.Color.Transparent;
-            this.disableLogin.Location = new System.Drawing.Point(12, 155);
-            this.disableLogin.Name = "disableLogin";
-            this.disableLogin.Size = new System.Drawing.Size(90, 17);
-            this.disableLogin.TabIndex = 34;
-            this.disableLogin.Text = "Disable Login";
-            this.disableLogin.UseVisualStyleBackColor = true;
-            this.disableLogin.Visible = false;
             // 
             // verNumLabel2
             // 
@@ -276,23 +260,6 @@
             this.userIdTextbox.Click += new System.EventHandler(this.UserIdTextbox_Click);
             this.userIdTextbox.Leave += new System.EventHandler(this.UserIdTextbox_Leave);
             // 
-            // md5Button
-            // 
-            this.md5Button.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(112)))), ((int)(((byte)(239)))));
-            this.md5Button.Enabled = false;
-            this.md5Button.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
-            this.md5Button.FlatAppearance.BorderSize = 2;
-            this.md5Button.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.md5Button.ForeColor = System.Drawing.Color.White;
-            this.md5Button.Location = new System.Drawing.Point(227, 122);
-            this.md5Button.Name = "md5Button";
-            this.md5Button.Size = new System.Drawing.Size(43, 27);
-            this.md5Button.TabIndex = 9;
-            this.md5Button.Text = "MD5";
-            this.md5Button.UseVisualStyleBackColor = false;
-            this.md5Button.Visible = false;
-            this.md5Button.Click += new System.EventHandler(this.Md5Button_Click);
-            // 
             // LoginForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -338,12 +305,10 @@
         private System.ComponentModel.BackgroundWorker loginBG;
         private System.Windows.Forms.Label verNumLabel2;
         private System.Windows.Forms.CheckBox visableCheckbox;
-        private System.Windows.Forms.CheckBox disableLogin;
         private System.Windows.Forms.TextBox userAuthTokenTextbox;
         private System.Windows.Forms.Label altLoginLabel;
         private System.Windows.Forms.Label altLoginTutLabel;
         private System.Windows.Forms.TextBox userIdTextbox;
         private System.Windows.Forms.Label aboutLabel;
-        private System.Windows.Forms.Button md5Button;
     }
 }
