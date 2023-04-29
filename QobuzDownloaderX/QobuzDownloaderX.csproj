@@ -80,6 +80,7 @@
     <Compile Include="Shared\QobuzApiServiceManager.cs" />
     <Compile Include="Shared\FontManager.cs" />
     <Compile Include="Shared\Tools\QualityStringMappings.cs" />
+    <Compile Include="Shared\Tools\ControlTools.cs" />
     <Compile Include="Shared\Tools\StringTools.cs" />
     <Compile Include="Shared\Globals.cs" />
     <Compile Include="View\HeadlessForm.cs">

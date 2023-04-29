@@ -29,21 +29,9 @@ namespace QobuzDownloaderX
                 System.IO.File.Delete(errorLog);
             }
 
-            searchTypeSelect.SelectedItem = "Album";
-        }
+            ControlTools.SetDoubleBuffered(containerScrollPanel);
 
-        private void RemoveControls(Control userControl)
-        {
-            while (userControl.Controls.Count > 0)
-            {
-                Control control = userControl.Controls[0];
-                if (control.HasChildren)
-                {
-                    RemoveControls(control); // Recursively remove and dispose all children
-                }
-                userControl.Controls.Remove(control);
-                control.Dispose(); // Remove Control to clear from memory
-            }
+            searchTypeSelect.SelectedItem = "Album";
         }
 
         private void ResetResultsTableLayoutPanel()
@@ -51,7 +39,7 @@ namespace QobuzDownloaderX
             if (resultsTableLayoutPanel != null)
             {
                 containerScrollPanel.Controls.Clear();
-                RemoveControls(resultsTableLayoutPanel);
+                ControlTools.RemoveControls(resultsTableLayoutPanel);
                 resultsTableLayoutPanel.Dispose();
             }
 
@@ -65,6 +53,7 @@ namespace QobuzDownloaderX
                 Size = new Size(894, 70),
                 TabIndex = 4
             };
+            ControlTools.SetDoubleBuffered(resultsTableLayoutPanel);
             resultsTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80F));
             resultsTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 613F));
             resultsTableLayoutPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100F));
@@ -161,16 +150,12 @@ namespace QobuzDownloaderX
 
         private void FillResultsTablePanel<T>(IEnumerable<T> items, Func<T, SearchResultRow> createSearchResultRow)
         {
-            ResetResultsTableLayoutPanel();
-
             if (items != null)
             {
-                resultsTableLayoutPanel.SuspendLayout();
                 foreach (var item in items)
                 {
                     CreateResultRow(createSearchResultRow(item));
                 }
-                resultsTableLayoutPanel.ResumeLayout();
             }
         }
 
@@ -243,6 +228,7 @@ namespace QobuzDownloaderX
                 BackColor = rowColor,
                 ColumnStyles = { new ColumnStyle(SizeType.Absolute, 490), new ColumnStyle(SizeType.Absolute, 90) }
             };
+            ControlTools.SetDoubleBuffered(releaseInfoColumnPanel);
             releaseInfoColumnPanel.Controls.Add(title, 0, 0);
             releaseInfoColumnPanel.Controls.Add(duration, 1, 0);
             releaseInfoColumnPanel.Controls.Add(artist, 0, 1);
@@ -256,6 +242,7 @@ namespace QobuzDownloaderX
                     BackColor = releaseInfoColumnPanel.BackColor,
                     AutoSize = true
                 };
+                ControlTools.SetDoubleBuffered(linksPanel);
 
                 if (webLink != null) linksPanel.Controls.Add(webLink);
                 if (storeLink != null) linksPanel.Controls.Add(storeLink);
@@ -283,19 +270,20 @@ namespace QobuzDownloaderX
                 };
             }
 
-            TableLayoutPanel thirdColumnPanel = new TableLayoutPanel
+            TableLayoutPanel qualityColumnPanel = new TableLayoutPanel
             {
                 ColumnCount = 1,
                 RowCount = hiResIcon == null ? 1 : 2,
                 BackColor = rowColor,
                 ColumnStyles = { new ColumnStyle(SizeType.Percent, 100) },
-                RowStyles = { new RowStyle(SizeType.AutoSize), new RowStyle(SizeType.AutoSize) },
+                RowStyles = { new RowStyle(SizeType.AutoSize), new RowStyle(SizeType.AutoSize) }
             };
+            ControlTools.SetDoubleBuffered(qualityColumnPanel);
 
-            thirdColumnPanel.Controls.Add(quality, 0, 0);
-            if (hiResIcon != null) thirdColumnPanel.Controls.Add(hiResIcon, 0, 1);
+            qualityColumnPanel.Controls.Add(quality, 0, 0);
+            if (hiResIcon != null) qualityColumnPanel.Controls.Add(hiResIcon, 0, 1);
 
-            return thirdColumnPanel;
+            return qualityColumnPanel;
         }
 
         private Button CreateDownloadButton(string webPlayerUrl)
@@ -385,12 +373,20 @@ namespace QobuzDownloaderX
 
         private void SearchButton_Click(object sender, EventArgs e)
         {
+            searchButton.Enabled = false;
+            containerScrollPanel.Hide();
+
             // In case of an exception, a newline is added to the searchQuery string for some reason.
-            // So we clone the object to prevent newline in TextBox on error.
+            // So we clone the object to prevent newline in TextBox on error
             string searchQuery = searchInput.Text.Clone().ToString();
+
+            // Clear previous results before fetching new results
+            ResetResultsTableLayoutPanel();
 
             if (string.IsNullOrEmpty(searchQuery))
             {
+                containerScrollPanel.Show();
+                searchButton.Enabled = true;
                 return;
             }
 
@@ -411,6 +407,9 @@ namespace QobuzDownloaderX
             {
                 ShowAndLogSearchResultError(ex);
             }
+
+            containerScrollPanel.Show();
+            searchButton.Enabled = true;
         }
 
         private void SearchForm_FormClosed(object sender, FormClosedEventArgs e)
