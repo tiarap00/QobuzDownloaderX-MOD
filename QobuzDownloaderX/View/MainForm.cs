@@ -66,8 +66,6 @@ namespace QobuzDownloaderX
         public string path6Full { get; set; }
 
         // Info / Tagging strings
-        public string trackIdString { get; set; }
-
         public string trackVersionName { get; set; }
         public bool? advisory { get; set; }
         public string albumArtist { get; set; }
@@ -80,7 +78,6 @@ namespace QobuzDownloaderX
         public string releaseDate { get; set; }
         public string isrc { get; set; }
         public string upc { get; set; }
-        public string playlistCoverImg { get; set; }
         public string frontCoverImg { get; set; }
         public string frontCoverImgBox { get; set; }
         public string type { get; set; }
@@ -782,7 +779,7 @@ namespace QobuzDownloaderX
 
         public bool DownloadTrack(Track qobuzTrack, string basePath, bool isPartOfPlaylist, bool isPartOfAlbum, bool removeTagArtFileAfterDownload = false, string albumPathSuffix = "")
         {
-            trackIdString = qobuzTrack.Id.GetValueOrDefault().ToString();
+            string trackIdString = qobuzTrack.Id.GetValueOrDefault().ToString();
 
             GetTrackTaggingInfo(qobuzTrack);
 
