@@ -75,10 +75,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\DownloadItem.cs" />
     <Compile Include="Shared\GoodiesFileType.cs" />
     <Compile Include="Models\UI\SearchResultRow.cs" />
     <Compile Include="Shared\QobuzApiServiceManager.cs" />
     <Compile Include="Shared\FontManager.cs" />
+    <Compile Include="Shared\Tools\FileTools.cs" />
+    <Compile Include="Shared\Tools\DownloadUrlParser.cs" />
     <Compile Include="Shared\Tools\QualityStringMappings.cs" />
     <Compile Include="Shared\Tools\ControlTools.cs" />
     <Compile Include="Shared\Tools\StringTools.cs" />

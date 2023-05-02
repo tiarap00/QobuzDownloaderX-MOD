@@ -22,8 +22,8 @@ namespace QobuzDownloaderX
     {
         private readonly string dllCheck = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "TagLibSharp.dll");
 
-        private readonly string loginErrorLog = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Login_Errors.log");
-        private readonly string versionCheckErrorLog = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "VersionCheck_Errors.log");
+        private readonly string loginErrorLog = Path.Combine(Globals.LoggingDir, "Login_Errors.log");
+        private readonly string versionCheckErrorLog = Path.Combine(Globals.LoggingDir, "VersionCheck_Errors.log");
 
         public LoginForm()
         {

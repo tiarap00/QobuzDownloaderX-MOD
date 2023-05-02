@@ -25,6 +25,9 @@ namespace QobuzDownloaderX
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            // Create logging dir and clean older logs if present
+            Globals.LoggingDir = FileTools.GetInitializedLogDir();
+
             // Initialise forms
             Globals.LoginForm = new LoginForm();
             Globals.AboutForm = new AboutForm();

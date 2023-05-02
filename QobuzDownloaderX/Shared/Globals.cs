@@ -13,7 +13,6 @@ namespace QobuzDownloaderX.Shared
         public const string USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0";
         public const string DEFAULT_COVER_ART_URL = "https://static.qobuz.com/images/covers/01/00/2013072600001_150.jpg";
 
-
         // Forms
         public static LoginForm LoginForm { get; set; }
         public static QobuzDownloaderX QbdlxForm { get; set; }
@@ -29,5 +28,8 @@ namespace QobuzDownloaderX.Shared
 
         // Search
         public static string SelectedDownloadUrl { get; set; }
+
+        // Logs
+        public static string LoggingDir { get; set; }
     }
 }

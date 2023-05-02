@@ -16,7 +16,7 @@ namespace QobuzDownloaderX
 {
     public partial class SearchForm : HeadlessForm
     {
-        private readonly string errorLog = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "Search_Errors.log");
+        private readonly string errorLog = Path.Combine(Globals.LoggingDir, "Search_Errors.log");
         TableLayoutPanel resultsTableLayoutPanel;
 
         public SearchForm()
@@ -79,7 +79,7 @@ namespace QobuzDownloaderX
             ResizeControlForText(ErrorSavedMesage, 5);
             resultsTableLayoutPanel.Controls.Add(ErrorSavedMesage, 0, 1);
 
-            List<string> errorLines = new List<string> { "", ex.Message };
+            List<string> errorLines = new List<string> { ex.Message };
 
             switch (ex)
             {
@@ -87,10 +87,12 @@ namespace QobuzDownloaderX
                     errorLines.Add($"Failed API request: {erEx.RequestContent}");
                     errorLines.Add($"Api response code: {erEx.ResponseStatusCode}");
                     errorLines.Add($"Api response status: {erEx.ResponseStatus}");
-                    errorLines.Add($"Api response reason: {erEx.ResponseReason} \r\n");
+                    errorLines.Add($"Api response reason: {erEx.ResponseReason}");
+                    errorLines.Add("");
                     break;
                 case ApiResponseParseErrorException pEx:
-                    errorLines.Add($"Api response content: {pEx.ResponseContent} \r\n");
+                    errorLines.Add($"Api response content: {pEx.ResponseContent}");
+                    errorLines.Add("");
                     break;
             }
 
