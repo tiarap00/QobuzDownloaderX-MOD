@@ -1059,59 +1059,52 @@ namespace QobuzDownloaderX
             }
 
             // Look for digital booklet(s) in "Goodies"
+            // Don't fail on failed "Goodies" downloads, just log...
             List<Goody> booklets = qobuzAlbum.Goodies?.Where(g => g.FileFormatId == (int)GoodiesFileType.BOOKLET).ToList();
 
             if (booklets?.Any() == true)
             {
-                return DownloadBooklets(booklets, Path3Full);
+                DownloadBooklets(booklets, Path3Full);
             }
 
             return true;
         }
 
-        private bool DownloadBooklets(List<Goody> booklets, string basePath)
+        private void DownloadBooklets(List<Goody> booklets, string basePath)
         {
             AddDownloadLogLine($"Goodies found, downloading...{Environment.NewLine}", true, true);
 
+            using (HttpClient httpClient = new HttpClient())
+            {
+                int counter = 1;
+
+                foreach (Goody booklet in booklets)
+                {
+                    string bookletFileName = counter == 1 ? "Digital Booklet.pdf" : $"Digital Booklet {counter}.pdf";
+                    string bookletFilePath = Path.Combine(basePath, bookletFileName);
+
+                    // Download booklet if file doesn't exist yet
+                    if (System.IO.File.Exists(bookletFilePath))
+                    {
+                        AddDownloadLogLine($"Booklet file for \"{bookletFileName}\" already exists. Skipping.{Environment.NewLine}", true, true);
+                    } else
+                    {
+                        DownloadBooklet(booklet, httpClient, bookletFileName, bookletFilePath);
+                    }
+
+                    counter++;
+                }
+            }
+        }
+
+        private void DownloadBooklet(Goody booklet, HttpClient httpClient, string fileName, string filePath)
+        {
             try
             {
-                using (HttpClient client = new HttpClient())
-                {
-                    int counter = 1;
+                // Download booklet
+                DownloadFileAsync(httpClient, booklet.Url, filePath).GetAwaiter().GetResult();
 
-                    foreach (Goody booklet in booklets)
-                    {
-                        string bookletFileName = counter == 1 ? "Digital Booklet.pdf" : $"Digital Booklet {counter}.pdf";
-                        string bookletFilePath = Path.Combine(basePath, bookletFileName);
-
-                        // Check if the file already exists
-                        if (System.IO.File.Exists(bookletFilePath))
-                        {
-                            AddDownloadLogLine($"Booklet file for \"{bookletFileName}\" already exists. Skipping.{Environment.NewLine}", true, true);
-                        }
-                        else
-                        {
-                            // Download booklet
-                            HttpResponseMessage response = client.GetAsync(booklet.Url).Result;
-
-                            if (response.IsSuccessStatusCode)
-                            {
-                                using (Stream bookletStream = response.Content.ReadAsStreamAsync().Result)
-                                {
-
-                                    using (FileStream fileStream = new FileStream(bookletFilePath, FileMode.Create))
-                                    {
-                                        bookletStream.CopyTo(fileStream);
-                                    }
-
-                                    AddDownloadLogLine($"Booklet \"{bookletFileName}\" download complete!{Environment.NewLine}", true, true);
-
-                                    counter++;
-                                }
-                            }
-                        }
-                    }
-                }
+                AddDownloadLogLine($"Booklet \"{fileName}\" download complete!{Environment.NewLine}", true, true);
             }
             catch (AggregateException ae)
             {
@@ -1121,7 +1114,6 @@ namespace QobuzDownloaderX
                 AddDownloadErrorLogLine("Goodies Download canceled, probably due to network error or request timeout.");
                 AddDownloadErrorLogLine(ae.ToString());
                 AddDownloadErrorLogLine(Environment.NewLine);
-                return false;
             }
             catch (Exception downloadEx)
             {
@@ -1131,10 +1123,7 @@ namespace QobuzDownloaderX
                 AddDownloadErrorLogLine("Unknown error during Goodies Download.");
                 AddDownloadErrorLogLine(downloadEx.ToString());
                 AddDownloadErrorLogLine(Environment.NewLine);
-                return false;
             }
-
-            return true;
         }
 
         private void PrepareAlbumDownload(Album qobuzAlbum)
@@ -1178,7 +1167,7 @@ namespace QobuzDownloaderX
 
                 // Say that downloading is completed.
                 AddEmptyDownloadLogLine(true, true);
-                AddDownloadLogLine("Downloading job completed! All downloaded files will be located in your chosen path.", true, true);
+                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
                 EnableBoxes();
             }
             catch (Exception downloadEx)
@@ -1215,7 +1204,7 @@ namespace QobuzDownloaderX
 
                 // Say that downloading is completed.
                 AddEmptyDownloadLogLine(true, true);
-                AddDownloadLogLine("Downloading job completed! All downloaded files will be located in your chosen path.", true, true);
+                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
                 EnableBoxes();
             }
             catch (Exception downloadEx)
@@ -1258,7 +1247,7 @@ namespace QobuzDownloaderX
 
                 // Say that downloading is completed.
                 AddEmptyDownloadLogLine(true, true);
-                AddDownloadLogLine("Downloading job completed! All downloaded files will be located in your chosen path.", true, true);
+                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
                 EnableBoxes();
             }
             catch (Exception downloadEx)
@@ -1306,7 +1295,7 @@ namespace QobuzDownloaderX
 
                 // Say that downloading is completed.
                 AddEmptyDownloadLogLine(true, true);
-                AddDownloadLogLine("Downloading job completed! All downloaded files will be located in your chosen path.", true, true);
+                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
                 EnableBoxes();
             }
             catch (Exception downloadEx)
@@ -1352,7 +1341,7 @@ namespace QobuzDownloaderX
 
                 // Say that downloading is completed.
                 AddEmptyDownloadLogLine(true, true);
-                AddDownloadLogLine("Downloading job completed! All downloaded files will be located in your chosen path.", true, true);
+                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
                 EnableBoxes();
             }
             catch (Exception downloadEx)
@@ -1428,7 +1417,7 @@ namespace QobuzDownloaderX
 
                 // Say that downloading is completed.
                 AddEmptyDownloadLogLine(true, true);
-                AddDownloadLogLine("Downloading job completed! All downloaded files will be located in your chosen path.", true, true);
+                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
                 EnableBoxes();
 
             }
