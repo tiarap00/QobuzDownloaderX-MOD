@@ -304,7 +304,7 @@ namespace QobuzDownloaderX
             downloadButton.FlatAppearance.BorderSize = 0;
             downloadButton.Click += (sender, e) =>
             {
-                Globals.SelectedDownloadUrl = webPlayerUrl;
+                Globals.QbdlxForm.downloadUrl.Invoke(new Action(() => Globals.QbdlxForm.downloadUrl.Text = webPlayerUrl));
                 Globals.QbdlxForm.getLinkTypeBG.RunWorkerAsync();
                 this.Close();
             };

@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QobuzDownloaderX));
-            this.selectFolder = new System.Windows.Forms.Button();
+            this.selectFolderButton = new System.Windows.Forms.Button();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.output = new System.Windows.Forms.TextBox();
             this.openFolderButton = new System.Windows.Forms.Button();
@@ -57,7 +57,7 @@
             this.downloadDiscogBG = new System.ComponentModel.BackgroundWorker();
             this.qualityTextbox = new System.Windows.Forms.TextBox();
             this.qualityLabel = new System.Windows.Forms.Label();
-            this.openSearch = new System.Windows.Forms.Button();
+            this.openSearchButton = new System.Windows.Forms.Button();
             this.tagsLabel = new System.Windows.Forms.Label();
             this.albumArtistCheckbox = new System.Windows.Forms.CheckBox();
             this.artistCheckbox = new System.Windows.Forms.CheckBox();
@@ -124,19 +124,19 @@
             ((System.ComponentModel.ISupportInitialize)(this.profilePictureBox)).BeginInit();
             this.SuspendLayout();
             // 
-            // selectFolder
+            // selectFolderButton
             // 
-            this.selectFolder.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(112)))), ((int)(((byte)(239)))));
-            this.selectFolder.FlatAppearance.BorderSize = 0;
-            this.selectFolder.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.selectFolder.ForeColor = System.Drawing.Color.White;
-            this.selectFolder.Location = new System.Drawing.Point(12, 115);
-            this.selectFolder.Name = "selectFolder";
-            this.selectFolder.Size = new System.Drawing.Size(231, 23);
-            this.selectFolder.TabIndex = 3;
-            this.selectFolder.Text = "Choose Download Folder";
-            this.selectFolder.UseVisualStyleBackColor = false;
-            this.selectFolder.Click += new System.EventHandler(this.SelectFolder_Click);
+            this.selectFolderButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(112)))), ((int)(((byte)(239)))));
+            this.selectFolderButton.FlatAppearance.BorderSize = 0;
+            this.selectFolderButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.selectFolderButton.ForeColor = System.Drawing.Color.White;
+            this.selectFolderButton.Location = new System.Drawing.Point(12, 115);
+            this.selectFolderButton.Name = "selectFolderButton";
+            this.selectFolderButton.Size = new System.Drawing.Size(231, 23);
+            this.selectFolderButton.TabIndex = 3;
+            this.selectFolderButton.Text = "Choose Download Folder";
+            this.selectFolderButton.UseVisualStyleBackColor = false;
+            this.selectFolderButton.Click += new System.EventHandler(this.SelectFolder_Click);
             // 
             // output
             // 
@@ -180,7 +180,7 @@
             this.downloadButton.TabIndex = 2;
             this.downloadButton.Text = "Download";
             this.downloadButton.UseVisualStyleBackColor = false;
-            this.downloadButton.Click += new System.EventHandler(this.downloadButton_Click);
+            this.downloadButton.Click += new System.EventHandler(this.DownloadButton_Click);
             // 
             // downloadUrl
             // 
@@ -193,7 +193,7 @@
             this.downloadUrl.Size = new System.Drawing.Size(576, 20);
             this.downloadUrl.TabIndex = 1;
             this.downloadUrl.WordWrap = false;
-            this.downloadUrl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.downloadUrl_KeyDown);
+            this.downloadUrl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.DownloadUrl_KeyDown);
             // 
             // imageURLTextbox
             // 
@@ -412,19 +412,19 @@
             this.qualityLabel.TabIndex = 58;
             this.qualityLabel.Text = "Album Quality";
             // 
-            // openSearch
+            // openSearchButton
             // 
-            this.openSearch.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(112)))), ((int)(((byte)(239)))));
-            this.openSearch.FlatAppearance.BorderSize = 0;
-            this.openSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.openSearch.ForeColor = System.Drawing.Color.White;
-            this.openSearch.Location = new System.Drawing.Point(597, 57);
-            this.openSearch.Name = "openSearch";
-            this.openSearch.Size = new System.Drawing.Size(120, 23);
-            this.openSearch.TabIndex = 6;
-            this.openSearch.Text = "Open Search";
-            this.openSearch.UseVisualStyleBackColor = false;
-            this.openSearch.Click += new System.EventHandler(this.OpenSearch_Click);
+            this.openSearchButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(112)))), ((int)(((byte)(239)))));
+            this.openSearchButton.FlatAppearance.BorderSize = 0;
+            this.openSearchButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.openSearchButton.ForeColor = System.Drawing.Color.White;
+            this.openSearchButton.Location = new System.Drawing.Point(597, 57);
+            this.openSearchButton.Name = "openSearchButton";
+            this.openSearchButton.Size = new System.Drawing.Size(120, 23);
+            this.openSearchButton.TabIndex = 6;
+            this.openSearchButton.Text = "Open Search";
+            this.openSearchButton.UseVisualStyleBackColor = false;
+            this.openSearchButton.Click += new System.EventHandler(this.OpenSearch_Click);
             // 
             // tagsLabel
             // 
@@ -1220,7 +1220,7 @@
             this.Controls.Add(this.artistCheckbox);
             this.Controls.Add(this.albumArtistCheckbox);
             this.Controls.Add(this.tagsLabel);
-            this.Controls.Add(this.openSearch);
+            this.Controls.Add(this.openSearchButton);
             this.Controls.Add(this.qualityTextbox);
             this.Controls.Add(this.qualityLabel);
             this.Controls.Add(this.totalTracksTextbox);
@@ -1243,7 +1243,7 @@
             this.Controls.Add(this.downloadUrl);
             this.Controls.Add(this.openFolderButton);
             this.Controls.Add(this.output);
-            this.Controls.Add(this.selectFolder);
+            this.Controls.Add(this.selectFolderButton);
             this.Controls.Add(this.testURLBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1263,7 +1263,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button selectFolder;
+        private System.Windows.Forms.Button selectFolderButton;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
         private System.Windows.Forms.TextBox output;
         private System.Windows.Forms.Button openFolderButton;
@@ -1289,7 +1289,7 @@
         private System.ComponentModel.BackgroundWorker downloadDiscogBG;
         private System.Windows.Forms.TextBox qualityTextbox;
         private System.Windows.Forms.Label qualityLabel;
-        private System.Windows.Forms.Button openSearch;
+        private System.Windows.Forms.Button openSearchButton;
         private System.Windows.Forms.Label tagsLabel;
         private System.Windows.Forms.CheckBox albumArtistCheckbox;
         private System.Windows.Forms.CheckBox artistCheckbox;

@@ -278,7 +278,7 @@ namespace QobuzDownloaderX
             AddDownloadErrorLogLine($"{downloadTaskType} Download Task ERROR.");
             AddDownloadErrorLogLine(downloadEx.ToString());
             AddDownloadErrorLogLine(Environment.NewLine);
-            EnableBoxes();
+            EnableControlsAfterDownload();
         }
 
         private void debuggingEvents(object sender, EventArgs e)
@@ -304,17 +304,15 @@ namespace QobuzDownloaderX
 
         private void OpenSearch_Click(object sender, EventArgs e)
         {
-            Globals.SelectedDownloadUrl = null;
             Globals.SearchForm.ShowDialog(this);
-            this.downloadUrl.Text = Globals.SelectedDownloadUrl;
         }
 
-        private void downloadButton_Click(object sender, EventArgs e)
+        private void DownloadButton_Click(object sender, EventArgs e)
         {
             getLinkTypeBG.RunWorkerAsync();
         }
 
-        private void downloadUrl_KeyDown(object sender, KeyEventArgs e)
+        private void DownloadUrl_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -364,21 +362,27 @@ namespace QobuzDownloaderX
             return default;
         }
 
-        private void DisableBoxes()
+        private void DisableControlsDuringDownload()
         {
-            mp3Checkbox.Invoke(new Action(() => mp3Checkbox.Visible = false));
-            flacLowCheckbox.Invoke(new Action(() => flacLowCheckbox.Visible = false));
-            flacMidCheckbox.Invoke(new Action(() => flacMidCheckbox.Visible = false));
-            flacHighCheckbox.Invoke(new Action(() => flacHighCheckbox.Visible = false));
+            mp3Checkbox.Invoke(new Action(() => mp3Checkbox.AutoCheck = false));
+            flacLowCheckbox.Invoke(new Action(() => flacLowCheckbox.AutoCheck = false));
+            flacMidCheckbox.Invoke(new Action(() => flacMidCheckbox.AutoCheck = false));
+            flacHighCheckbox.Invoke(new Action(() => flacHighCheckbox.AutoCheck = false));
+
+            selectFolderButton.Invoke(new Action(() => selectFolderButton.Enabled = false));
+            openSearchButton.Invoke(new Action(() => openSearchButton.Enabled = false));
             downloadButton.Invoke(new Action(() => downloadButton.Enabled = false));
         }
 
-        private void EnableBoxes()
+        private void EnableControlsAfterDownload()
         {
-            mp3Checkbox.Invoke(new Action(() => mp3Checkbox.Visible = true));
-            flacLowCheckbox.Invoke(new Action(() => flacLowCheckbox.Visible = true));
-            flacMidCheckbox.Invoke(new Action(() => flacMidCheckbox.Visible = true));
-            flacHighCheckbox.Invoke(new Action(() => flacHighCheckbox.Visible = true));
+            mp3Checkbox.Invoke(new Action(() => mp3Checkbox.AutoCheck = true));
+            flacLowCheckbox.Invoke(new Action(() => flacLowCheckbox.AutoCheck = true));
+            flacMidCheckbox.Invoke(new Action(() => flacMidCheckbox.AutoCheck = true));
+            flacHighCheckbox.Invoke(new Action(() => flacHighCheckbox.AutoCheck = true));
+
+            selectFolderButton.Invoke(new Action(() => selectFolderButton.Enabled = true));
+            openSearchButton.Invoke(new Action(() => openSearchButton.Enabled = true));
             downloadButton.Invoke(new Action(() => downloadButton.Enabled = true));
         }
 
@@ -406,7 +410,7 @@ namespace QobuzDownloaderX
                 // If there's no selected path.
                 MessageBox.Show("No path selected!", "ERROR",
                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                EnableBoxes();
+                EnableControlsAfterDownload();
             }
             else
             {
@@ -425,7 +429,7 @@ namespace QobuzDownloaderX
 
         private void GetLinkTypeBG_DoWork(object sender, DoWorkEventArgs e)
         {
-            DisableBoxes();
+            DisableControlsDuringDownload();
 
             // Check if there's no selected path.
             if (string.IsNullOrEmpty(folderBrowserDialog.SelectedPath))
@@ -433,7 +437,7 @@ namespace QobuzDownloaderX
                 // If there is NOT a saved path.
                 output.Invoke(new Action(() => output.Text = String.Empty));
                 output.Invoke(new Action(() => output.AppendText("No path has been set! Remember to Choose a Folder!\r\n")));
-                EnableBoxes();
+                EnableControlsAfterDownload();
                 return;
             }
 
@@ -445,12 +449,12 @@ namespace QobuzDownloaderX
             {
                 output.Invoke(new Action(() => output.Text = String.Empty));
                 output.Invoke(new Action(() => output.AppendText("URL not understood. Is there a typo?")));
-                EnableBoxes();
+                EnableControlsAfterDownload();
                 return;
             }
 
             // Link should be valid here, start new download log
-            DownloadLogPath = Path.Combine(Globals.LoggingDir, $"Download_Log_{DateTime.Now:yyyy-MM-dd_HH.mm.ss}.log");
+            DownloadLogPath = Path.Combine(Globals.LoggingDir, $"Download_Log_{DateTime.Now:yyyy-MM-dd_HH.mm.ss.fff}.log");
 
             string logLine = $"Downloading <{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(downloadItem.Type)}> from {this.downloadUrl.Text}";
             AddDownloadLogLine(new string('=', logLine.Length).PadRight(logLine.Length), true);
@@ -491,7 +495,7 @@ namespace QobuzDownloaderX
                     output.Invoke(new Action(() => output.Text = String.Empty));
                     AddDownloadLogLine($"Downloading favorites only works on favorite albums at the moment. More options will be added in the future.{Environment.NewLine}", true, true);
                     AddDownloadLogLine("If you'd like to go ahead and grab your favorite albums, paste this link in the URL section - https://play.qobuz.com/user/library/favorites/albums", true, true);
-                    EnableBoxes();
+                    EnableControlsAfterDownload();
                 }
             }
             else if (downloadItem.Type == "playlist")
@@ -503,7 +507,7 @@ namespace QobuzDownloaderX
                 // We shouldn't get here?!? I'll leave this here just in case...
                 output.Invoke(new Action(() => output.Text = String.Empty));
                 AddDownloadLogLine("URL not understood. Is there a typo?", true, true);
-                EnableBoxes();
+                EnableControlsAfterDownload();
             }
         }
 
@@ -1046,7 +1050,7 @@ namespace QobuzDownloaderX
             }
 
             // If API call failed or empty Album was provided, abort
-            if (qobuzAlbum == null || string.IsNullOrEmpty(qobuzAlbum.Id)) { EnableBoxes(); return false; }
+            if (qobuzAlbum == null || string.IsNullOrEmpty(qobuzAlbum.Id)) { EnableControlsAfterDownload(); return false; }
 
             PrepareAlbumDownload(qobuzAlbum);
 
@@ -1160,7 +1164,7 @@ namespace QobuzDownloaderX
                 Track qobuzTrack = ExecuteApiCall(apiService => apiService.GetTrack(DowloadItemID, true));
 
                 // If API call failed, abort
-                if (qobuzTrack == null) { EnableBoxes(); return; }
+                if (qobuzTrack == null) { EnableControlsAfterDownload(); return; }
 
                 AddDownloadLogLine($"Track \"{qobuzTrack.Title}\" found. Starting Download...", true, true);
                 AddEmptyDownloadLogLine(true, true);
@@ -1168,12 +1172,12 @@ namespace QobuzDownloaderX
                 bool fileDownloaded = DownloadTrack(qobuzTrack, downloadBasePath, false, false, true);
 
                 // If download failed, abort
-                if (!fileDownloaded) { EnableBoxes(); return; }
+                if (!fileDownloaded) { EnableControlsAfterDownload(); return; }
 
                 // Say that downloading is completed.
                 AddEmptyDownloadLogLine(true, true);
                 AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
-                EnableBoxes();
+                EnableControlsAfterDownload();
             }
             catch (Exception downloadEx)
             {
@@ -1197,7 +1201,7 @@ namespace QobuzDownloaderX
                 Album qobuzAlbum = ExecuteApiCall(apiService => apiService.GetAlbum(DowloadItemID, true));
 
                 // If API call failed, abort
-                if (qobuzAlbum == null) { EnableBoxes(); return; }
+                if (qobuzAlbum == null) { EnableControlsAfterDownload(); return; }
 
                 AddDownloadLogLine($"Album \"{qobuzAlbum.Title}\" found. Starting Downloads...", true, true);
                 AddEmptyDownloadLogLine(true, true);
@@ -1205,12 +1209,12 @@ namespace QobuzDownloaderX
                 bool albumDownloaded = DownloadAlbum(qobuzAlbum, downloadBasePath);
 
                 // If download failed, abort
-                if (!albumDownloaded) { EnableBoxes(); return; }
+                if (!albumDownloaded) { EnableControlsAfterDownload(); return; }
 
                 // Say that downloading is completed.
                 AddEmptyDownloadLogLine(true, true);
                 AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
-                EnableBoxes();
+                EnableControlsAfterDownload();
             }
             catch (Exception downloadEx)
             {
@@ -1234,7 +1238,7 @@ namespace QobuzDownloaderX
                 Artist qobuzArtist = ExecuteApiCall(apiService => apiService.GetArtist(DowloadItemID, true, "albums", "release_desc", 999999));
 
                 // If API call failed, abort
-                if (qobuzArtist == null) { EnableBoxes(); return; }
+                if (qobuzArtist == null) { EnableControlsAfterDownload(); return; }
 
                 foreach (Album qobuzAlbum in qobuzArtist.Albums.Items)
                 {
@@ -1247,13 +1251,13 @@ namespace QobuzDownloaderX
                     bool albumDownloaded = DownloadAlbum(qobuzAlbum, downloadBasePath, true, $" [{qobuzAlbum.Id}]");
 
                     // If download failed, abort
-                    if (!albumDownloaded) { EnableBoxes(); return; }
+                    if (!albumDownloaded) { EnableControlsAfterDownload(); return; }
                 }
 
                 // Say that downloading is completed.
                 AddEmptyDownloadLogLine(true, true);
                 AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
-                EnableBoxes();
+                EnableControlsAfterDownload();
             }
             catch (Exception downloadEx)
             {
@@ -1278,7 +1282,7 @@ namespace QobuzDownloaderX
                 QobuzApiSharp.Models.Content.Label qobuzLabel = ExecuteApiCall(apiService => apiService.GetLabel(DowloadItemID, true, "albums", 999999));
 
                 // If API call failed, abort
-                if (qobuzLabel == null) { EnableBoxes(); return; }
+                if (qobuzLabel == null) { EnableControlsAfterDownload(); return; }
 
                 // Add Label name to basePath
                 string safeLabelName = StringTools.GetSafeFilename(StringTools.DecodeEncodedNonAsciiCharacters(qobuzLabel.Name));
@@ -1295,13 +1299,13 @@ namespace QobuzDownloaderX
                     bool albumDownloaded = DownloadAlbum(qobuzAlbum, labelBasePath, true, $" [{qobuzAlbum.Id}]");
 
                     // If download failed, abort
-                    if (!albumDownloaded) { EnableBoxes(); return; }
+                    if (!albumDownloaded) { EnableControlsAfterDownload(); return; }
                 }
 
                 // Say that downloading is completed.
                 AddEmptyDownloadLogLine(true, true);
                 AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
-                EnableBoxes();
+                EnableControlsAfterDownload();
             }
             catch (Exception downloadEx)
             {
@@ -1328,7 +1332,7 @@ namespace QobuzDownloaderX
                 UserFavorites qobuzUserFavorites = ExecuteApiCall(apiService => apiService.GetUserFavorites(DowloadItemID, "albums", 999999));
 
                 // If API call failed, abort
-                if (qobuzUserFavorites == null) { EnableBoxes(); return; }
+                if (qobuzUserFavorites == null) { EnableControlsAfterDownload(); return; }
 
                 foreach (Album qobuzAlbum in qobuzUserFavorites.Albums.Items)
                 {
@@ -1341,13 +1345,13 @@ namespace QobuzDownloaderX
                     bool albumDownloaded = DownloadAlbum(qobuzAlbum, labelBasePath, true, $" [{qobuzAlbum.Id}]");
 
                     // If download failed, abort
-                    if (!albumDownloaded) { EnableBoxes(); return; }
+                    if (!albumDownloaded) { EnableControlsAfterDownload(); return; }
                 }
 
                 // Say that downloading is completed.
                 AddEmptyDownloadLogLine(true, true);
                 AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
-                EnableBoxes();
+                EnableControlsAfterDownload();
             }
             catch (Exception downloadEx)
             {
@@ -1379,7 +1383,7 @@ namespace QobuzDownloaderX
                 Playlist qobuzPlaylist = ExecuteApiCall(apiService => apiService.GetPlaylist(DowloadItemID, true, "tracks", 10000));
 
                 // If API call failed, abort
-                if (qobuzPlaylist == null) { EnableBoxes(); return; }
+                if (qobuzPlaylist == null) { EnableControlsAfterDownload(); return; }
 
                 AddDownloadLogLine($"Playlist \"{qobuzPlaylist.Name}\" found. Starting Downloads...", true, true);
                 AddEmptyDownloadLogLine(true, true);
@@ -1423,7 +1427,7 @@ namespace QobuzDownloaderX
                 // Say that downloading is completed.
                 AddEmptyDownloadLogLine(true, true);
                 AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
-                EnableBoxes();
+                EnableControlsAfterDownload();
 
             }
             catch (Exception downloadEx)
@@ -1867,7 +1871,7 @@ namespace QobuzDownloaderX
 
         private void enableBtnsButton_Click(object sender, EventArgs e)
         {
-            EnableBoxes();
+            EnableControlsAfterDownload();
         }
     }
 }
