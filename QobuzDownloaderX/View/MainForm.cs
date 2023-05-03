@@ -1043,6 +1043,8 @@ namespace QobuzDownloaderX
 
         private bool DownloadAlbum(Album qobuzAlbum, string basePath, bool loadTracks = false, string albumPathSuffix = "")
         {
+            bool noErrorsOccured = true;
+
             if (loadTracks)
             {
                 // Get Album model object with tracks for when tracks aren't already loaded in Album model
@@ -1064,23 +1066,28 @@ namespace QobuzDownloaderX
                 // Nested Album objects in Tracks are not always fully populated, inject current qobuzAlbum in Track to be downloaded
                 qobuzTrack.Album = qobuzAlbum;
 
-                DownloadTrack(qobuzTrack, basePath, false, true, i == trackCount - 1, albumPathSuffix);
+                if (!DownloadTrack(qobuzTrack, basePath, false, true, i == trackCount - 1, albumPathSuffix)) noErrorsOccured = false;
             }
 
             // Look for digital booklet(s) in "Goodies"
             // Don't fail on failed "Goodies" downloads, just log...
-            List<Goody> booklets = qobuzAlbum.Goodies?.Where(g => g.FileFormatId == (int)GoodiesFileType.BOOKLET).ToList();
+            if (!DownloadBooklets(qobuzAlbum, Path3Full)) noErrorsOccured = false;
 
-            if (booklets?.Any() == true)
-            {
-                DownloadBooklets(booklets, Path3Full);
-            }
-
-            return true;
+            return noErrorsOccured;
         }
 
-        private void DownloadBooklets(List<Goody> booklets, string basePath)
+        private bool DownloadBooklets(Album qobuzAlbum, string basePath)
         {
+            bool noErrorsOccured = true;
+
+            List<Goody> booklets = qobuzAlbum.Goodies?.Where(g => g.FileFormatId == (int)GoodiesFileType.BOOKLET).ToList();
+
+            if (booklets?.Any() == false)
+            {
+                // No booklets found, just return
+                return noErrorsOccured;
+            }
+
             AddDownloadLogLine($"Goodies found, downloading...{Environment.NewLine}", true, true);
 
             using (HttpClient httpClient = new HttpClient())
@@ -1098,16 +1105,21 @@ namespace QobuzDownloaderX
                         AddDownloadLogLine($"Booklet file for \"{bookletFileName}\" already exists. Skipping.{Environment.NewLine}", true, true);
                     } else
                     {
-                        DownloadBooklet(booklet, httpClient, bookletFileName, bookletFilePath);
+                        // When a booklet download fails, mark error occured but continue downloading others if they exist 
+                        if (!DownloadBooklet(booklet, httpClient, bookletFileName, bookletFilePath)) noErrorsOccured = false;
                     }
 
                     counter++;
                 }
             }
+
+            return noErrorsOccured;
         }
 
-        private void DownloadBooklet(Goody booklet, HttpClient httpClient, string fileName, string filePath)
+        private bool DownloadBooklet(Goody booklet, HttpClient httpClient, string fileName, string filePath)
         {
+            bool noErrorsOccured = true;
+
             try
             {
                 // Download booklet
@@ -1123,6 +1135,7 @@ namespace QobuzDownloaderX
                 AddDownloadErrorLogLine("Goodies Download canceled, probably due to network error or request timeout.");
                 AddDownloadErrorLogLine(ae.ToString());
                 AddDownloadErrorLogLine(Environment.NewLine);
+                noErrorsOccured = false;
             }
             catch (Exception downloadEx)
             {
@@ -1132,7 +1145,10 @@ namespace QobuzDownloaderX
                 AddDownloadErrorLogLine("Unknown error during Goodies Download.");
                 AddDownloadErrorLogLine(downloadEx.ToString());
                 AddDownloadErrorLogLine(Environment.NewLine);
+                noErrorsOccured = false;
             }
+
+            return noErrorsOccured;
         }
 
         private void PrepareAlbumDownload(Album qobuzAlbum)
@@ -1208,12 +1224,17 @@ namespace QobuzDownloaderX
 
                 bool albumDownloaded = DownloadAlbum(qobuzAlbum, downloadBasePath);
 
-                // If download failed, abort
-                if (!albumDownloaded) { EnableControlsAfterDownload(); return; }
+                if (albumDownloaded) {
+                    // Say that downloading is completed.
+                    AddEmptyDownloadLogLine(true, true);
+                    AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
+                } else
+                {
+                    // Say that downloading job is completed with errors.
+                    AddEmptyDownloadLogLine(true, true);
+                    AddDownloadLogLine("Download job completed with warnings and/or errors! Some or all files could be missing!", true, true);
+                }
 
-                // Say that downloading is completed.
-                AddEmptyDownloadLogLine(true, true);
-                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
                 EnableControlsAfterDownload();
             }
             catch (Exception downloadEx)
