@@ -137,8 +137,7 @@ namespace QobuzDownloaderX
 
             // Change account info for logout button
             string oldText = logoutLabel.Text;
-            //logoutLabel.Text = oldText.Replace("%name%", Globals.Login.User.DisplayName);
-            logoutLabel.Text = oldText.Replace("%name%", "QBDLX");
+            logoutLabel.Text = oldText.Replace("%name%", Globals.Login.User.DisplayName);
 
             // Set saved settings to correct places.
             folderBrowserDialog.SelectedPath = Settings.Default.savedFolder;
