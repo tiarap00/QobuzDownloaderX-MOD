@@ -17,7 +17,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
-using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -138,7 +137,8 @@ namespace QobuzDownloaderX
 
             // Change account info for logout button
             string oldText = logoutLabel.Text;
-            logoutLabel.Text = oldText.Replace("%name%", Globals.Login.User.DisplayName);
+            //logoutLabel.Text = oldText.Replace("%name%", Globals.Login.User.DisplayName);
+            logoutLabel.Text = oldText.Replace("%name%", "QBDLX");
 
             // Set saved settings to correct places.
             folderBrowserDialog.SelectedPath = Settings.Default.savedFolder;
@@ -401,8 +401,8 @@ namespace QobuzDownloaderX
 
         private void OpenFolderButton_Click(object sender, EventArgs e)
         {
-            // Open selcted folder
-            if (folderBrowserDialog.SelectedPath == null || folderBrowserDialog.SelectedPath == "")
+            // Open selected folder
+            if (string.IsNullOrEmpty(folderBrowserDialog.SelectedPath))
             {
                 // If there's no selected path.
                 MessageBox.Show("No path selected!", "ERROR",
@@ -413,9 +413,15 @@ namespace QobuzDownloaderX
             {
                 // If selected path doesn't exist, create it. (Will be ignored if it does)
                 System.IO.Directory.CreateDirectory(folderBrowserDialog.SelectedPath);
-                // Open selcted folder
+                // Open selected folder
                 Process.Start(@folderBrowserDialog.SelectedPath);
             }
+        }
+
+        private void OpenLogFolderButton_Click(object sender, EventArgs e)
+        {
+            // Open log folder. Folder should exist here so no extra check
+            Process.Start(@Globals.LoggingDir);
         }
 
         private void GetLinkTypeBG_DoWork(object sender, DoWorkEventArgs e)
@@ -423,7 +429,7 @@ namespace QobuzDownloaderX
             DisableBoxes();
 
             // Check if there's no selected path.
-            if (folderBrowserDialog.SelectedPath == null || folderBrowserDialog.SelectedPath == "")
+            if (string.IsNullOrEmpty(folderBrowserDialog.SelectedPath))
             {
                 // If there is NOT a saved path.
                 output.Invoke(new Action(() => output.Text = String.Empty));

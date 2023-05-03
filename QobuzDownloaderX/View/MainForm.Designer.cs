@@ -118,6 +118,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.downloadPlaylistBG = new System.ComponentModel.BackgroundWorker();
             this.testURLBox = new System.Windows.Forms.TextBox();
+            this.openLogFolderButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.albumArtPicBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.logoBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.profilePictureBox)).BeginInit();
@@ -129,11 +130,11 @@
             this.selectFolder.FlatAppearance.BorderSize = 0;
             this.selectFolder.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.selectFolder.ForeColor = System.Drawing.Color.White;
-            this.selectFolder.Location = new System.Drawing.Point(13, 115);
+            this.selectFolder.Location = new System.Drawing.Point(12, 115);
             this.selectFolder.Name = "selectFolder";
-            this.selectFolder.Size = new System.Drawing.Size(349, 23);
-            this.selectFolder.TabIndex = 2;
-            this.selectFolder.Text = "Choose Folder";
+            this.selectFolder.Size = new System.Drawing.Size(231, 23);
+            this.selectFolder.TabIndex = 3;
+            this.selectFolder.Text = "Choose Download Folder";
             this.selectFolder.UseVisualStyleBackColor = false;
             this.selectFolder.Click += new System.EventHandler(this.SelectFolder_Click);
             // 
@@ -150,7 +151,7 @@
             this.output.ReadOnly = true;
             this.output.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.output.Size = new System.Drawing.Size(705, 339);
-            this.output.TabIndex = 3;
+            this.output.TabIndex = 20;
             this.output.Text = "Test String";
             // 
             // openFolderButton
@@ -159,11 +160,11 @@
             this.openFolderButton.FlatAppearance.BorderSize = 0;
             this.openFolderButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.openFolderButton.ForeColor = System.Drawing.Color.White;
-            this.openFolderButton.Location = new System.Drawing.Point(368, 115);
+            this.openFolderButton.Location = new System.Drawing.Point(249, 115);
             this.openFolderButton.Name = "openFolderButton";
-            this.openFolderButton.Size = new System.Drawing.Size(349, 23);
-            this.openFolderButton.TabIndex = 13;
-            this.openFolderButton.Text = "Open Folder";
+            this.openFolderButton.Size = new System.Drawing.Size(231, 23);
+            this.openFolderButton.TabIndex = 4;
+            this.openFolderButton.Text = "Open Download Folder";
             this.openFolderButton.UseVisualStyleBackColor = false;
             this.openFolderButton.Click += new System.EventHandler(this.OpenFolderButton_Click);
             // 
@@ -176,7 +177,7 @@
             this.downloadButton.Location = new System.Drawing.Point(597, 86);
             this.downloadButton.Name = "downloadButton";
             this.downloadButton.Size = new System.Drawing.Size(120, 23);
-            this.downloadButton.TabIndex = 17;
+            this.downloadButton.TabIndex = 2;
             this.downloadButton.Text = "Download";
             this.downloadButton.UseVisualStyleBackColor = false;
             this.downloadButton.Click += new System.EventHandler(this.downloadButton_Click);
@@ -190,7 +191,7 @@
             this.downloadUrl.Multiline = true;
             this.downloadUrl.Name = "downloadUrl";
             this.downloadUrl.Size = new System.Drawing.Size(576, 20);
-            this.downloadUrl.TabIndex = 16;
+            this.downloadUrl.TabIndex = 1;
             this.downloadUrl.WordWrap = false;
             this.downloadUrl.KeyDown += new System.Windows.Forms.KeyEventHandler(this.downloadUrl_KeyDown);
             // 
@@ -420,7 +421,7 @@
             this.openSearch.Location = new System.Drawing.Point(597, 57);
             this.openSearch.Name = "openSearch";
             this.openSearch.Size = new System.Drawing.Size(120, 23);
-            this.openSearch.TabIndex = 60;
+            this.openSearch.TabIndex = 6;
             this.openSearch.Text = "Open Search";
             this.openSearch.UseVisualStyleBackColor = false;
             this.openSearch.Click += new System.EventHandler(this.OpenSearch_Click);
@@ -431,7 +432,7 @@
             this.tagsLabel.Location = new System.Drawing.Point(12, 501);
             this.tagsLabel.Name = "tagsLabel";
             this.tagsLabel.Size = new System.Drawing.Size(914, 23);
-            this.tagsLabel.TabIndex = 61;
+            this.tagsLabel.TabIndex = 7;
             this.tagsLabel.Text = "🠋 Choose which tags to save (click me) 🠋";
             this.tagsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.tagsLabel.Click += new System.EventHandler(this.tagsLabel_Click);
@@ -915,7 +916,7 @@
             this.logoutLabel.Location = new System.Drawing.Point(41, 506);
             this.logoutLabel.Name = "logoutLabel";
             this.logoutLabel.Size = new System.Drawing.Size(161, 13);
-            this.logoutLabel.TabIndex = 95;
+            this.logoutLabel.TabIndex = 8;
             this.logoutLabel.Text = "Logged in as %name%, Log out?";
             this.logoutLabel.Click += new System.EventHandler(this.logoutLabel_Click);
             this.logoutLabel.MouseLeave += new System.EventHandler(this.logoutLabel_MouseLeave);
@@ -1143,12 +1144,27 @@
             this.testURLBox.Visible = false;
             this.testURLBox.WordWrap = false;
             // 
+            // openLogFolderButton
+            // 
+            this.openLogFolderButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(112)))), ((int)(((byte)(239)))));
+            this.openLogFolderButton.FlatAppearance.BorderSize = 0;
+            this.openLogFolderButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.openLogFolderButton.ForeColor = System.Drawing.Color.White;
+            this.openLogFolderButton.Location = new System.Drawing.Point(486, 115);
+            this.openLogFolderButton.Name = "openLogFolderButton";
+            this.openLogFolderButton.Size = new System.Drawing.Size(231, 23);
+            this.openLogFolderButton.TabIndex = 5;
+            this.openLogFolderButton.Text = "Open Log Folder";
+            this.openLogFolderButton.UseVisualStyleBackColor = false;
+            this.openLogFolderButton.Click += new System.EventHandler(this.OpenLogFolderButton_Click);
+            // 
             // QobuzDownloaderX
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.ClientSize = new System.Drawing.Size(938, 632);
+            this.Controls.Add(this.openLogFolderButton);
             this.Controls.Add(this.filenameTempSelect);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.formatIDLabel);
@@ -1336,6 +1352,7 @@
         public System.Windows.Forms.TextBox downloadUrl;
         private System.Windows.Forms.TextBox testURLBox;
         public System.ComponentModel.BackgroundWorker getLinkTypeBG;
+        private System.Windows.Forms.Button openLogFolderButton;
     }
 }
 
