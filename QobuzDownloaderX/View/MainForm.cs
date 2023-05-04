@@ -1323,7 +1323,7 @@ namespace QobuzDownloaderX
             try
             {
                 // Get Label model object
-                QobuzApiSharp.Models.Content.Label qobuzLabel = ExecuteApiCall(apiService => apiService.GetLabel(DowloadItemID, true, "albums", 2));
+                QobuzApiSharp.Models.Content.Label qobuzLabel = ExecuteApiCall(apiService => apiService.GetLabel(DowloadItemID, true, "albums", 999999));
 
                 // If API call failed, abort
                 if (qobuzLabel == null) { EnableControlsAfterDownload(); return; }
