@@ -35,7 +35,7 @@ namespace QobuzDownloaderX.Shared
 
                     // Valid Type found, set DownloadItem values
                     downloadItem.Type = matches.Result("${Type}");
-                    downloadItem.Id = matches.Result("${id}");
+                    downloadItem.Id = matches.Result("${id}")?.TrimEnd('/');
 
                     break;
                 }

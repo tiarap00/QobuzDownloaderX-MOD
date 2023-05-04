@@ -119,6 +119,7 @@
             this.downloadPlaylistBG = new System.ComponentModel.BackgroundWorker();
             this.testURLBox = new System.Windows.Forms.TextBox();
             this.openLogFolderButton = new System.Windows.Forms.Button();
+            this.DownloadFaveTracksBG = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.albumArtPicBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.logoBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.profilePictureBox)).BeginInit();
@@ -941,7 +942,7 @@
             // 
             // downloadFaveArtistsBG
             // 
-            this.downloadFaveArtistsBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.downloadFaveArtistsBG_DoWork);
+            this.downloadFaveArtistsBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DownloadFaveArtistsBG_DoWork);
             // 
             // artSizeSelect
             // 
@@ -1158,6 +1159,10 @@
             this.openLogFolderButton.UseVisualStyleBackColor = false;
             this.openLogFolderButton.Click += new System.EventHandler(this.OpenLogFolderButton_Click);
             // 
+            // DownloadFaveTracksBG
+            // 
+            this.DownloadFaveTracksBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DownloadFaveTracksBG_DoWork);
+            // 
             // QobuzDownloaderX
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1353,6 +1358,7 @@
         private System.Windows.Forms.TextBox testURLBox;
         public System.ComponentModel.BackgroundWorker getLinkTypeBG;
         private System.Windows.Forms.Button openLogFolderButton;
+        private System.ComponentModel.BackgroundWorker DownloadFaveTracksBG;
     }
 }
 
