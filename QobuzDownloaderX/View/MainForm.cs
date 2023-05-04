@@ -266,6 +266,7 @@ namespace QobuzDownloaderX
 
         /// <summary>
         /// Standardized logging when global download task fails.
+        /// After logging, disabled controls are re-enabled.
         /// </summary>
         /// <param name="downloadTaskType">Name of the failed download task</param>
         /// <param name="downloadEx">Exception thrown by task</param>
@@ -1151,6 +1152,39 @@ namespace QobuzDownloaderX
             return noErrorsOccured;
         }
 
+        private void DownloadAlbums(string basePath, List<Album> albums)
+        {
+            bool noAlbumErrorsOccured = true;
+
+            foreach (Album qobuzAlbum in albums)
+            {
+                // Empty output, then say Starting Downloads.
+                output.Invoke(new Action(() => output.Text = String.Empty));
+                AddEmptyDownloadLogLine(true, false);
+                AddDownloadLogLine($"Starting Downloads for album \"{qobuzAlbum.Title}\" with ID: <{qobuzAlbum.Id}>...", true, true);
+                AddEmptyDownloadLogLine(true, true);
+
+                bool albumDownloadOK = DownloadAlbum(qobuzAlbum, basePath, true, $" [{qobuzAlbum.Id}]");
+
+                // If album download failed, mark error occured and continue
+                if (!albumDownloadOK) noAlbumErrorsOccured = false;
+            }
+
+            AddEmptyDownloadLogLine(true, true);
+
+            // Say that downloading is completed.
+            if (noAlbumErrorsOccured)
+            {
+                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
+            }
+            else
+            {
+                AddDownloadLogLine("Download job completed with warnings and/or errors! Some or all files could be missing!", true, true);
+            }
+
+            EnableControlsAfterDownload();
+        }
+
         private void PrepareAlbumDownload(Album qobuzAlbum)
         {
             // Grab sample rate and bit depth for album track is from.
@@ -1224,14 +1258,14 @@ namespace QobuzDownloaderX
 
                 bool albumDownloaded = DownloadAlbum(qobuzAlbum, downloadBasePath);
 
+                AddEmptyDownloadLogLine(true, true);
+
                 if (albumDownloaded) {
                     // Say that downloading is completed.
-                    AddEmptyDownloadLogLine(true, true);
                     AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
                 } else
                 {
                     // Say that downloading job is completed with errors.
-                    AddEmptyDownloadLogLine(true, true);
                     AddDownloadLogLine("Download job completed with warnings and/or errors! Some or all files could be missing!", true, true);
                 }
 
@@ -1247,7 +1281,7 @@ namespace QobuzDownloaderX
         private void DownloadDiscogBG_DoWork(object sender, DoWorkEventArgs e)
         {
             // Set "basePath" as the selected path.
-            String downloadBasePath = folderBrowserDialog.SelectedPath;
+            String artistBasePath = folderBrowserDialog.SelectedPath;
 
             // Empty output, then say Grabbing IDs.
             output.Invoke(new Action(() => output.Text = String.Empty));
@@ -1261,24 +1295,7 @@ namespace QobuzDownloaderX
                 // If API call failed, abort
                 if (qobuzArtist == null) { EnableControlsAfterDownload(); return; }
 
-                foreach (Album qobuzAlbum in qobuzArtist.Albums.Items)
-                {
-                    // Empty output, then say Starting Downloads.
-                    output.Invoke(new Action(() => output.Text = string.Empty));
-                    AddEmptyDownloadLogLine(true, false);
-                    AddDownloadLogLine($"Starting Downloads for album \"{qobuzAlbum.Title}\" with ID: <{qobuzAlbum.Id}>...", true, true);
-                    AddEmptyDownloadLogLine(true, true);
-
-                    bool albumDownloaded = DownloadAlbum(qobuzAlbum, downloadBasePath, true, $" [{qobuzAlbum.Id}]");
-
-                    // If download failed, abort
-                    if (!albumDownloaded) { EnableControlsAfterDownload(); return; }
-                }
-
-                // Say that downloading is completed.
-                AddEmptyDownloadLogLine(true, true);
-                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
-                EnableControlsAfterDownload();
+                DownloadAlbums(artistBasePath, qobuzArtist.Albums.Items);
             }
             catch (Exception downloadEx)
             {
@@ -1309,24 +1326,7 @@ namespace QobuzDownloaderX
                 string safeLabelName = StringTools.GetSafeFilename(StringTools.DecodeEncodedNonAsciiCharacters(qobuzLabel.Name));
                 labelBasePath = Path.Combine(labelBasePath, safeLabelName);
 
-                foreach (Album qobuzAlbum in qobuzLabel.Albums.Items)
-                {
-                    // Empty output, then say Starting Downloads.
-                    output.Invoke(new Action(() => output.Text = String.Empty));
-                    AddEmptyDownloadLogLine(true, false);
-                    AddDownloadLogLine($"Starting Downloads for album \"{qobuzAlbum.Title}\" with ID: <{qobuzAlbum.Id}>...", true, true);
-                    AddEmptyDownloadLogLine(true, true);
-
-                    bool albumDownloaded = DownloadAlbum(qobuzAlbum, labelBasePath, true, $" [{qobuzAlbum.Id}]");
-
-                    // If download failed, abort
-                    if (!albumDownloaded) { EnableControlsAfterDownload(); return; }
-                }
-
-                // Say that downloading is completed.
-                AddEmptyDownloadLogLine(true, true);
-                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
-                EnableControlsAfterDownload();
+                DownloadAlbums(labelBasePath, qobuzLabel.Albums.Items);
             }
             catch (Exception downloadEx)
             {
@@ -1341,7 +1341,7 @@ namespace QobuzDownloaderX
         private void DownloadFaveAlbumsBG_DoWork(object sender, DoWorkEventArgs e)
         {
             // Set "basePath" as the selected path + "/- Favorites".
-            string labelBasePath = Path.Combine(folderBrowserDialog.SelectedPath, "- Favorites");
+            string favoritesBasePath = Path.Combine(folderBrowserDialog.SelectedPath, "- Favorites");
 
             // Empty output, then say Grabbing IDs.
             output.Invoke(new Action(() => output.Text = String.Empty));
@@ -1355,31 +1355,14 @@ namespace QobuzDownloaderX
                 // If API call failed, abort
                 if (qobuzUserFavorites == null) { EnableControlsAfterDownload(); return; }
 
-                foreach (Album qobuzAlbum in qobuzUserFavorites.Albums.Items)
-                {
-                    // Empty output, then say Starting Downloads.
-                    output.Invoke(new Action(() => output.Text = String.Empty));
-                    AddEmptyDownloadLogLine(true, false);
-                    AddDownloadLogLine($"Starting Downloads for album \"{qobuzAlbum.Title}\" with ID: <{qobuzAlbum.Id}>...", true, true);
-                    AddEmptyDownloadLogLine(true, true);
-
-                    bool albumDownloaded = DownloadAlbum(qobuzAlbum, labelBasePath, true, $" [{qobuzAlbum.Id}]");
-
-                    // If download failed, abort
-                    if (!albumDownloaded) { EnableControlsAfterDownload(); return; }
-                }
-
-                // Say that downloading is completed.
-                AddEmptyDownloadLogLine(true, true);
-                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
-                EnableControlsAfterDownload();
+                DownloadAlbums(favoritesBasePath, qobuzUserFavorites.Albums.Items);
             }
             catch (Exception downloadEx)
             {
                 output.Invoke(new Action(() => output.Text = String.Empty));
                 LogDownloadTaskException("Favorite Albums", downloadEx);
             }
-        }
+        } 
 
         // Favorite Artists
         private void downloadFaveArtistsBG_DoWork(object sender, DoWorkEventArgs e)
