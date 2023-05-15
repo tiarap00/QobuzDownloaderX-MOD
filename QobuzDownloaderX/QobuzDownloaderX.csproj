@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\DownloadItem.cs" />
+    <Compile Include="Shared\DownloadLogger.cs" />
     <Compile Include="Shared\DownloadManager.cs" />
     <Compile Include="Shared\GoodiesFileType.cs" />
     <Compile Include="Models\UI\SearchResultRow.cs" />

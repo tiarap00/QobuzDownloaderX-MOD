@@ -304,10 +304,11 @@ namespace QobuzDownloaderX
             downloadButton.FlatAppearance.BorderSize = 0;
             downloadButton.Click += async (sender, e) =>
             {
+                // Copy selected download link to main form link field for convenience
                 Globals.QbdlxForm.downloadUrl.Invoke(new Action(() => Globals.QbdlxForm.downloadUrl.Text = webPlayerUrl));
                 this.Close();
-                // Run the StartLinkDownloadTaskAsync method on a background thread & Wait for the task to complete
-                await Task.Run(() => Globals.DownloadManager.StartLinkDownloadTaskAsync(sender, e));
+                // Start download from main form
+                await Globals.QbdlxForm.StartLinkItemDownloadAsync(webPlayerUrl);
             };
 
             return downloadButton;

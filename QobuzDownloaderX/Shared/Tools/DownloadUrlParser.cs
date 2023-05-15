@@ -18,7 +18,7 @@ namespace QobuzDownloaderX.Shared
 
         public static DownloadItem ParseDownloadUrl(string downloadUrl)
         {
-            DownloadItem downloadItem = new DownloadItem();
+            DownloadItem downloadItem = new DownloadItem(downloadUrl);
 
             if (string.IsNullOrEmpty(downloadUrl))
             {

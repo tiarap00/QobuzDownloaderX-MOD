@@ -26,9 +26,6 @@ namespace QobuzDownloaderX.Shared
         public static string FormatIdString { get; set; }
         public static string AudioFileType { get; set; }
 
-        // Download Manager
-        public static DownloadManager DownloadManager { get; set; }
-
         // Logs
         public static string LoggingDir { get; set; }
     }

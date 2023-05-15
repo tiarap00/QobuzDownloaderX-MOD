@@ -32,10 +32,6 @@ namespace QobuzDownloaderX
             Globals.LoginForm = new LoginForm();
             Globals.AboutForm = new AboutForm();
 
-            // Create Global DownloadManager
-            Globals.DownloadManager = new DownloadManager();
-
-
             // Register EventHandler to release resources on exit
             Application.ApplicationExit += ApplicationExit;
 

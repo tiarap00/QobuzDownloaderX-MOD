@@ -1,13 +1,12 @@
 ﻿using QobuzApiSharp.Models.Content;
+using QobuzDownloaderX.Models;
 using QobuzDownloaderX.Properties;
 using QobuzDownloaderX.Shared;
 using QobuzDownloaderX.View;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,17 +17,18 @@ namespace QobuzDownloaderX
 {
     public partial class QobuzDownloaderX : HeadlessForm
     {
-        public readonly string downloadErrorLogPath = Path.Combine(Globals.LoggingDir, "Download_Errors.log");
+        private readonly DownloadLogger logger;
+        private readonly DownloadManager downloadManager;
 
         public QobuzDownloaderX()
         {
             InitializeComponent();
 
+            logger = new DownloadLogger(output, UpdateControlsDownloadEnd);
             // Remove previous download error log
-            if (System.IO.File.Exists(downloadErrorLogPath))
-            {
-                System.IO.File.Delete(downloadErrorLogPath);
-            }
+            logger.RemovePreviousErrorLog();
+
+            downloadManager = new DownloadManager(logger);
         }
 
         public string DownloadLogPath { get; set; }
@@ -99,7 +99,7 @@ namespace QobuzDownloaderX
             profilePictureBox.ImageLocation = profilePic.Replace(@"\", null).Replace("s=50", "s=20");
 
             // Welcome the user after successful login.
-            output.Invoke(new Action(() => output.Text = String.Empty));
+            logger.ClearUiLogComponent();
             output.Invoke(new Action(() => output.AppendText("Welcome " + Globals.Login.User.DisplayName + " (" + Globals.Login.User.Email + ") !\r\n")));
             output.Invoke(new Action(() => output.AppendText("User Zone - " + Globals.Login.User.Zone + "\r\n\r\n")));
             output.Invoke(new Action(() => output.AppendText("Qobuz Credential Description - " + Globals.Login.User.Credential.Description + "\r\n")));
@@ -195,108 +195,6 @@ namespace QobuzDownloaderX
             debuggingEvents(sender, e);
         }
 
-        /// <summary>
-        /// Add string to download log file, screen or both.<br/>
-        /// When a line is written to the log file, a timestamp is added as prefix for non blank lines.<br/>
-        /// For writing to log file, blank lines are filtered exept if the given string starts with a blank line.<br/>
-        /// Use AddEmptyDownloadLogLine to create empty devider lines in the download log.
-        /// </summary>
-        /// <param name="logEntry">String to be logged</param>
-        /// <param name="logToFile">Should string be logged to file?</param>
-        /// <param name="logToScreen">Should string be logged to screen?</param>
-        public void AddDownloadLogLine(string logEntry, bool logToFile, bool logToScreen = false)
-        {
-            if (string.IsNullOrEmpty(logEntry)) return;
-
-            if (logToScreen) output?.Invoke(new Action(() => output.AppendText(logEntry)));
-
-            if (logToFile)
-            {
-                var logEntries = logEntry.Split(new[] { Environment.NewLine }, StringSplitOptions.None)
-                    .Select(logLine => string.IsNullOrWhiteSpace(logLine) ? logLine : $"{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff} : {logLine}");
-
-                // Filter out all empty lines exept if the logEntry started with an empty line to avoid blank lines for each newline in UI
-                var filteredLogEntries = logEntries.Aggregate(new List<string>(), (accumulator, current) =>
-                {
-                    if (accumulator.Count == 0 || !string.IsNullOrWhiteSpace(current))
-                    {
-                        accumulator.Add(current);
-                    }
-
-                    return accumulator;
-                });
-
-                System.IO.File.AppendAllLines(DownloadLogPath, filteredLogEntries);
-            }
-        }
-        /// <summary>
-        /// Convenience method to add [ERROR] prefix to logged string before calling AddDownloadLogLine.
-        /// </summary>
-        /// <param name="logEntry">String to be logged</param>
-        /// <param name="logToFile">Should string be logged to file?</param>
-        /// <param name="logToScreen">Should string be logged to screen?</param>
-        public void AddDownloadLogErrorLine(string logEntry, bool logToFile, bool logToScreen = false)
-        {
-            AddDownloadLogLine($"[ERROR] {logEntry}", logToFile, logToScreen);
-        }
-
-        /// <summary>
-        /// Convenience method to add empty spacing line to log.
-        /// </summary>
-        /// <param name="logToFile">Should string be logged to file?</param>
-        /// <param name="logToScreen">Should string be logged to screen?</param>
-        public void AddEmptyDownloadLogLine(bool logToFile, bool logToScreen = false)
-        {
-            AddDownloadLogLine($"{Environment.NewLine}{Environment.NewLine}", logToFile, logToScreen);
-        }
-
-        public void AddDownloadErrorLogLines(IEnumerable<string> logEntries)
-        {
-            if (logEntries == null && !logEntries.Any()) return;
-
-            System.IO.File.AppendAllLines(downloadErrorLogPath, logEntries);
-        }
-
-        public void AddDownloadErrorLogLine(string logEntry)
-        {
-            AddDownloadErrorLogLines(new string[] { logEntry });
-        }
-
-        /// <summary>
-        /// Standardized logging when global download task fails.
-        /// After logging, disabled controls are re-enabled.
-        /// </summary>
-        /// <param name="downloadTaskType">Name of the failed download task</param>
-        /// <param name="downloadEx">Exception thrown by task</param>
-        public void LogDownloadTaskException(string downloadTaskType, Exception downloadEx)
-        {
-            // If there is an issue trying to, or during the download, show error info.
-            output.Invoke(new Action(() => output.Text = String.Empty));
-            AddDownloadLogErrorLine($"{downloadTaskType} Download Task ERROR. Details saved to error log.{Environment.NewLine}", true, true);
-
-            AddDownloadErrorLogLine($"{downloadTaskType} Download Task ERROR.");
-            AddDownloadErrorLogLine(downloadEx.ToString());
-            AddDownloadErrorLogLine(Environment.NewLine);
-            UpdateControlsDownloadDone();
-        }
-
-        public void FinishDownloadJob(bool noErrorsOccured)
-        {
-            AddEmptyDownloadLogLine(true, true);
-
-            // Say that downloading is completed.
-            if (noErrorsOccured)
-            {
-                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
-            }
-            else
-            {
-                AddDownloadLogLine("Download job completed with warnings and/or errors! Some or all files could be missing!", true, true);
-            }
-
-            UpdateControlsDownloadDone();
-        }
-
         private void debuggingEvents(object sender, EventArgs e)
         {
             DevClickEggThingValue = 0;
@@ -325,13 +223,12 @@ namespace QobuzDownloaderX
 
         private async void DownloadButton_Click(object sender, EventArgs e)
         {
-            if (!Globals.DownloadManager.Buzy)
+            if (!downloadManager.Buzy)
             {
-                // Run the StartLinkDownloadTaskAsync method on a background thread & Wait for the task to complete
-                await Task.Run(() => Globals.DownloadManager.StartLinkDownloadTaskAsync(sender, e));
+                await StartLinkItemDownloadAsync(downloadUrl.Text);
             } else
             {
-                Globals.DownloadManager.StopDownloadTask();
+                downloadManager.StopDownloadTask();
             }
         }
 
@@ -342,12 +239,43 @@ namespace QobuzDownloaderX
                 e.Handled = true;
                 e.SuppressKeyPress = true;
 
-                // Run the StartLinkDownloadTaskAsync method on a background thread & Wait for the task to complete
-                await Task.Run(() => Globals.DownloadManager.StartLinkDownloadTaskAsync(sender, e));
+                await StartLinkItemDownloadAsync(downloadUrl.Text);
             }
         }
 
-        public void UpdateControlsDownloadBuzy()
+        public async Task StartLinkItemDownloadAsync(string downloadLink)
+        {
+            // Check if there's no selected path.
+            if (string.IsNullOrEmpty(Settings.Default.savedFolder))
+            {
+                // If there is NOT a saved path.
+                logger.ClearUiLogComponent();
+                output.Invoke(new Action(() => output.AppendText($"No path has been set! Remember to Choose a Folder!{Environment.NewLine}")));
+                return;
+            }
+
+            // Get download item type and ID from url
+            DownloadItem downloadItem = DownloadUrlParser.ParseDownloadUrl(downloadLink);
+
+            // If download item could not be parsed, abort
+            if (downloadItem.IsEmpty())
+            {
+                logger.ClearUiLogComponent();
+                output.Invoke(new Action(() => output.AppendText("URL not understood. Is there a typo?")));
+                return;
+            }
+
+            // If, for some reason, a download is still buzy, do nothing
+            if (downloadManager.Buzy)
+            {
+                return;
+            }
+
+            // Run the StartDownloadItemTaskAsync method on a background thread & Wait for the task to complete
+            await Task.Run(() => downloadManager.StartDownloadItemTaskAsync(downloadItem, UpdateControlsDownloadStart, UpdateControlsDownloadEnd));
+        }
+
+        public void UpdateControlsDownloadStart()
         {
             mp3Checkbox.Invoke(new Action(() => mp3Checkbox.AutoCheck = false));
             flacLowCheckbox.Invoke(new Action(() => flacLowCheckbox.AutoCheck = false));
@@ -365,7 +293,7 @@ namespace QobuzDownloaderX
             }));
         }
 
-        public void UpdateControlsDownloadDone()
+        public void UpdateControlsDownloadEnd()
         {
             mp3Checkbox.Invoke(new Action(() => mp3Checkbox.AutoCheck = true));
             flacLowCheckbox.Invoke(new Action(() => flacLowCheckbox.AutoCheck = true));
@@ -407,7 +335,7 @@ namespace QobuzDownloaderX
                 // If there's no selected path.
                 MessageBox.Show("No path selected!", "ERROR",
                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                UpdateControlsDownloadDone();
+                UpdateControlsDownloadEnd();
             }
             else
             {
@@ -462,7 +390,7 @@ namespace QobuzDownloaderX
                         }
                         catch
                         {
-                            AddDownloadLogErrorLine($"Cover art tag failed, .jpg still exists?...{Environment.NewLine}", true, true);
+                            logger.AddDownloadLogErrorLine($"Cover art tag failed, .jpg still exists?...{Environment.NewLine}", true, true);
                         }
                     }
 
@@ -548,7 +476,7 @@ namespace QobuzDownloaderX
                         }
                         catch
                         {
-                            AddDownloadLogErrorLine($"Cover art tag failed, .jpg still exists?...{Environment.NewLine}", true, true);
+                            logger.AddDownloadLogErrorLine($"Cover art tag failed, .jpg still exists?...{Environment.NewLine}", true, true);
                         }
                     }
 
@@ -781,12 +709,12 @@ namespace QobuzDownloaderX
                     case true:
                         string trackReference = inPlaylist ? $"{qobuzTrack.Performer?.Name} - {qobuzTrack.Title}" : qobuzTrack.TrackNumber.GetValueOrDefault().ToString();
                         TrackName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Title.Trim());
-                        AddDownloadLogLine($"Track {trackReference} is not available for streaming. Unable to download.\r\n", tryToStream, tryToStream);
+                        logger.AddDownloadLogLine($"Track {trackReference} is not available for streaming. Unable to download.\r\n", tryToStream, tryToStream);
                         tryToStream = false;
                         break;
 
                     default:
-                        AddDownloadLogLine("Track is not available for streaming. But streamable check is being ignored for debugging, or messed up releases. Attempting to download...\r\n", tryToStream, tryToStream);
+                        logger.AddDownloadLogLine("Track is not available for streaming. But streamable check is being ignored for debugging, or messed up releases. Attempting to download...\r\n", tryToStream, tryToStream);
                         break;
                 }
             }
@@ -1242,7 +1170,7 @@ namespace QobuzDownloaderX
 
         private void enableBtnsButton_Click(object sender, EventArgs e)
         {
-            UpdateControlsDownloadDone();
+            UpdateControlsDownloadEnd();
         }
     }
 }

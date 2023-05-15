@@ -13,19 +13,22 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace QobuzDownloaderX.Shared
 {
     public class DownloadManager
     {
+        private readonly DownloadLogger logger;
         private CancellationTokenSource cancellationTokenSource;
+
+        public delegate void DownloadStatusChanged();
 
         public bool Buzy { get; private set; }
 
-        public DownloadManager ()
+        public DownloadManager (DownloadLogger logger)
         {
             Buzy = false;
+            this.logger = logger;
         }
 
         // Important strings
@@ -42,8 +45,8 @@ namespace QobuzDownloaderX.Shared
                 // If connection to API fails, or something is incorrect, show error info + log details.
                 List<string> errorLines = new List<string>();
 
-                Globals.QbdlxForm.AddEmptyDownloadLogLine(false, true);
-                Globals.QbdlxForm.AddDownloadLogErrorLine($"Communication problem with Qobuz API. Details saved to error log{Environment.NewLine}", true, true);
+                logger.AddEmptyDownloadLogLine(false, true);
+                logger.AddDownloadLogErrorLine($"Communication problem with Qobuz API. Details saved to error log{Environment.NewLine}", true, true);
 
                 switch (ex)
                 {
@@ -65,7 +68,7 @@ namespace QobuzDownloaderX.Shared
                 }
 
                 // Write detailed info to error log
-                Globals.QbdlxForm.AddDownloadErrorLogLines(errorLines);
+                logger.AddDownloadErrorLogLines(errorLines);
             }
 
             return default;
@@ -74,12 +77,6 @@ namespace QobuzDownloaderX.Shared
         public void StopDownloadTask()
         {
             this.cancellationTokenSource?.Cancel();
-        }
-
-        private void HandleTaskEnded()
-        {
-            Globals.QbdlxForm.UpdateControlsDownloadDone();
-            Buzy = false;
         }
 
         public async Task DownloadFileAsync(HttpClient httpClient, string downloadUrl, string filePath)
@@ -92,6 +89,7 @@ namespace QobuzDownloaderX.Shared
                     DateTime startTime = DateTime.Now;
                     DateTime lastUpdateTime = DateTime.Now;
                     byte[] buffer = new byte[8192]; // Use an 8KB buffer size for copying data
+                    bool firstBufferRead = false;
 
                     int bytesRead;
                     while ((bytesRead = await streamToReadFrom.ReadAsync(buffer, 0, buffer.Length)) > 0)
@@ -103,12 +101,14 @@ namespace QobuzDownloaderX.Shared
                         totalBytesRead += bytesRead;
                         double speed = (totalBytesRead / 1024d / 1024d) / DateTime.Now.Subtract(startTime).TotalSeconds;
 
-                        // Update the downloadSpeedLabel with the current speed max. every 100 ms, with 3 decimal places
-                        if (DateTime.Now.Subtract(lastUpdateTime).TotalMilliseconds >= 100)
+                        // Update the downloadSpeedLabel with the current speed at download start and then max. every 100 ms, with 3 decimal places
+                        if (!firstBufferRead || DateTime.Now.Subtract(lastUpdateTime).TotalMilliseconds >= 100)
                         {
                             Globals.QbdlxForm.downloadSpeedLabel.Invoke(new Action(() => Globals.QbdlxForm.downloadSpeedLabel.Text = $"Downloading... {speed:F3} MB/s"));
                             lastUpdateTime = DateTime.Now;
                         }
+
+                        firstBufferRead = true;
                     }
                 }
             }
@@ -168,12 +168,12 @@ namespace QobuzDownloaderX.Shared
             if (System.IO.File.Exists(checkFile))
             {
                 string message = $"File for \"{Globals.QbdlxForm.FinalTrackNamePath}\" already exists. Skipping.\r\n";
-                Globals.QbdlxForm.AddDownloadLogLine(message, true, true);
+                logger.AddDownloadLogLine(message, true, true);
                 return false;
             }
 
             // Notify UI of starting track download.
-            Globals.QbdlxForm.AddDownloadLogLine($"Downloading - {Globals.QbdlxForm.FinalTrackNamePath} ...... ", true, true);
+            logger.AddDownloadLogLine($"Downloading - {Globals.QbdlxForm.FinalTrackNamePath} ...... ", true, true);
 
             // Get track streaming URL, abort if failed.
             string streamUrl = ExecuteApiCall(apiService => apiService.GetTrackFileUrl(trackIdString, Globals.FormatIdString))?.Url;
@@ -181,7 +181,7 @@ namespace QobuzDownloaderX.Shared
             if (string.IsNullOrEmpty(streamUrl))
             {
                 // Can happen with free accounts trying to download non-previewable tracks (or if API call failed). 
-                Globals.QbdlxForm.AddDownloadLogLine($"Couldn't get streaming URL for Track \"{Globals.QbdlxForm.FinalTrackNamePath}\". Skipping.\r\n", true, true);
+                logger.AddDownloadLogLine($"Couldn't get streaming URL for Track \"{Globals.QbdlxForm.FinalTrackNamePath}\". Skipping.\r\n", true, true);
                 return false;
             }
 
@@ -209,7 +209,7 @@ namespace QobuzDownloaderX.Shared
                         catch (Exception ex)
                         {
                             // Qobuz servers throw a 404 as if the image doesn't exist.
-                            Globals.QbdlxForm.AddDownloadErrorLogLines(new string[] { "Error downloading image file for tagging.", ex.Message, Environment.NewLine });
+                            logger.AddDownloadErrorLogLines(new string[] { "Error downloading image file for tagging.", ex.Message, Environment.NewLine });
                         }
                     }
 
@@ -223,7 +223,7 @@ namespace QobuzDownloaderX.Shared
                         catch (Exception ex)
                         {
                             // Qobuz servers throw a 404 as if the image doesn't exist.
-                            Globals.QbdlxForm.AddDownloadErrorLogLines(new string[] { "Error downloading full size cover image file.", ex.Message, Environment.NewLine });
+                            logger.AddDownloadErrorLogLines(new string[] { "Error downloading full size cover image file.", ex.Message, Environment.NewLine });
                         }
                     }
                 }
@@ -237,27 +237,27 @@ namespace QobuzDownloaderX.Shared
                     System.IO.File.Delete(coverArtTagFilePath);
                 }
 
-                Globals.QbdlxForm.AddDownloadLogLine("Track Download Done!\r\n", true, true);
+                logger.AddDownloadLogLine("Track Download Done!\r\n", true, true);
                 System.Threading.Thread.Sleep(100);
             }
             catch (AggregateException ae)
             {
                 // When a Task fails, an AggregateException is thrown. Could be a HttpClient timeout or network error.
-                Globals.QbdlxForm.AddDownloadLogErrorLine($"Track Download canceled, probably due to network error or request timeout. Details saved to error log.{Environment.NewLine}", true, true);
+                logger.AddDownloadLogErrorLine($"Track Download canceled, probably due to network error or request timeout. Details saved to error log.{Environment.NewLine}", true, true);
 
-                Globals.QbdlxForm.AddDownloadErrorLogLine("Track Download canceled, probably due to network error or request timeout.");
-                Globals.QbdlxForm.AddDownloadErrorLogLine(ae.ToString());
-                Globals.QbdlxForm.AddDownloadErrorLogLine(Environment.NewLine);
+                logger.AddDownloadErrorLogLine("Track Download canceled, probably due to network error or request timeout.");
+                logger.AddDownloadErrorLogLine(ae.ToString());
+                logger.AddDownloadErrorLogLine(Environment.NewLine);
                 return false;
             }
             catch (Exception downloadEx)
             {
                 // If there is an unknown issue trying to, or during the download, show and log error info.
-                Globals.QbdlxForm.AddDownloadLogErrorLine($"Unknown error during Track Download. Details saved to error log.{Environment.NewLine}", true, true);
+                logger.AddDownloadLogErrorLine($"Unknown error during Track Download. Details saved to error log.{Environment.NewLine}", true, true);
 
-                Globals.QbdlxForm.AddDownloadErrorLogLine("Unknown error during Track Download.");
-                Globals.QbdlxForm.AddDownloadErrorLogLine(downloadEx.ToString());
-                Globals.QbdlxForm.AddDownloadErrorLogLine(Environment.NewLine);
+                logger.AddDownloadErrorLogLine("Unknown error during Track Download.");
+                logger.AddDownloadErrorLogLine(downloadEx.ToString());
+                logger.AddDownloadErrorLogLine(Environment.NewLine);
                 return false;
             }
 
@@ -314,7 +314,7 @@ namespace QobuzDownloaderX.Shared
                 return noErrorsOccured;
             }
 
-            Globals.QbdlxForm.AddDownloadLogLine($"Goodies found, downloading...{Environment.NewLine}", true, true);
+            logger.AddDownloadLogLine($"Goodies found, downloading...{Environment.NewLine}", true, true);
 
             using (HttpClient httpClient = new HttpClient())
             {
@@ -328,7 +328,7 @@ namespace QobuzDownloaderX.Shared
                     // Download booklet if file doesn't exist yet
                     if (System.IO.File.Exists(bookletFilePath))
                     {
-                        Globals.QbdlxForm.AddDownloadLogLine($"Booklet file for \"{bookletFileName}\" already exists. Skipping.{Environment.NewLine}", true, true);
+                        logger.AddDownloadLogLine($"Booklet file for \"{bookletFileName}\" already exists. Skipping.{Environment.NewLine}", true, true);
                     }
                     else
                     {
@@ -352,26 +352,26 @@ namespace QobuzDownloaderX.Shared
                 // Download booklet
                 await DownloadFileAsync(httpClient, booklet.Url, filePath);
 
-                Globals.QbdlxForm.AddDownloadLogLine($"Booklet \"{fileName}\" download complete!{Environment.NewLine}", true, true);
+                logger.AddDownloadLogLine($"Booklet \"{fileName}\" download complete!{Environment.NewLine}", true, true);
             }
             catch (AggregateException ae)
             {
                 // When a Task fails, an AggregateException is thrown. Could be a HttpClient timeout or network error.
-                Globals.QbdlxForm.AddDownloadLogErrorLine($"Goodies Download canceled, probably due to network error or request timeout. Details saved to error log.{Environment.NewLine}", true, true);
+                logger.AddDownloadLogErrorLine($"Goodies Download canceled, probably due to network error or request timeout. Details saved to error log.{Environment.NewLine}", true, true);
 
-                Globals.QbdlxForm.AddDownloadErrorLogLine("Goodies Download canceled, probably due to network error or request timeout.");
-                Globals.QbdlxForm.AddDownloadErrorLogLine(ae.ToString());
-                Globals.QbdlxForm.AddDownloadErrorLogLine(Environment.NewLine);
+                logger.AddDownloadErrorLogLine("Goodies Download canceled, probably due to network error or request timeout.");
+                logger.AddDownloadErrorLogLine(ae.ToString());
+                logger.AddDownloadErrorLogLine(Environment.NewLine);
                 noErrorsOccured = false;
             }
             catch (Exception downloadEx)
             {
                 // If there is an unknown issue trying to, or during the download, show and log error info.
-                Globals.QbdlxForm.AddDownloadLogErrorLine($"Unknown error during Goodies Download. Details saved to error log.{Environment.NewLine}", true, true);
+                logger.AddDownloadLogErrorLine($"Unknown error during Goodies Download. Details saved to error log.{Environment.NewLine}", true, true);
 
-                Globals.QbdlxForm.AddDownloadErrorLogLine("Unknown error during Goodies Download.");
-                Globals.QbdlxForm.AddDownloadErrorLogLine(downloadEx.ToString());
-                Globals.QbdlxForm.AddDownloadErrorLogLine(Environment.NewLine);
+                logger.AddDownloadErrorLogLine("Unknown error during Goodies Download.");
+                logger.AddDownloadErrorLogLine(downloadEx.ToString());
+                logger.AddDownloadErrorLogLine(Environment.NewLine);
                 noErrorsOccured = false;
             }
 
@@ -388,10 +388,10 @@ namespace QobuzDownloaderX.Shared
                 cancellationToken.ThrowIfCancellationRequested();
 
                 // Empty output, then say Starting Downloads.
-                Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-                Globals.QbdlxForm.AddEmptyDownloadLogLine(true, false);
-                Globals.QbdlxForm.AddDownloadLogLine($"Starting Downloads for album \"{qobuzAlbum.Title}\" with ID: <{qobuzAlbum.Id}>...", true, true);
-                Globals.QbdlxForm.AddEmptyDownloadLogLine(true, true);
+                logger.ClearUiLogComponent();
+                logger.AddEmptyDownloadLogLine(true, false);
+                logger.AddDownloadLogLine($"Starting Downloads for album \"{qobuzAlbum.Title}\" with ID: <{qobuzAlbum.Id}>...", true, true);
+                logger.AddEmptyDownloadLogLine(true, true);
 
                 bool albumDownloadOK = await DownloadAlbumAsync(cancellationToken, qobuzAlbum, basePath, true, $" [{qobuzAlbum.Id}]");
 
@@ -401,20 +401,14 @@ namespace QobuzDownloaderX.Shared
 
             if (isEndOfDownloadJob)
             {
-                Globals.QbdlxForm.FinishDownloadJob(noAlbumErrorsOccured);
+                logger.LogFinishedDownloadJob(noAlbumErrorsOccured);
             }
 
             return noAlbumErrorsOccured;
         }
 
-        public async Task StartLinkDownloadTaskAsync(object sender, EventArgs e)
+        public async Task StartDownloadItemTaskAsync(DownloadItem downloadItem, DownloadStatusChanged downloadStartedCallback, DownloadStatusChanged downloadStoppedCallback)
         {
-            if (Buzy)
-            {
-                Globals.QbdlxForm.AddEmptyDownloadLogLine(true, true);
-                Globals.QbdlxForm.AddDownloadLogLine($"Download job buzy, please wait for job to finish!{Environment.NewLine}", true, true);
-            }
-            
             // Create new cancellation token source.
             using (this.cancellationTokenSource = new CancellationTokenSource())
             {
@@ -422,39 +416,16 @@ namespace QobuzDownloaderX.Shared
 
                 try
                 {
-                    Globals.QbdlxForm.UpdateControlsDownloadBuzy();
-
-                    // Check if there's no selected path.
-                    if (string.IsNullOrEmpty(Settings.Default.savedFolder))
-                    {
-                        // If there is NOT a saved path.
-                        Globals.QbdlxForm.output?.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-                        Globals.QbdlxForm.output?.Invoke(new Action(() =>
-                            Globals.QbdlxForm.output.AppendText($"No path has been set! Remember to Choose a Folder!{Environment.NewLine}")));
-                        HandleTaskEnded();
-                        return;
-                    }
-
-                    // Get download item type and ID from url
-                    DownloadItem downloadItem = DownloadUrlParser.ParseDownloadUrl(Globals.QbdlxForm.downloadUrl.Text);
-
-                    // If download item could not be parsed, abort
-                    if (downloadItem.IsEmpty())
-                    {
-                        Globals.QbdlxForm.output?.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-                        Globals.QbdlxForm.output?.Invoke(new Action(() => Globals.QbdlxForm.output.AppendText("URL not understood. Is there a typo?")));
-                        HandleTaskEnded();
-                        return;
-                    }
+                    downloadStartedCallback?.Invoke();
 
                     // Link should be valid here, start new download log
-                    Globals.QbdlxForm.DownloadLogPath = Path.Combine(Globals.LoggingDir, $"Download_Log_{DateTime.Now:yyyy-MM-dd_HH.mm.ss.fff}.log");
+                    logger.DownloadLogPath = Path.Combine(Globals.LoggingDir, $"Download_Log_{DateTime.Now:yyyy-MM-dd_HH.mm.ss.fff}.log");
 
-                    string logLine = $"Downloading <{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(downloadItem.Type)}> from {Globals.QbdlxForm.downloadUrl.Text}";
-                    Globals.QbdlxForm.AddDownloadLogLine(new string('=', logLine.Length).PadRight(logLine.Length), true);
-                    Globals.QbdlxForm.AddDownloadLogLine(logLine, true);
-                    Globals.QbdlxForm.AddDownloadLogLine(new string('=', logLine.Length).PadRight(logLine.Length), true);
-                    Globals.QbdlxForm.AddEmptyDownloadLogLine(true);
+                    string logLine = $"Downloading <{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(downloadItem.Type)}> from {downloadItem.Url}";
+                    logger.AddDownloadLogLine(new string('=', logLine.Length).PadRight(logLine.Length), true);
+                    logger.AddDownloadLogLine(logLine, true);
+                    logger.AddDownloadLogLine(new string('=', logLine.Length).PadRight(logLine.Length), true);
+                    logger.AddEmptyDownloadLogLine(true);
 
                     DowloadItemID = downloadItem.Id;
 
@@ -490,12 +461,12 @@ namespace QobuzDownloaderX.Shared
                             }
                             else
                             {
-                                Globals.QbdlxForm.output?.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-                                Globals.QbdlxForm.AddDownloadLogLine($"You entered an invalid user favorites link.{Environment.NewLine}", true, true);
-                                Globals.QbdlxForm.AddDownloadLogLine($"Favorite Tracks, Albums & Artists are supported with the following links:{Environment.NewLine}", true, true);
-                                Globals.QbdlxForm.AddDownloadLogLine($"Tracks - https://play.qobuz.com/user/library/favorites/tracks{Environment.NewLine}", true, true);
-                                Globals.QbdlxForm.AddDownloadLogLine($"Albums - https://play.qobuz.com/user/library/favorites/albums{Environment.NewLine}", true, true);
-                                Globals.QbdlxForm.AddDownloadLogLine($"Artists - https://play.qobuz.com/user/library/favorites/artists{Environment.NewLine}", true, true);
+                                logger.ClearUiLogComponent();
+                                logger.AddDownloadLogLine($"You entered an invalid user favorites link.{Environment.NewLine}", true, true);
+                                logger.AddDownloadLogLine($"Favorite Tracks, Albums & Artists are supported with the following links:{Environment.NewLine}", true, true);
+                                logger.AddDownloadLogLine($"Tracks - https://play.qobuz.com/user/library/favorites/tracks{Environment.NewLine}", true, true);
+                                logger.AddDownloadLogLine($"Albums - https://play.qobuz.com/user/library/favorites/albums{Environment.NewLine}", true, true);
+                                logger.AddDownloadLogLine($"Artists - https://play.qobuz.com/user/library/favorites/artists{Environment.NewLine}", true, true);
                             }
                             break;
 
@@ -504,20 +475,21 @@ namespace QobuzDownloaderX.Shared
                             break;
                         default:
                             // We shouldn't get here?!? I'll leave this here just in case...
-                            Globals.QbdlxForm.output?.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-                            Globals.QbdlxForm.AddDownloadLogLine("URL not understood. Is there a typo?", true, true);
+                            logger.ClearUiLogComponent();
+                            logger.AddDownloadLogLine("URL not understood. Is there a typo?", true, true);
                             break;
                     }
                 }
                 catch (OperationCanceledException)
                 {
                     // Handle cancellation.
-                    Globals.QbdlxForm.AddEmptyDownloadLogLine(true, true);
-                    Globals.QbdlxForm.AddDownloadLogLine("Download stopped by user!", true, true);
+                    logger.AddEmptyDownloadLogLine(true, true);
+                    logger.AddDownloadLogLine("Download stopped by user!", true, true);
                 }
                 finally
                 {
-                    HandleTaskEnded();
+                    downloadStoppedCallback?.Invoke();
+                    Buzy = false;
                 }
             }
         }
@@ -526,8 +498,8 @@ namespace QobuzDownloaderX.Shared
         private async Task StartDownloadTrackTaskAsync(CancellationToken cancellationToken)
         {
             // Empty screen output, then say Grabbing info.
-            Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-            Globals.QbdlxForm.AddDownloadLogLine($"Grabbing Track info...{Environment.NewLine}", true, true);
+            logger.ClearUiLogComponent();
+            logger.AddDownloadLogLine($"Grabbing Track info...{Environment.NewLine}", true, true);
 
             // Set "basePath" as the selected path.
             string downloadBasePath = Settings.Default.savedFolder;
@@ -539,8 +511,8 @@ namespace QobuzDownloaderX.Shared
                 // If API call failed, abort
                 if (qobuzTrack == null) { return; }
 
-                Globals.QbdlxForm.AddDownloadLogLine($"Track \"{qobuzTrack.Title}\" found. Starting Download...", true, true);
-                Globals.QbdlxForm.AddEmptyDownloadLogLine(true, true);
+                logger.AddDownloadLogLine($"Track \"{qobuzTrack.Title}\" found. Starting Download...", true, true);
+                logger.AddEmptyDownloadLogLine(true, true);
 
                 bool fileDownloaded = await DownloadTrackAsync(cancellationToken, qobuzTrack, downloadBasePath, true, false, true);
 
@@ -548,8 +520,8 @@ namespace QobuzDownloaderX.Shared
                 if (!fileDownloaded) { return; }
 
                 // Say that downloading is completed.
-                Globals.QbdlxForm.AddEmptyDownloadLogLine(true, true);
-                Globals.QbdlxForm.AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
+                logger.AddEmptyDownloadLogLine(true, true);
+                logger.AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -558,7 +530,7 @@ namespace QobuzDownloaderX.Shared
             }
             catch (Exception downloadEx)
             {
-                Globals.QbdlxForm.LogDownloadTaskException("Track", downloadEx);
+                logger.LogDownloadTaskException("Track", downloadEx);
             }
         }
 
@@ -566,8 +538,8 @@ namespace QobuzDownloaderX.Shared
         private async Task StartDownloadAlbumTaskAsync(CancellationToken cancellationToken)
         {
             // Empty screen output, then say Grabbing info.
-            Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-            Globals.QbdlxForm.AddDownloadLogLine($"Grabbing Album info...{Environment.NewLine}", true, true);
+            logger.ClearUiLogComponent();
+            logger.AddDownloadLogLine($"Grabbing Album info...{Environment.NewLine}", true, true);
 
             // Set "basePath" as the selected path.
             String downloadBasePath = Settings.Default.savedFolder;
@@ -580,10 +552,10 @@ namespace QobuzDownloaderX.Shared
                 // If API call failed, abort
                 if (qobuzAlbum == null) { return; }
 
-                Globals.QbdlxForm.AddDownloadLogLine($"Album \"{qobuzAlbum.Title}\" found. Starting Downloads...", true, true);
-                Globals.QbdlxForm.AddEmptyDownloadLogLine(true, true);
+                logger.AddDownloadLogLine($"Album \"{qobuzAlbum.Title}\" found. Starting Downloads...", true, true);
+                logger.AddEmptyDownloadLogLine(true, true);
 
-                Globals.QbdlxForm.FinishDownloadJob(await DownloadAlbumAsync(cancellationToken, qobuzAlbum, downloadBasePath));
+                logger.LogFinishedDownloadJob(await DownloadAlbumAsync(cancellationToken, qobuzAlbum, downloadBasePath));
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -592,7 +564,7 @@ namespace QobuzDownloaderX.Shared
             }
             catch (Exception downloadEx)
             {
-                Globals.QbdlxForm.LogDownloadTaskException("Album", downloadEx);
+                logger.LogDownloadTaskException("Album", downloadEx);
             }
         }
 
@@ -603,8 +575,8 @@ namespace QobuzDownloaderX.Shared
             String artistBasePath = Settings.Default.savedFolder;
 
             // Empty output, then say Grabbing IDs.
-            Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-            Globals.QbdlxForm.AddDownloadLogLine("Grabbing Artist info...", true, true);
+            logger.ClearUiLogComponent();
+            logger.AddDownloadLogLine("Grabbing Artist info...", true, true);
 
             try
             {
@@ -614,7 +586,7 @@ namespace QobuzDownloaderX.Shared
                 // If API call failed, abort
                 if (qobuzArtist == null) { return; }
 
-                Globals.QbdlxForm.AddDownloadLogLine($"Starting Downloads for artist \"{qobuzArtist.Name}\" with ID: <{qobuzArtist.Id}>...", true, true);
+                logger.AddDownloadLogLine($"Starting Downloads for artist \"{qobuzArtist.Name}\" with ID: <{qobuzArtist.Id}>...", true, true);
 
                 await DownloadAlbumsAsync(cancellationToken, artistBasePath, qobuzArtist.Albums.Items, true);
             }
@@ -625,8 +597,8 @@ namespace QobuzDownloaderX.Shared
             }
             catch (Exception downloadEx)
             {
-                Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-                Globals.QbdlxForm.LogDownloadTaskException("Artist", downloadEx);
+                logger.ClearUiLogComponent();
+                logger.LogDownloadTaskException("Artist", downloadEx);
             }
         }
 
@@ -637,8 +609,8 @@ namespace QobuzDownloaderX.Shared
             string labelBasePath = Path.Combine(Settings.Default.savedFolder, "- Labels");
 
             // Empty output, then say Grabbing IDs.
-            Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-            Globals.QbdlxForm.AddDownloadLogLine("Grabbing Label info...", true, true);
+            logger.ClearUiLogComponent();
+            logger.AddDownloadLogLine("Grabbing Label info...", true, true);
 
             try
             {
@@ -648,7 +620,7 @@ namespace QobuzDownloaderX.Shared
                 // If API call failed, abort
                 if (qobuzLabel == null) { return; }
 
-                Globals.QbdlxForm.AddDownloadLogLine($"Starting Downloads for label \"{qobuzLabel.Name}\" with ID: <{qobuzLabel.Id}>...", true, true);
+                logger.AddDownloadLogLine($"Starting Downloads for label \"{qobuzLabel.Name}\" with ID: <{qobuzLabel.Id}>...", true, true);
 
                 // Add Label name to basePath
                 string safeLabelName = StringTools.GetSafeFilename(StringTools.DecodeEncodedNonAsciiCharacters(qobuzLabel.Name));
@@ -663,8 +635,8 @@ namespace QobuzDownloaderX.Shared
             }
             catch (Exception downloadEx)
             {
-                Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-                Globals.QbdlxForm.LogDownloadTaskException("Label", downloadEx);
+                logger.ClearUiLogComponent();
+                logger.LogDownloadTaskException("Label", downloadEx);
             }
         }
 
@@ -677,8 +649,8 @@ namespace QobuzDownloaderX.Shared
             string favoritesBasePath = Path.Combine(Settings.Default.savedFolder, "- Favorites");
 
             // Empty output, then say Grabbing IDs.
-            Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-            Globals.QbdlxForm.AddDownloadLogLine("Grabbing Favorite Album IDs...", true, true);
+            logger.ClearUiLogComponent();
+            logger.AddDownloadLogLine("Grabbing Favorite Album IDs...", true, true);
 
             try
             {
@@ -697,8 +669,8 @@ namespace QobuzDownloaderX.Shared
             }
             catch (Exception downloadEx)
             {
-                Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-                Globals.QbdlxForm.LogDownloadTaskException("Favorite Albums", downloadEx);
+                logger.ClearUiLogComponent();
+                logger.LogDownloadTaskException("Favorite Albums", downloadEx);
             }
         }
 
@@ -709,8 +681,8 @@ namespace QobuzDownloaderX.Shared
             string favoritesBasePath = Path.Combine(Settings.Default.savedFolder, "- Favorites");
 
             // Empty output, then say Grabbing IDs.
-            Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-            Globals.QbdlxForm.AddDownloadLogLine("Grabbing Favorite Artists...", true, true);
+            logger.ClearUiLogComponent();
+            logger.AddDownloadLogLine("Grabbing Favorite Artists...", true, true);
 
             try
             {
@@ -725,8 +697,8 @@ namespace QobuzDownloaderX.Shared
                 // If user has no favorite artists, log and abort
                 if (qobuzUserFavorites.Artists?.Total == 0)
                 {
-                    Globals.QbdlxForm.AddEmptyDownloadLogLine(true, true);
-                    Globals.QbdlxForm.AddDownloadLogLine("No favorite artists found, nothing to download.", true, true);
+                    logger.AddEmptyDownloadLogLine(true, true);
+                    logger.AddDownloadLogLine("No favorite artists found, nothing to download.", true, true);
                     return;
                 }
 
@@ -741,14 +713,14 @@ namespace QobuzDownloaderX.Shared
                     // If API call failed, mark artist error occured and continue with next artist
                     if (qobuzArtist == null) { noArtistErrorsOccured = false; continue; }
 
-                    Globals.QbdlxForm.AddEmptyDownloadLogLine(true, true);
-                    Globals.QbdlxForm.AddDownloadLogLine($"Starting Downloads for artist \"{qobuzArtist.Name}\" with ID: <{qobuzArtist.Id}>...", true, true);
+                    logger.AddEmptyDownloadLogLine(true, true);
+                    logger.AddDownloadLogLine($"Starting Downloads for artist \"{qobuzArtist.Name}\" with ID: <{qobuzArtist.Id}>...", true, true);
 
                     // If albums download failed, mark artist error occured and continue with next artist
                     if (!await DownloadAlbumsAsync(cancellationToken, favoritesBasePath, qobuzArtist.Albums.Items, false)) noArtistErrorsOccured = false;
                 }
 
-                Globals.QbdlxForm.FinishDownloadJob(noArtistErrorsOccured);
+                logger.LogFinishedDownloadJob(noArtistErrorsOccured);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -757,8 +729,8 @@ namespace QobuzDownloaderX.Shared
             }
             catch (Exception downloadEx)
             {
-                Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-                Globals.QbdlxForm.LogDownloadTaskException("Favorite Albums", downloadEx);
+                logger.ClearUiLogComponent();
+                logger.LogDownloadTaskException("Favorite Albums", downloadEx);
             }
         }
 
@@ -769,9 +741,9 @@ namespace QobuzDownloaderX.Shared
             string favoriteTracksBasePath = Path.Combine(Settings.Default.savedFolder, "- Favorites");
 
             // Empty screen output, then say Grabbing info.
-            Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-            Globals.QbdlxForm.AddDownloadLogLine("Grabbing Favorite Tracks...", true, true);
-            Globals.QbdlxForm.AddEmptyDownloadLogLine(true, true);
+            logger.ClearUiLogComponent();
+            logger.AddDownloadLogLine("Grabbing Favorite Tracks...", true, true);
+            logger.AddEmptyDownloadLogLine(true, true);
 
             try
             {
@@ -786,12 +758,12 @@ namespace QobuzDownloaderX.Shared
                 // If user has no favorite tracks, log and abort
                 if (qobuzUserFavoritesIds.Tracks?.Count == 0)
                 {
-                    Globals.QbdlxForm.AddDownloadLogLine("No favorite tracks found, nothing to download.", true, true);
+                    logger.AddDownloadLogLine("No favorite tracks found, nothing to download.", true, true);
                     return;
                 }
 
-                Globals.QbdlxForm.AddDownloadLogLine("Favorite tracks found. Starting Downloads...", true, true);
-                Globals.QbdlxForm.AddEmptyDownloadLogLine(true, true);
+                logger.AddDownloadLogLine("Favorite tracks found. Starting Downloads...", true, true);
+                logger.AddEmptyDownloadLogLine(true, true);
 
                 // Download favorite tracks
                 foreach (int favoriteTrackId in qobuzUserFavoritesIds.Tracks)
@@ -807,7 +779,7 @@ namespace QobuzDownloaderX.Shared
                     if (! await DownloadTrackAsync(cancellationToken, qobuzTrack, favoriteTracksBasePath, true, false, true)) noTrackErrorsOccured = false;
                 }
 
-                Globals.QbdlxForm.FinishDownloadJob(noTrackErrorsOccured);
+                logger.LogFinishedDownloadJob(noTrackErrorsOccured);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -816,8 +788,8 @@ namespace QobuzDownloaderX.Shared
             }
             catch (Exception downloadEx)
             {
-                Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-                Globals.QbdlxForm.LogDownloadTaskException("Playlist", downloadEx);
+                logger.ClearUiLogComponent();
+                logger.LogDownloadTaskException("Playlist", downloadEx);
             }
         }
 
@@ -828,9 +800,9 @@ namespace QobuzDownloaderX.Shared
             String playlistBasePath = Settings.Default.savedFolder;
 
             // Empty screen output, then say Grabbing info.
-            Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-            Globals.QbdlxForm.AddDownloadLogLine("Grabbing Playlist info...", true, true);
-            Globals.QbdlxForm.AddEmptyDownloadLogLine(true, true);
+            logger.ClearUiLogComponent();
+            logger.AddDownloadLogLine("Grabbing Playlist info...", true, true);
+            logger.AddEmptyDownloadLogLine(true, true);
 
             try
             {
@@ -840,8 +812,8 @@ namespace QobuzDownloaderX.Shared
                 // If API call failed, abort
                 if (qobuzPlaylist == null) { return; }
 
-                Globals.QbdlxForm.AddDownloadLogLine($"Playlist \"{qobuzPlaylist.Name}\" found. Starting Downloads...", true, true);
-                Globals.QbdlxForm.AddEmptyDownloadLogLine(true, true);
+                logger.AddDownloadLogLine($"Playlist \"{qobuzPlaylist.Name}\" found. Starting Downloads...", true, true);
+                logger.AddEmptyDownloadLogLine(true, true);
 
                 // Create Playlist root directory.
                 string playlistNamePath = StringTools.GetSafeFilename(StringTools.DecodeEncodedNonAsciiCharacters(qobuzPlaylist.Name));
@@ -864,7 +836,7 @@ namespace QobuzDownloaderX.Shared
                     catch (Exception ex)
                     {
                         // Qobuz servers throw a 404 as if the image doesn't exist.
-                        Globals.QbdlxForm.AddDownloadErrorLogLines(new string[] { "Error downloading full size playlist cover image file.", ex.Message, "\r\n" });
+                        logger.AddDownloadErrorLogLines(new string[] { "Error downloading full size playlist cover image file.", ex.Message, "\r\n" });
                     }
                 }
 
@@ -887,7 +859,7 @@ namespace QobuzDownloaderX.Shared
                     if (! await DownloadTrackAsync(cancellationToken, qobuzTrack, playlistBasePath, true, false, true)) noTrackErrorsOccured = false;
                 }
 
-                Globals.QbdlxForm.FinishDownloadJob(noTrackErrorsOccured);
+                logger.LogFinishedDownloadJob(noTrackErrorsOccured);
 
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
@@ -897,8 +869,8 @@ namespace QobuzDownloaderX.Shared
             }
             catch (Exception downloadEx)
             {
-                Globals.QbdlxForm.output.Invoke(new Action(() => Globals.QbdlxForm.output.Text = String.Empty));
-                Globals.QbdlxForm.LogDownloadTaskException("Playlist", downloadEx);
+                logger.ClearUiLogComponent();
+                logger.LogDownloadTaskException("Playlist", downloadEx);
             }
         }
     }
