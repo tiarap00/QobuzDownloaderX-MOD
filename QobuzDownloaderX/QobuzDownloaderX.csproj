@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\DownloadItem.cs" />
+    <Compile Include="Shared\DownloadManager.cs" />
     <Compile Include="Shared\GoodiesFileType.cs" />
     <Compile Include="Models\UI\SearchResultRow.cs" />
     <Compile Include="Shared\QobuzApiServiceManager.cs" />
@@ -207,7 +208,7 @@
       <Version>13.0.3</Version>
     </PackageReference>
     <PackageReference Include="QobuzApiSharp">
-      <Version>0.0.2</Version>
+      <Version>0.0.3</Version>
     </PackageReference>
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
   </ItemGroup>

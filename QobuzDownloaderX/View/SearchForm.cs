@@ -302,11 +302,12 @@ namespace QobuzDownloaderX
                 TextAlign = ContentAlignment.MiddleCenter
             };
             downloadButton.FlatAppearance.BorderSize = 0;
-            downloadButton.Click += (sender, e) =>
+            downloadButton.Click += async (sender, e) =>
             {
                 Globals.QbdlxForm.downloadUrl.Invoke(new Action(() => Globals.QbdlxForm.downloadUrl.Text = webPlayerUrl));
-                Globals.QbdlxForm.getLinkTypeBG.RunWorkerAsync();
                 this.Close();
+                // Run the StartLinkDownloadTaskAsync method on a background thread & Wait for the task to complete
+                await Task.Run(() => Globals.DownloadManager.StartLinkDownloadTaskAsync(sender, e));
             };
 
             return downloadButton;

@@ -51,10 +51,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.totalTracksTextbox = new System.Windows.Forms.TextBox();
             this.totalTracksLabel = new System.Windows.Forms.Label();
-            this.getLinkTypeBG = new System.ComponentModel.BackgroundWorker();
-            this.downloadAlbumBG = new System.ComponentModel.BackgroundWorker();
-            this.downloadTrackBG = new System.ComponentModel.BackgroundWorker();
-            this.downloadDiscogBG = new System.ComponentModel.BackgroundWorker();
             this.qualityTextbox = new System.Windows.Forms.TextBox();
             this.qualityLabel = new System.Windows.Forms.Label();
             this.openSearchButton = new System.Windows.Forms.Button();
@@ -97,10 +93,7 @@
             this.displaySecretButton = new System.Windows.Forms.Button();
             this.profilePictureBox = new System.Windows.Forms.PictureBox();
             this.logoutLabel = new System.Windows.Forms.Label();
-            this.downloadLabelBG = new System.ComponentModel.BackgroundWorker();
             this.hiddenTextPanel = new System.Windows.Forms.Panel();
-            this.downloadFaveAlbumsBG = new System.ComponentModel.BackgroundWorker();
-            this.downloadFaveArtistsBG = new System.ComponentModel.BackgroundWorker();
             this.artSizeSelect = new System.Windows.Forms.ComboBox();
             this.artSizeLabel = new System.Windows.Forms.Label();
             this.typeCheckbox = new System.Windows.Forms.CheckBox();
@@ -116,10 +109,8 @@
             this.formatIDLabel = new System.Windows.Forms.Label();
             this.filenameTempSelect = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.downloadPlaylistBG = new System.ComponentModel.BackgroundWorker();
             this.testURLBox = new System.Windows.Forms.TextBox();
             this.openLogFolderButton = new System.Windows.Forms.Button();
-            this.DownloadFaveTracksBG = new System.ComponentModel.BackgroundWorker();
             ((System.ComponentModel.ISupportInitialize)(this.albumArtPicBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.logoBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.profilePictureBox)).BeginInit();
@@ -373,22 +364,6 @@
             this.totalTracksLabel.Size = new System.Drawing.Size(67, 13);
             this.totalTracksLabel.TabIndex = 55;
             this.totalTracksLabel.Text = "Total Tracks";
-            // 
-            // getLinkTypeBG
-            // 
-            this.getLinkTypeBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.GetLinkTypeBG_DoWork);
-            // 
-            // downloadAlbumBG
-            // 
-            this.downloadAlbumBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DownloadAlbumBG_DoWork);
-            // 
-            // downloadTrackBG
-            // 
-            this.downloadTrackBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DownloadTrackBG_DoWork);
-            // 
-            // downloadDiscogBG
-            // 
-            this.downloadDiscogBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DownloadDiscogBG_DoWork);
             // 
             // qualityTextbox
             // 
@@ -923,10 +898,6 @@
             this.logoutLabel.MouseLeave += new System.EventHandler(this.logoutLabel_MouseLeave);
             this.logoutLabel.MouseHover += new System.EventHandler(this.logoutLabel_MouseHover);
             // 
-            // downloadLabelBG
-            // 
-            this.downloadLabelBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DownloadLabelBG_DoWork);
-            // 
             // hiddenTextPanel
             // 
             this.hiddenTextPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
@@ -935,14 +906,6 @@
             this.hiddenTextPanel.Size = new System.Drawing.Size(179, 1);
             this.hiddenTextPanel.TabIndex = 87;
             this.hiddenTextPanel.Visible = false;
-            // 
-            // downloadFaveAlbumsBG
-            // 
-            this.downloadFaveAlbumsBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DownloadFaveAlbumsBG_DoWork);
-            // 
-            // downloadFaveArtistsBG
-            // 
-            this.downloadFaveArtistsBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DownloadFaveArtistsBG_DoWork);
             // 
             // artSizeSelect
             // 
@@ -1130,10 +1093,6 @@
             this.label7.TabIndex = 108;
             this.label7.Text = "Filename Template:";
             // 
-            // downloadPlaylistBG
-            // 
-            this.downloadPlaylistBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DownloadPlaylistBG_DoWork);
-            // 
             // testURLBox
             // 
             this.testURLBox.Location = new System.Drawing.Point(946, 394);
@@ -1158,10 +1117,6 @@
             this.openLogFolderButton.Text = "Open Log Folder";
             this.openLogFolderButton.UseVisualStyleBackColor = false;
             this.openLogFolderButton.Click += new System.EventHandler(this.OpenLogFolderButton_Click);
-            // 
-            // DownloadFaveTracksBG
-            // 
-            this.DownloadFaveTracksBG.DoWork += new System.ComponentModel.DoWorkEventHandler(this.DownloadFaveTracksBG_DoWork);
             // 
             // QobuzDownloaderX
             // 
@@ -1250,6 +1205,7 @@
             this.Controls.Add(this.output);
             this.Controls.Add(this.selectFolderButton);
             this.Controls.Add(this.testURLBox);
+            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -1270,7 +1226,7 @@
         #endregion
         private System.Windows.Forms.Button selectFolderButton;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog;
-        private System.Windows.Forms.TextBox output;
+        public System.Windows.Forms.TextBox output;
         private System.Windows.Forms.Button openFolderButton;
         private System.Windows.Forms.Button downloadButton;
         private System.Windows.Forms.TextBox imageURLTextbox;
@@ -1289,9 +1245,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox totalTracksTextbox;
         private System.Windows.Forms.Label totalTracksLabel;
-        private System.ComponentModel.BackgroundWorker downloadAlbumBG;
-        private System.ComponentModel.BackgroundWorker downloadTrackBG;
-        private System.ComponentModel.BackgroundWorker downloadDiscogBG;
         private System.Windows.Forms.TextBox qualityTextbox;
         private System.Windows.Forms.Label qualityLabel;
         private System.Windows.Forms.Button openSearchButton;
@@ -1334,10 +1287,7 @@
         private System.Windows.Forms.Button displaySecretButton;
         private System.Windows.Forms.PictureBox profilePictureBox;
         private System.Windows.Forms.Label logoutLabel;
-        private System.ComponentModel.BackgroundWorker downloadLabelBG;
         private System.Windows.Forms.Panel hiddenTextPanel;
-        private System.ComponentModel.BackgroundWorker downloadFaveAlbumsBG;
-        private System.ComponentModel.BackgroundWorker downloadFaveArtistsBG;
         private System.Windows.Forms.ComboBox artSizeSelect;
         private System.Windows.Forms.Label artSizeLabel;
         private System.Windows.Forms.CheckBox typeCheckbox;
@@ -1353,12 +1303,9 @@
         private System.Windows.Forms.Label formatIDLabel;
         private System.Windows.Forms.ComboBox filenameTempSelect;
         private System.Windows.Forms.Label label7;
-        private System.ComponentModel.BackgroundWorker downloadPlaylistBG;
         public System.Windows.Forms.TextBox downloadUrl;
         private System.Windows.Forms.TextBox testURLBox;
-        public System.ComponentModel.BackgroundWorker getLinkTypeBG;
         private System.Windows.Forms.Button openLogFolderButton;
-        private System.ComponentModel.BackgroundWorker DownloadFaveTracksBG;
     }
 }
 

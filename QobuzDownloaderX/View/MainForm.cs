@@ -26,7 +26,7 @@ namespace QobuzDownloaderX
 {
     public partial class QobuzDownloaderX : HeadlessForm
     {
-        private readonly string downloadErrorLogPath = Path.Combine(Globals.LoggingDir, "Download_Errors.log");
+        public readonly string downloadErrorLogPath = Path.Combine(Globals.LoggingDir, "Download_Errors.log");
 
         public QobuzDownloaderX()
         {
@@ -39,7 +39,7 @@ namespace QobuzDownloaderX
             }
         }
 
-        private string DownloadLogPath { get; set; }
+        public string DownloadLogPath { get; set; }
 
         public string ArtSize { get; set; }
         public string FileNameTemplateString { get; set; }
@@ -89,6 +89,12 @@ namespace QobuzDownloaderX
         public int DiscTotal { get; set; }
         public int TrackNumber { get; set; }
         public int TrackTotal { get; set; }
+
+        // Button color download inactive
+        private Color ReadyButtonBackColor = Color.FromArgb(0, 112, 239); // Windows Blue (Azure Blue)
+
+        // Button color download active
+        private Color BuzyButtonBackColor = Color.FromArgb(200, 30, 0); // Blue
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -206,7 +212,7 @@ namespace QobuzDownloaderX
         /// <param name="logEntry">String to be logged</param>
         /// <param name="logToFile">Should string be logged to file?</param>
         /// <param name="logToScreen">Should string be logged to screen?</param>
-        private void AddDownloadLogLine(string logEntry, bool logToFile, bool logToScreen = false)
+        public void AddDownloadLogLine(string logEntry, bool logToFile, bool logToScreen = false)
         {
             if (string.IsNullOrEmpty(logEntry)) return;
 
@@ -237,7 +243,7 @@ namespace QobuzDownloaderX
         /// <param name="logEntry">String to be logged</param>
         /// <param name="logToFile">Should string be logged to file?</param>
         /// <param name="logToScreen">Should string be logged to screen?</param>
-        private void AddDownloadLogErrorLine(string logEntry, bool logToFile, bool logToScreen = false)
+        public void AddDownloadLogErrorLine(string logEntry, bool logToFile, bool logToScreen = false)
         {
             AddDownloadLogLine($"[ERROR] {logEntry}", logToFile, logToScreen);
         }
@@ -247,19 +253,19 @@ namespace QobuzDownloaderX
         /// </summary>
         /// <param name="logToFile">Should string be logged to file?</param>
         /// <param name="logToScreen">Should string be logged to screen?</param>
-        private void AddEmptyDownloadLogLine(bool logToFile, bool logToScreen = false)
+        public void AddEmptyDownloadLogLine(bool logToFile, bool logToScreen = false)
         {
             AddDownloadLogLine($"{Environment.NewLine}{Environment.NewLine}", logToFile, logToScreen);
         }
 
-        private void AddDownloadErrorLogLines(IEnumerable<string> logEntries)
+        public void AddDownloadErrorLogLines(IEnumerable<string> logEntries)
         {
             if (logEntries == null && !logEntries.Any()) return;
 
             System.IO.File.AppendAllLines(downloadErrorLogPath, logEntries);
         }
 
-        private void AddDownloadErrorLogLine(string logEntry)
+        public void AddDownloadErrorLogLine(string logEntry)
         {
             AddDownloadErrorLogLines(new string[] { logEntry });
         }
@@ -270,7 +276,7 @@ namespace QobuzDownloaderX
         /// </summary>
         /// <param name="downloadTaskType">Name of the failed download task</param>
         /// <param name="downloadEx">Exception thrown by task</param>
-        private void LogDownloadTaskException(string downloadTaskType, Exception downloadEx)
+        public void LogDownloadTaskException(string downloadTaskType, Exception downloadEx)
         {
             // If there is an issue trying to, or during the download, show error info.
             output.Invoke(new Action(() => output.Text = String.Empty));
@@ -279,10 +285,10 @@ namespace QobuzDownloaderX
             AddDownloadErrorLogLine($"{downloadTaskType} Download Task ERROR.");
             AddDownloadErrorLogLine(downloadEx.ToString());
             AddDownloadErrorLogLine(Environment.NewLine);
-            EnableControlsAfterDownload();
+            UpdateControlsDownloadDone();
         }
 
-        private void FinishDownloadJob(bool noErrorsOccured)
+        public void FinishDownloadJob(bool noErrorsOccured)
         {
             AddEmptyDownloadLogLine(true, true);
 
@@ -296,7 +302,7 @@ namespace QobuzDownloaderX
                 AddDownloadLogLine("Download job completed with warnings and/or errors! Some or all files could be missing!", true, true);
             }
 
-            EnableControlsAfterDownload();
+            UpdateControlsDownloadDone();
         }
 
         private void debuggingEvents(object sender, EventArgs e)
@@ -325,83 +331,64 @@ namespace QobuzDownloaderX
             Globals.SearchForm.ShowDialog(this);
         }
 
-        private void DownloadButton_Click(object sender, EventArgs e)
+        private async void DownloadButton_Click(object sender, EventArgs e)
         {
-            getLinkTypeBG.RunWorkerAsync();
+            if (!Globals.DownloadManager.Buzy)
+            {
+                // Run the StartLinkDownloadTaskAsync method on a background thread & Wait for the task to complete
+                await Task.Run(() => Globals.DownloadManager.StartLinkDownloadTaskAsync(sender, e));
+            } else
+            {
+                Globals.DownloadManager.StopDownloadTask();
+            }
         }
 
-        private void DownloadUrl_KeyDown(object sender, KeyEventArgs e)
+        private async void DownloadUrl_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
-                getLinkTypeBG.RunWorkerAsync();
                 e.Handled = true;
                 e.SuppressKeyPress = true;
+
+                // Run the StartLinkDownloadTaskAsync method on a background thread & Wait for the task to complete
+                await Task.Run(() => Globals.DownloadManager.StartLinkDownloadTaskAsync(sender, e));
             }
         }
 
-        private T ExecuteApiCall<T>(Func<QobuzApiService, T> apiCall)
-        {
-            try
-            {
-                return apiCall(QobuzApiServiceManager.GetApiService());
-            }
-            catch (Exception ex)
-            {
-                // If connection to API fails, or something is incorrect, show error info + log details.
-                List<string> errorLines = new List<string>();
-
-                AddEmptyDownloadLogLine(false, true);
-                AddDownloadLogErrorLine($"Communication problem with Qobuz API. Details saved to error log{Environment.NewLine}", true, true);
-
-                switch (ex)
-                {
-                    case ApiErrorResponseException erEx:
-                        errorLines.Add("Failed API request:");
-                        errorLines.Add(erEx.RequestContent);
-                        errorLines.Add($"Api response code: {erEx.ResponseStatusCode}");
-                        errorLines.Add($"Api response status: {erEx.ResponseStatus}");
-                        errorLines.Add($"Api response reason: {erEx.ResponseReason}");
-                        break;
-                    case ApiResponseParseErrorException pEx:
-                        errorLines.Add("Error parsing API response");
-                        errorLines.Add($"Api response content: {pEx.ResponseContent}");
-                        break;
-                    default:
-                        errorLines.Add("Unknown error trying API request:");
-                        errorLines.Add($"{ex}");
-                        break;
-                }
-
-                // Write detailed info to error log
-                AddDownloadErrorLogLines(errorLines);
-            }
-
-            return default;
-        }
-
-        private void DisableControlsDuringDownload()
+        public void UpdateControlsDownloadBuzy()
         {
             mp3Checkbox.Invoke(new Action(() => mp3Checkbox.AutoCheck = false));
             flacLowCheckbox.Invoke(new Action(() => flacLowCheckbox.AutoCheck = false));
             flacMidCheckbox.Invoke(new Action(() => flacMidCheckbox.AutoCheck = false));
             flacHighCheckbox.Invoke(new Action(() => flacHighCheckbox.AutoCheck = false));
 
+            downloadUrl.Invoke(new Action(() => downloadUrl.Enabled = false));
+
             selectFolderButton.Invoke(new Action(() => selectFolderButton.Enabled = false));
             openSearchButton.Invoke(new Action(() => openSearchButton.Enabled = false));
-            downloadButton.Invoke(new Action(() => downloadButton.Enabled = false));
+
+            downloadButton.Invoke(new Action(() => {
+                downloadButton.Text = "Stop Download";
+                downloadButton.BackColor = BuzyButtonBackColor;
+            }));
         }
 
-        private void EnableControlsAfterDownload()
+        public void UpdateControlsDownloadDone()
         {
             mp3Checkbox.Invoke(new Action(() => mp3Checkbox.AutoCheck = true));
             flacLowCheckbox.Invoke(new Action(() => flacLowCheckbox.AutoCheck = true));
             flacMidCheckbox.Invoke(new Action(() => flacMidCheckbox.AutoCheck = true));
             flacHighCheckbox.Invoke(new Action(() => flacHighCheckbox.AutoCheck = true));
 
+            downloadUrl.Invoke(new Action(() => downloadUrl.Enabled = true));
+
             selectFolderButton.Invoke(new Action(() => selectFolderButton.Enabled = true));
             openSearchButton.Invoke(new Action(() => openSearchButton.Enabled = true));
-            downloadButton.Invoke(new Action(() => downloadButton.Enabled = true));
+
+            downloadButton.Invoke(new Action(() => {
+                downloadButton.Text = "Download";
+                downloadButton.BackColor = ReadyButtonBackColor;
+            }));
         }
 
         private void SelectFolder_Click(object sender, EventArgs e)
@@ -428,7 +415,7 @@ namespace QobuzDownloaderX
                 // If there's no selected path.
                 MessageBox.Show("No path selected!", "ERROR",
                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                EnableControlsAfterDownload();
+                UpdateControlsDownloadDone();
             }
             else
             {
@@ -445,99 +432,8 @@ namespace QobuzDownloaderX
             Process.Start(@Globals.LoggingDir);
         }
 
-        private void GetLinkTypeBG_DoWork(object sender, DoWorkEventArgs e)
-        {
-            DisableControlsDuringDownload();
-
-            // Check if there's no selected path.
-            if (string.IsNullOrEmpty(folderBrowserDialog.SelectedPath))
-            {
-                // If there is NOT a saved path.
-                output.Invoke(new Action(() => output.Text = String.Empty));
-                output.Invoke(new Action(() => output.AppendText("No path has been set! Remember to Choose a Folder!\r\n")));
-                EnableControlsAfterDownload();
-                return;
-            }
-
-            // Get download item type and ID from url
-            DownloadItem downloadItem = DownloadUrlParser.ParseDownloadUrl(this.downloadUrl.Text);
-
-            // If download item could not be parsed, abort
-            if (downloadItem.IsEmpty())
-            {
-                output.Invoke(new Action(() => output.Text = String.Empty));
-                output.Invoke(new Action(() => output.AppendText("URL not understood. Is there a typo?")));
-                EnableControlsAfterDownload();
-                return;
-            }
-
-            // Link should be valid here, start new download log
-            DownloadLogPath = Path.Combine(Globals.LoggingDir, $"Download_Log_{DateTime.Now:yyyy-MM-dd_HH.mm.ss.fff}.log");
-
-            string logLine = $"Downloading <{CultureInfo.CurrentCulture.TextInfo.ToTitleCase(downloadItem.Type)}> from {this.downloadUrl.Text}";
-            AddDownloadLogLine(new string('=', logLine.Length).PadRight(logLine.Length), true);
-            AddDownloadLogLine(logLine, true);
-            AddDownloadLogLine(new string('=', logLine.Length).PadRight(logLine.Length), true);
-            AddEmptyDownloadLogLine(true);
-
-            DowloadItemID = downloadItem.Id;
-
-            if (downloadItem.Type == "track")
-            {
-                downloadTrackBG.RunWorkerAsync();
-            }
-            else if (downloadItem.Type == "album")
-            {
-                downloadAlbumBG.RunWorkerAsync();
-            }
-            else if (downloadItem.Type == "artist")
-            {
-                downloadDiscogBG.RunWorkerAsync();
-            }
-            else if (downloadItem.Type == "label")
-            {
-                downloadLabelBG.RunWorkerAsync();
-            }
-            else if (downloadItem.Type == "user")
-            {
-                if (DowloadItemID == @"library/favorites/albums")
-                {
-                    downloadFaveAlbumsBG.RunWorkerAsync();
-                }
-                else if (DowloadItemID == @"library/favorites/artists")
-                {
-                    downloadFaveArtistsBG.RunWorkerAsync();
-                }
-                else if (DowloadItemID == @"library/favorites/tracks")
-                {
-                    DownloadFaveTracksBG.RunWorkerAsync();
-                }
-                else
-                {
-                    output.Invoke(new Action(() => output.Text = String.Empty));
-                    AddDownloadLogLine($"You entered an invalid user favorites link.{Environment.NewLine}", true, true);
-                    AddDownloadLogLine($"Favorite Tracks, Albums & Artists are supported with the following links:{Environment.NewLine}", true, true);
-                    AddDownloadLogLine($"Tracks - https://play.qobuz.com/user/library/favorites/tracks{Environment.NewLine}", true, true);
-                    AddDownloadLogLine($"Albums - https://play.qobuz.com/user/library/favorites/albums{Environment.NewLine}", true, true);
-                    AddDownloadLogLine($"Artists - https://play.qobuz.com/user/library/favorites/artists{Environment.NewLine}", true, true);
-                    EnableControlsAfterDownload();
-                }
-            }
-            else if (downloadItem.Type == "playlist")
-            {
-                downloadPlaylistBG.RunWorkerAsync();
-            }
-            else
-            {
-                // We shouldn't get here?!? I'll leave this here just in case...
-                output.Invoke(new Action(() => output.Text = String.Empty));
-                AddDownloadLogLine("URL not understood. Is there a typo?", true, true);
-                EnableControlsAfterDownload();
-            }
-        }
-
         // Add Metadata to audiofiles in ID3v2 for mp3 and Vorbis Comment for FLAC
-        private void AddMetaDataTags(string tagFilePath, string tagCoverArtFilePath)
+        public void AddMetaDataTags(string tagFilePath, string tagCoverArtFilePath)
         {
             // Set file to tag
             var tfile = TagLib.File.Create(tagFilePath);
@@ -733,7 +629,7 @@ namespace QobuzDownloaderX
             }
         }
 
-        private void CreateTrackDirectories(string basePath, string qualityPath, string albumPathSuffix = "", bool forTracklist = false)
+        public void CreateTrackDirectories(string basePath, string qualityPath, string albumPathSuffix = "", bool forTracklist = false)
         {
             if (forTracklist)
             {
@@ -766,7 +662,7 @@ namespace QobuzDownloaderX
         }
 
         // Set Track tagging info, tagbased Paths
-        private void GetTrackTaggingInfo(Track qobuzTrack)
+        public void GetTrackTaggingInfo(Track qobuzTrack)
         {
             ClearTrackTaggingInfo();
 
@@ -796,7 +692,7 @@ namespace QobuzDownloaderX
         }
 
         // Set Album tagging info, tagbased Paths
-        private void GetAlbumTaggingInfo(Album qobuzAlbum)
+        public void GetAlbumTaggingInfo(Album qobuzAlbum)
         {
             ClearAlbumTaggingInfo();
 
@@ -820,7 +716,7 @@ namespace QobuzDownloaderX
             AlbumNamePath = StringTools.GetSafeFilename(AlbumName);
         }
 
-        private void UpdateAlbumTagsUI()
+        public void UpdateAlbumTagsUI()
         {
             // Update UI
             albumArtistTextBox.Invoke(new Action(() => albumArtistTextBox.Text = AlbumArtist));
@@ -830,7 +726,7 @@ namespace QobuzDownloaderX
             totalTracksTextbox.Invoke(new Action(() => totalTracksTextbox.Text = TrackTotal.ToString()));
         }
 
-        private void ClearTrackTaggingInfo()
+        public void ClearTrackTaggingInfo()
         {
             // Clear tag strings
             PerformerName = null;
@@ -849,7 +745,7 @@ namespace QobuzDownloaderX
             TrackNamePath = null;
         }
 
-        private void ClearAlbumTaggingInfo()
+        public void ClearAlbumTaggingInfo()
         {
             // Clear tag strings
             AlbumArtist = null;
@@ -868,7 +764,7 @@ namespace QobuzDownloaderX
             AlbumNamePath = null;
         }
 
-        private void GetAlbumCoverArtUrls(Album qobuzAlbum)
+        public void GetAlbumCoverArtUrls(Album qobuzAlbum)
         {
             // Grab cover art link
             FrontCoverImgUrl = qobuzAlbum.Image.Large;
@@ -882,7 +778,7 @@ namespace QobuzDownloaderX
             albumArtPicBox.Invoke(new Action(() => albumArtPicBox.ImageLocation = FrontCoverImgBoxUrl));
         }
 
-        private bool IsStreamable(Track qobuzTrack, bool inPlaylist = false)
+        public bool IsStreamable(Track qobuzTrack, bool inPlaylist = false)
         {
             bool tryToStream = true;
 
@@ -906,303 +802,7 @@ namespace QobuzDownloaderX
             return tryToStream;
         }
 
-        private async Task DownloadFileAsync(HttpClient httpClient, string downloadUrl, string filePath)
-        {
-            // See https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=netframework-4.8
-            // "HttpClient.GetStreamAsync(uri)" should internally use "HttpCompletionOption.ResponseHeadersRead", 
-            // which seems apropriate to download potentially large files.
-            // If this should cause problems, alternative is using "HttpCompletionOption.ResponseContentRead" which might use more memory.
-            // See https://stackoverflow.com/questions/69849953/net-httpclient-getstreamasync-behaves-differently-to-getasync
-            using (Stream streamToReadFrom = await httpClient.GetStreamAsync(downloadUrl))
-            {
-                using (FileStream streamToWriteTo = System.IO.File.Create(filePath))
-                {
-                    await streamToReadFrom.CopyToAsync(streamToWriteTo);
-                }
-            }
-        }
-
-        private bool DownloadTrack(Track qobuzTrack, string basePath, bool isPartOfTracklist, bool isPartOfAlbum, bool removeTagArtFileAfterDownload = false, string albumPathSuffix = "")
-        {
-            string trackIdString = qobuzTrack.Id.GetValueOrDefault().ToString();
-
-            GetTrackTaggingInfo(qobuzTrack);
-
-            // If track is downloaded as part of Album, Album related processings should already be done.
-            // Only handle Album related processing when downloading a single track.
-            if (!isPartOfAlbum) PrepareAlbumDownload(qobuzTrack.Album);
-
-            // Check if available for streaming.
-            if (!IsStreamable(qobuzTrack)) return false;
-
-            // If AlbumArtist, PerformerName or AlbumName goes over set MaxLength number of characters, limit them to the MaxLength
-            AlbumArtistPath = StringTools.TrimToMaxLength(AlbumArtistPath, MaxLength);
-            PerformerNamePath = StringTools.TrimToMaxLength(PerformerNamePath, MaxLength);
-            AlbumNamePath = StringTools.TrimToMaxLength(AlbumNamePath, MaxLength);
-
-            // Create directories if they don't exist yet
-            // Add Album ID to Album Path if requested (to avoid conflicts for similar albums with trimmed long names)
-            CreateTrackDirectories(basePath, QualityPath, albumPathSuffix, isPartOfTracklist);
-
-            // Set trackPath to the created directories
-            string trackPath = Path4Full;
-
-            // Create padded track number string with minimum of 2 integer positions based on number of total tracks
-            string paddedTrackNumber = TrackNumber.ToString().PadLeft(Math.Max(2, (int)Math.Floor(Math.Log10(TrackTotal) + 1)), '0');
-
-            // Create full track filename
-            if (isPartOfTracklist)
-            {
-                FinalTrackNamePath = string.Concat(PerformerNamePath, FileNameTemplateString, TrackNamePath).TrimEnd();
-            }
-            else
-            {
-                FinalTrackNamePath = string.Concat(paddedTrackNumber, FileNameTemplateString, TrackNamePath).TrimEnd();
-            }
-
-            // Shorten full filename if over MaxLength to avoid errors with file names being too long
-            FinalTrackNamePath = StringTools.TrimToMaxLength(FinalTrackNamePath, MaxLength);
-
-            // Check if the file already exists
-            string checkFile = Path.Combine(trackPath, FinalTrackNamePath + Globals.AudioFileType);
-
-            if (System.IO.File.Exists(checkFile))
-            {
-                string message = $"File for \"{FinalTrackNamePath}\" already exists. Skipping.\r\n";
-                AddDownloadLogLine(message, true, true);
-                return false;
-            }
-
-            // Notify UI of starting track download.
-            AddDownloadLogLine($"Downloading - {FinalTrackNamePath} ...... ", true, true);
-
-            // Get track streaming URL, abort if failed.
-            string streamUrl = ExecuteApiCall(apiService => apiService.GetTrackFileUrl(trackIdString, Globals.FormatIdString))?.Url;
-
-            if (string.IsNullOrEmpty(streamUrl))
-            {
-                // Can happen with free accounts trying to download non-previewable tracks (or if API call failed). 
-                AddDownloadLogLine($"Couldn't get streaming URL for Track \"{FinalTrackNamePath}\". Skipping.\r\n", true, true);
-                return false;
-            }
-
-            try
-            {
-                // Create file path strings
-                string filePath = Path.Combine(trackPath, FinalTrackNamePath + Globals.AudioFileType);
-                string coverArtFilePath = Path.Combine(Path3Full, "Cover.jpg");
-                string coverArtTagFilePath = Path.Combine(Path3Full, ArtSize + ".jpg");
-
-                using (HttpClient httpClient = new HttpClient())
-                {
-                    httpClient.DefaultRequestHeaders.Add("User-Agent", Globals.USER_AGENT);
-
-                    // Save streamed file from link
-                    // GetAwaiter().GetResult(); is best of bad options, entire sync / async should be refactored.
-                    DownloadFileAsync(httpClient, streamUrl, filePath).GetAwaiter().GetResult();
-
-                    // Download selected cover art size for tagging files (if not exists)
-                    if (!System.IO.File.Exists(coverArtTagFilePath))
-                    {
-                        try
-                        {
-                            DownloadFileAsync(httpClient, FrontCoverImgTagUrl, coverArtTagFilePath).GetAwaiter().GetResult();
-                        }
-                        catch (Exception ex)
-                        {
-                            // Qobuz servers throw a 404 as if the image doesn't exist.
-                            AddDownloadErrorLogLines(new string[] { "Error downloading image file for tagging.", ex.Message, Environment.NewLine });
-                        }
-                    }
-
-                    // Download max quality Cover Art to "Cover.jpg" file in chosen path (if not exists & not part of playlist).
-                    if (!isPartOfTracklist && !System.IO.File.Exists(coverArtFilePath))
-                    {
-                        try
-                        {
-                            DownloadFileAsync(httpClient, FrontCoverImgUrl, coverArtFilePath).GetAwaiter().GetResult();
-                        }
-                        catch (Exception ex)
-                        {
-                            // Qobuz servers throw a 404 as if the image doesn't exist.
-                            AddDownloadErrorLogLines(new string[] { "Error downloading full size cover image file.", ex.Message, Environment.NewLine });
-                        }
-                    }
-                }
-
-                // Tag metadata to downloaded track.
-                AddMetaDataTags(filePath, coverArtTagFilePath);
-
-                // Remove temp tagging art file if requested and exists.
-                if (removeTagArtFileAfterDownload && System.IO.File.Exists(coverArtTagFilePath))
-                {
-                    System.IO.File.Delete(coverArtTagFilePath);
-                }
-
-                AddDownloadLogLine("Track Download Done!\r\n", true, true);
-                System.Threading.Thread.Sleep(100);
-            }
-            catch (AggregateException ae)
-            {
-                // When a Task fails, an AggregateException is thrown. Could be a HttpClient timeout or network error.
-                AddDownloadLogErrorLine($"Track Download canceled, probably due to network error or request timeout. Details saved to error log.{Environment.NewLine}", true, true);
-
-                AddDownloadErrorLogLine("Track Download canceled, probably due to network error or request timeout.");
-                AddDownloadErrorLogLine(ae.ToString());
-                AddDownloadErrorLogLine(Environment.NewLine);
-                return false;
-            }
-            catch (Exception downloadEx)
-            {
-                // If there is an unknown issue trying to, or during the download, show and log error info.
-                AddDownloadLogErrorLine($"Unknown error during Track Download. Details saved to error log.{Environment.NewLine}", true, true);
-
-                AddDownloadErrorLogLine("Unknown error during Track Download.");
-                AddDownloadErrorLogLine(downloadEx.ToString());
-                AddDownloadErrorLogLine(Environment.NewLine);
-                return false;
-            }
-
-            return true;
-        }
-
-        private bool DownloadAlbum(Album qobuzAlbum, string basePath, bool loadTracks = false, string albumPathSuffix = "")
-        {
-            bool noErrorsOccured = true;
-
-            if (loadTracks)
-            {
-                // Get Album model object with tracks for when tracks aren't already loaded in Album model
-                qobuzAlbum = ExecuteApiCall(apiService => apiService.GetAlbum(qobuzAlbum.Id, true));
-            }
-
-            // If API call failed or empty Album was provided, abort
-            if (qobuzAlbum == null || string.IsNullOrEmpty(qobuzAlbum.Id)) { EnableControlsAfterDownload(); return false; }
-
-            PrepareAlbumDownload(qobuzAlbum);
-
-            // Download all tracks of the Album, clean albumArt tag file after last track
-            int trackCount = qobuzAlbum.TracksCount ?? 0;
-
-            for (int i = 0; i < trackCount; i++)
-            {
-                Track qobuzTrack = qobuzAlbum.Tracks.Items[i];
-
-                // Nested Album objects in Tracks are not always fully populated, inject current qobuzAlbum in Track to be downloaded
-                qobuzTrack.Album = qobuzAlbum;
-
-                if (!DownloadTrack(qobuzTrack, basePath, false, true, i == trackCount - 1, albumPathSuffix)) noErrorsOccured = false;
-            }
-
-            // Look for digital booklet(s) in "Goodies"
-            // Don't fail on failed "Goodies" downloads, just log...
-            if (!DownloadBooklets(qobuzAlbum, Path3Full)) noErrorsOccured = false;
-
-            return noErrorsOccured;
-        }
-
-        private bool DownloadBooklets(Album qobuzAlbum, string basePath)
-        {
-            bool noErrorsOccured = true;
-
-            List<Goody> booklets = qobuzAlbum.Goodies?.Where(g => g.FileFormatId == (int)GoodiesFileType.BOOKLET).ToList();
-
-            if (booklets?.Any() == false)
-            {
-                // No booklets found, just return
-                return noErrorsOccured;
-            }
-
-            AddDownloadLogLine($"Goodies found, downloading...{Environment.NewLine}", true, true);
-
-            using (HttpClient httpClient = new HttpClient())
-            {
-                int counter = 1;
-
-                foreach (Goody booklet in booklets)
-                {
-                    string bookletFileName = counter == 1 ? "Digital Booklet.pdf" : $"Digital Booklet {counter}.pdf";
-                    string bookletFilePath = Path.Combine(basePath, bookletFileName);
-
-                    // Download booklet if file doesn't exist yet
-                    if (System.IO.File.Exists(bookletFilePath))
-                    {
-                        AddDownloadLogLine($"Booklet file for \"{bookletFileName}\" already exists. Skipping.{Environment.NewLine}", true, true);
-                    } else
-                    {
-                        // When a booklet download fails, mark error occured but continue downloading others if they exist 
-                        if (!DownloadBooklet(booklet, httpClient, bookletFileName, bookletFilePath)) noErrorsOccured = false;
-                    }
-
-                    counter++;
-                }
-            }
-
-            return noErrorsOccured;
-        }
-
-        private bool DownloadBooklet(Goody booklet, HttpClient httpClient, string fileName, string filePath)
-        {
-            bool noErrorsOccured = true;
-
-            try
-            {
-                // Download booklet
-                DownloadFileAsync(httpClient, booklet.Url, filePath).GetAwaiter().GetResult();
-
-                AddDownloadLogLine($"Booklet \"{fileName}\" download complete!{Environment.NewLine}", true, true);
-            }
-            catch (AggregateException ae)
-            {
-                // When a Task fails, an AggregateException is thrown. Could be a HttpClient timeout or network error.
-                AddDownloadLogErrorLine($"Goodies Download canceled, probably due to network error or request timeout. Details saved to error log.{Environment.NewLine}", true, true);
-
-                AddDownloadErrorLogLine("Goodies Download canceled, probably due to network error or request timeout.");
-                AddDownloadErrorLogLine(ae.ToString());
-                AddDownloadErrorLogLine(Environment.NewLine);
-                noErrorsOccured = false;
-            }
-            catch (Exception downloadEx)
-            {
-                // If there is an unknown issue trying to, or during the download, show and log error info.
-                AddDownloadLogErrorLine($"Unknown error during Goodies Download. Details saved to error log.{Environment.NewLine}", true, true);
-
-                AddDownloadErrorLogLine("Unknown error during Goodies Download.");
-                AddDownloadErrorLogLine(downloadEx.ToString());
-                AddDownloadErrorLogLine(Environment.NewLine);
-                noErrorsOccured = false;
-            }
-
-            return noErrorsOccured;
-        }
-
-        private bool DownloadAlbums(string basePath, List<Album> albums, bool isEndOfDownloadJob)
-        {
-            bool noAlbumErrorsOccured = true;
-
-            foreach (Album qobuzAlbum in albums)
-            {
-                // Empty output, then say Starting Downloads.
-                output.Invoke(new Action(() => output.Text = String.Empty));
-                AddEmptyDownloadLogLine(true, false);
-                AddDownloadLogLine($"Starting Downloads for album \"{qobuzAlbum.Title}\" with ID: <{qobuzAlbum.Id}>...", true, true);
-                AddEmptyDownloadLogLine(true, true);
-
-                bool albumDownloadOK = DownloadAlbum(qobuzAlbum, basePath, true, $" [{qobuzAlbum.Id}]");
-
-                // If album download failed, mark error occured and continue
-                if (!albumDownloadOK) noAlbumErrorsOccured = false;
-            }
-
-            if (isEndOfDownloadJob)
-            {
-                FinishDownloadJob(noAlbumErrorsOccured);
-            }
-
-            return noAlbumErrorsOccured;
-        }
-
-        private void PrepareAlbumDownload(Album qobuzAlbum)
+        public void PrepareAlbumDownload(Album qobuzAlbum)
         {
             // Grab sample rate and bit depth for album track is from.
             (string quality, string qualityPathLocal) = QualityStringMappings.GetQualityStrings(Globals.FormatIdString, qobuzAlbum);
@@ -1214,337 +814,6 @@ namespace QobuzDownloaderX
             GetAlbumCoverArtUrls(qobuzAlbum);
             GetAlbumTaggingInfo(qobuzAlbum);
             UpdateAlbumTagsUI();
-        }
-
-        // For downloading "track" links
-        private void DownloadTrackBG_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // Empty screen output, then say Grabbing info.
-            output.Invoke(new Action(() => output.Text = String.Empty));
-            AddDownloadLogLine($"Grabbing Track info...{Environment.NewLine}", true, true);
-
-            // Set "basePath" as the selected path.
-            string downloadBasePath = folderBrowserDialog.SelectedPath;
-
-            try
-            {
-                Track qobuzTrack = ExecuteApiCall(apiService => apiService.GetTrack(DowloadItemID, true));
-
-                // If API call failed, abort
-                if (qobuzTrack == null) { EnableControlsAfterDownload(); return; }
-
-                AddDownloadLogLine($"Track \"{qobuzTrack.Title}\" found. Starting Download...", true, true);
-                AddEmptyDownloadLogLine(true, true);
-
-                bool fileDownloaded = DownloadTrack(qobuzTrack, downloadBasePath, true, false, true);
-
-                // If download failed, abort
-                if (!fileDownloaded) { EnableControlsAfterDownload(); return; }
-
-                // Say that downloading is completed.
-                AddEmptyDownloadLogLine(true, true);
-                AddDownloadLogLine("Download job completed! All downloaded files will be located in your chosen path.", true, true);
-                EnableControlsAfterDownload();
-            }
-            catch (Exception downloadEx)
-            {
-                LogDownloadTaskException("Track", downloadEx);
-            }
-        }
-
-        // For downloading "album" links
-        private void DownloadAlbumBG_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // Empty screen output, then say Grabbing info.
-            output.Invoke(new Action(() => output.Text = String.Empty));
-            AddDownloadLogLine($"Grabbing Album info...{Environment.NewLine}", true, true);
-
-            // Set "basePath" as the selected path.
-            String downloadBasePath = folderBrowserDialog.SelectedPath;
-
-            try
-            {
-                // Get Album model object
-                Album qobuzAlbum = ExecuteApiCall(apiService => apiService.GetAlbum(DowloadItemID, true));
-
-                // If API call failed, abort
-                if (qobuzAlbum == null) { EnableControlsAfterDownload(); return; }
-
-                AddDownloadLogLine($"Album \"{qobuzAlbum.Title}\" found. Starting Downloads...", true, true);
-                AddEmptyDownloadLogLine(true, true);
-
-                FinishDownloadJob(DownloadAlbum(qobuzAlbum, downloadBasePath));
-            }
-            catch (Exception downloadEx)
-            {
-                LogDownloadTaskException("Album", downloadEx);
-            }
-        }
-
-        // For downloading "artist" links
-        private void DownloadDiscogBG_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // Set "basePath" as the selected path.
-            String artistBasePath = folderBrowserDialog.SelectedPath;
-
-            // Empty output, then say Grabbing IDs.
-            output.Invoke(new Action(() => output.Text = String.Empty));
-            AddDownloadLogLine("Grabbing Artist info...", true, true);
-
-            try
-            {
-                // Get Artist model object
-                Artist qobuzArtist = ExecuteApiCall(apiService => apiService.GetArtist(DowloadItemID, true, "albums", "release_desc", 999999));
-
-                // If API call failed, abort
-                if (qobuzArtist == null) { EnableControlsAfterDownload(); return; }
-
-                AddDownloadLogLine($"Starting Downloads for artist \"{qobuzArtist.Name}\" with ID: <{qobuzArtist.Id}>...", true, true);
-
-                DownloadAlbums(artistBasePath, qobuzArtist.Albums.Items, true);
-            }
-            catch (Exception downloadEx)
-            {
-                output.Invoke(new Action(() => output.Text = String.Empty));
-                LogDownloadTaskException("Artist", downloadEx);
-            }
-        }
-
-        // For downloading "label" links
-        private void DownloadLabelBG_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // Set "basePath" as the selected path + "/- Labels".
-            string labelBasePath = Path.Combine(folderBrowserDialog.SelectedPath, "- Labels");
-
-            // Empty output, then say Grabbing IDs.
-            output.Invoke(new Action(() => output.Text = String.Empty));
-            AddDownloadLogLine("Grabbing Label info...", true, true);
-
-            try
-            {
-                // Get Label model object
-                QobuzApiSharp.Models.Content.Label qobuzLabel = ExecuteApiCall(apiService => apiService.GetLabel(DowloadItemID, true, "albums", 999999));
-
-                // If API call failed, abort
-                if (qobuzLabel == null) { EnableControlsAfterDownload(); return; }
-
-                AddDownloadLogLine($"Starting Downloads for label \"{qobuzLabel.Name}\" with ID: <{qobuzLabel.Id}>...", true, true);
-
-                // Add Label name to basePath
-                string safeLabelName = StringTools.GetSafeFilename(StringTools.DecodeEncodedNonAsciiCharacters(qobuzLabel.Name));
-                labelBasePath = Path.Combine(labelBasePath, safeLabelName);
-
-                DownloadAlbums(labelBasePath, qobuzLabel.Albums.Items, true);
-            }
-            catch (Exception downloadEx)
-            {
-                output.Invoke(new Action(() => output.Text = String.Empty));
-                LogDownloadTaskException("Label", downloadEx);
-            }
-        }
-
-        // For downloading "favorites"
-
-        // Favorite Albums
-        private void DownloadFaveAlbumsBG_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // Set "basePath" as the selected path + "/- Favorites".
-            string favoritesBasePath = Path.Combine(folderBrowserDialog.SelectedPath, "- Favorites");
-
-            // Empty output, then say Grabbing IDs.
-            output.Invoke(new Action(() => output.Text = String.Empty));
-            AddDownloadLogLine("Grabbing Favorite Album IDs...", true, true);
-
-            try
-            {
-                // Get UserFavorites model object
-                UserFavorites qobuzUserFavorites = ExecuteApiCall(apiService => apiService.GetUserFavorites(DowloadItemID, "albums", 999999));
-
-                // If API call failed, abort
-                if (qobuzUserFavorites == null) { EnableControlsAfterDownload(); return; }
-
-                DownloadAlbums(favoritesBasePath, qobuzUserFavorites.Albums.Items, true);
-            }
-            catch (Exception downloadEx)
-            {
-                output.Invoke(new Action(() => output.Text = String.Empty));
-                LogDownloadTaskException("Favorite Albums", downloadEx);
-            }
-        }
-
-        // Favorite Artists
-        private void DownloadFaveArtistsBG_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // Set "basePath" as the selected path + "/- Favorites".
-            string favoritesBasePath = Path.Combine(folderBrowserDialog.SelectedPath, "- Favorites");
-
-            // Empty output, then say Grabbing IDs.
-            output.Invoke(new Action(() => output.Text = String.Empty));
-            AddDownloadLogLine("Grabbing Favorite Artists...", true, true);
-
-            try
-            {
-                bool noArtistErrorsOccured = true;
-
-                // Get UserFavorites model object
-                UserFavorites qobuzUserFavorites = ExecuteApiCall(apiService => apiService.GetUserFavorites(DowloadItemID, "artists", 999999));
-
-                // If API call failed, abort
-                if (qobuzUserFavorites == null) { EnableControlsAfterDownload(); return; }
-
-                // If user has no favorite artists, log and abort
-                if (qobuzUserFavorites.Artists?.Total == 0)
-                {
-                    AddEmptyDownloadLogLine(true, true);
-                    AddDownloadLogLine("No favorite artists found, nothing to download.", true, true);
-                    EnableControlsAfterDownload(); return;
-                }
-
-                foreach (Artist favoriteArtist in qobuzUserFavorites.Artists.Items)
-                {
-                    // Get Artist model object
-                    Artist qobuzArtist = ExecuteApiCall(apiService => apiService.GetArtist(favoriteArtist.Id.ToString(), true, "albums", "release_desc", 999999));
-
-                    // If API call failed, mark artist error occured and continue with next artist
-                    if (qobuzArtist == null) { noArtistErrorsOccured = false;  continue; }
-
-                    AddEmptyDownloadLogLine(true, true);
-                    AddDownloadLogLine($"Starting Downloads for artist \"{qobuzArtist.Name}\" with ID: <{qobuzArtist.Id}>...", true, true);
-
-                    // If albums download failed, mark artist error occured and continue with next artist
-                    if (!DownloadAlbums(favoritesBasePath, qobuzArtist.Albums.Items, false)) noArtistErrorsOccured = false;
-                }
-
-                FinishDownloadJob(noArtistErrorsOccured);
-            }
-            catch (Exception downloadEx)
-            {
-                output.Invoke(new Action(() => output.Text = String.Empty));
-                LogDownloadTaskException("Favorite Albums", downloadEx);
-            }
-        }
-
-        private void DownloadFaveTracksBG_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // Set "basePath" as the selected path + "/- Favorites".
-            string favoriteTracksBasePath = Path.Combine(folderBrowserDialog.SelectedPath, "- Favorites");
-
-            // Empty screen output, then say Grabbing info.
-            output.Invoke(new Action(() => output.Text = String.Empty));
-            AddDownloadLogLine("Grabbing Favorite Tracks...", true, true);
-            AddEmptyDownloadLogLine(true, true);
-
-            try
-            {
-                bool noTrackErrorsOccured = true;
-
-                // Get UserFavoritesIds model object, getting Id's allows more results.
-                UserFavoritesIds qobuzUserFavoritesIds = ExecuteApiCall(apiService => apiService.GetUserFavoriteIds(DowloadItemID, "tracks", 999999));
-
-                // If API call failed, abort
-                if (qobuzUserFavoritesIds == null) { EnableControlsAfterDownload(); return; }
-
-                // If user has no favorite tracks, log and abort
-                if (qobuzUserFavoritesIds.Tracks?.Count == 0)
-                {
-                    AddDownloadLogLine("No favorite tracks found, nothing to download.", true, true);
-                    EnableControlsAfterDownload(); return;
-                }
-
-                AddDownloadLogLine("Favorite tracks found. Starting Downloads...", true, true);
-                AddEmptyDownloadLogLine(true, true);
-
-                // Download favorite tracks
-                foreach (int favoriteTrackId in qobuzUserFavoritesIds.Tracks)
-                {
-                    Track qobuzTrack = ExecuteApiCall(apiService => apiService.GetTrack(favoriteTrackId.ToString(), true));
-
-                    // If API call failed, log and continue with next track
-                    if (qobuzTrack == null) { noTrackErrorsOccured = false; continue; }
-
-                    if (!DownloadTrack(qobuzTrack, favoriteTracksBasePath, true, false, true)) noTrackErrorsOccured = false;
-                }
-
-                FinishDownloadJob(noTrackErrorsOccured);
-            }
-            catch (Exception downloadEx)
-            {
-                output.Invoke(new Action(() => output.Text = String.Empty));
-                LogDownloadTaskException("Playlist", downloadEx);
-            }
-        }
-
-        // For downloading "playlist" links
-        private void DownloadPlaylistBG_DoWork(object sender, DoWorkEventArgs e)
-        {
-            // Set "basePath" as the selected path.
-            String playlistBasePath = folderBrowserDialog.SelectedPath;
-
-            // Empty screen output, then say Grabbing info.
-            output.Invoke(new Action(() => output.Text = String.Empty));
-            AddDownloadLogLine("Grabbing Playlist info...", true, true);
-            AddEmptyDownloadLogLine(true, true);
-
-            try
-            {
-                // Get Playlist model object
-                Playlist qobuzPlaylist = ExecuteApiCall(apiService => apiService.GetPlaylist(DowloadItemID, true, "tracks", 10000));
-
-                // If API call failed, abort
-                if (qobuzPlaylist == null) { EnableControlsAfterDownload(); return; }
-
-                AddDownloadLogLine($"Playlist \"{qobuzPlaylist.Name}\" found. Starting Downloads...", true, true);
-                AddEmptyDownloadLogLine(true, true);
-
-                // Create Playlist root directory.
-                string playlistNamePath = StringTools.GetSafeFilename(StringTools.DecodeEncodedNonAsciiCharacters(qobuzPlaylist.Name));
-                playlistNamePath = StringTools.TrimToMaxLength(playlistNamePath, MaxLength);
-                playlistBasePath = Path.Combine(playlistBasePath, "- Playlists", playlistNamePath);
-                System.IO.Directory.CreateDirectory(playlistBasePath);
-
-                // Download Playlist cover art to "Playlist.jpg" in root directory (if not exists)
-                string coverArtFilePath = Path.Combine(playlistBasePath, "Playlist.jpg");
-
-                if (!System.IO.File.Exists(coverArtFilePath))
-                {
-                    try
-                    {
-                        using (WebClient imgClient = new WebClient())
-                        {
-                            imgClient.DownloadFile(new Uri(qobuzPlaylist.ImageRectangle.FirstOrDefault<string>()), coverArtFilePath);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        // Qobuz servers throw a 404 as if the image doesn't exist.
-                        AddDownloadErrorLogLines(new string[] { "Error downloading full size playlist cover image file.", ex.Message, "\r\n" });
-                    }
-                }
-
-                bool noTrackErrorsOccured = true;
-
-                // Download Playlist tracks
-                foreach (Track playlistTrack in qobuzPlaylist.Tracks.Items)
-                {
-                    if (!IsStreamable(playlistTrack, true)) continue;
-
-                    // Fetch full Track info
-                    Track qobuzTrack = ExecuteApiCall(apiService => apiService.GetTrack(playlistTrack.Id.GetValueOrDefault().ToString(), true));
-
-                    // If API call failed, log and continue with next track
-                    if (qobuzTrack == null) { noTrackErrorsOccured = false; continue; }
-
-                    if (!DownloadTrack(qobuzTrack, playlistBasePath, true, false, true)) noTrackErrorsOccured = false;
-                }
-
-                FinishDownloadJob(noTrackErrorsOccured);
-
-            }
-            catch (Exception downloadEx)
-            {
-                output.Invoke(new Action(() => output.Text = String.Empty)); 
-                LogDownloadTaskException("Playlist", downloadEx);
-            }
         }
 
         private void tagsLabel_Click(object sender, EventArgs e)
@@ -1981,7 +1250,7 @@ namespace QobuzDownloaderX
 
         private void enableBtnsButton_Click(object sender, EventArgs e)
         {
-            EnableControlsAfterDownload();
+            UpdateControlsDownloadDone();
         }
     }
 }
