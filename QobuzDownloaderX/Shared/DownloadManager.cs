@@ -13,6 +13,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace QobuzDownloaderX.Shared
 {
@@ -83,18 +84,37 @@ namespace QobuzDownloaderX.Shared
 
         public async Task DownloadFileAsync(HttpClient httpClient, string downloadUrl, string filePath)
         {
-            // See https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=netframework-4.8
-            // "HttpClient.GetStreamAsync(uri)" should internally use "HttpCompletionOption.ResponseHeadersRead", 
-            // which seems apropriate to download potentially large files.
-            // If this should cause problems, alternative is using "HttpCompletionOption.ResponseContentRead" which might use more memory.
-            // See https://stackoverflow.com/questions/69849953/net-httpclient-getstreamasync-behaves-differently-to-getasync
             using (Stream streamToReadFrom = await httpClient.GetStreamAsync(downloadUrl))
             {
                 using (FileStream streamToWriteTo = System.IO.File.Create(filePath))
                 {
-                    await streamToReadFrom.CopyToAsync(streamToWriteTo);
+                    long totalBytesRead = 0;
+                    DateTime startTime = DateTime.Now;
+                    DateTime lastUpdateTime = DateTime.Now;
+                    byte[] buffer = new byte[8192]; // Use an 8KB buffer size for copying data
+
+                    int bytesRead;
+                    while ((bytesRead = await streamToReadFrom.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                    {
+                        // Write only the minimum of buffer.Length and bytesRead bytes to the file
+                        await streamToWriteTo.WriteAsync(buffer, 0, Math.Min(buffer.Length, bytesRead));
+
+                        // Calculate download speed
+                        totalBytesRead += bytesRead;
+                        double speed = (totalBytesRead / 1024d / 1024d) / DateTime.Now.Subtract(startTime).TotalSeconds;
+
+                        // Update the downloadSpeedLabel with the current speed max. every 100 ms, with 3 decimal places
+                        if (DateTime.Now.Subtract(lastUpdateTime).TotalMilliseconds >= 100)
+                        {
+                            Globals.QbdlxForm.downloadSpeedLabel.Invoke(new Action(() => Globals.QbdlxForm.downloadSpeedLabel.Text = $"Downloading... {speed:F3} MB/s"));
+                            lastUpdateTime = DateTime.Now;
+                        }
+                    }
                 }
             }
+
+            // After download completes successfully
+            Globals.QbdlxForm.downloadSpeedLabel.Invoke(new Action(() => Globals.QbdlxForm.downloadSpeedLabel.Text = "Idle"));
         }
 
         private async Task<bool> DownloadTrackAsync(CancellationToken cancellationToken, Track qobuzTrack, string basePath, bool isPartOfTracklist, bool isPartOfAlbum, bool removeTagArtFileAfterDownload = false, string albumPathSuffix = "")

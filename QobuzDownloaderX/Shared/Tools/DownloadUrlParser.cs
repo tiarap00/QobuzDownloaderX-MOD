@@ -10,7 +10,7 @@ namespace QobuzDownloaderX.Shared
         // Pre-compiled supported download URL patterns
         private static readonly Regex[] DownloadUrlRegExes = {
             new Regex("https:\\/\\/(?:.*?).qobuz.com\\/(?<Type>.*?)\\/(?<id>.*?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled),
-            new Regex("https:\\/\\/(?:.*?).qobuz.com\\/(?:.*?)\\/(?<Type>.*?)\\/(?:.*?)\\/(?<id>.*?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled)
+            new Regex("https:\\/\\/(?:.*?).qobuz.com\\/(?:.*?)\\/(?<Type>.*?)\\/(?<Slug>.*?)\\/(?<id>.*?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled)
         };
 
         // Supported types of links

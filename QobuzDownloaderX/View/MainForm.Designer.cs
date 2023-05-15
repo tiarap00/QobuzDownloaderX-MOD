@@ -111,6 +111,7 @@
             this.label7 = new System.Windows.Forms.Label();
             this.testURLBox = new System.Windows.Forms.TextBox();
             this.openLogFolderButton = new System.Windows.Forms.Button();
+            this.downloadSpeedLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.albumArtPicBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.logoBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.profilePictureBox)).BeginInit();
@@ -1118,12 +1119,23 @@
             this.openLogFolderButton.UseVisualStyleBackColor = false;
             this.openLogFolderButton.Click += new System.EventHandler(this.OpenLogFolderButton_Click);
             // 
+            // downloadSpeedLabel
+            // 
+            this.downloadSpeedLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.downloadSpeedLabel.Location = new System.Drawing.Point(655, 506);
+            this.downloadSpeedLabel.Name = "downloadSpeedLabel";
+            this.downloadSpeedLabel.Size = new System.Drawing.Size(250, 13);
+            this.downloadSpeedLabel.TabIndex = 109;
+            this.downloadSpeedLabel.Text = "Idle";
+            this.downloadSpeedLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
             // QobuzDownloaderX
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.ClientSize = new System.Drawing.Size(938, 632);
+            this.Controls.Add(this.downloadSpeedLabel);
             this.Controls.Add(this.openLogFolderButton);
             this.Controls.Add(this.filenameTempSelect);
             this.Controls.Add(this.label7);
@@ -1306,6 +1318,7 @@
         public System.Windows.Forms.TextBox downloadUrl;
         private System.Windows.Forms.TextBox testURLBox;
         private System.Windows.Forms.Button openLogFolderButton;
+        public System.Windows.Forms.Label downloadSpeedLabel;
     }
 }
 
