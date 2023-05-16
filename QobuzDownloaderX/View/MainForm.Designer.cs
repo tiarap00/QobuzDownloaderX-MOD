@@ -427,7 +427,7 @@
             this.albumArtistCheckbox.TabIndex = 62;
             this.albumArtistCheckbox.Text = "Album Artist";
             this.albumArtistCheckbox.UseVisualStyleBackColor = true;
-            this.albumArtistCheckbox.CheckedChanged += new System.EventHandler(this.albumArtistCheckbox_CheckedChanged);
+            this.albumArtistCheckbox.CheckedChanged += new System.EventHandler(this.AlbumArtistCheckbox_CheckedChanged);
             // 
             // artistCheckbox
             // 
@@ -442,7 +442,7 @@
             this.artistCheckbox.TabIndex = 63;
             this.artistCheckbox.Text = "Track Artist";
             this.artistCheckbox.UseVisualStyleBackColor = true;
-            this.artistCheckbox.CheckedChanged += new System.EventHandler(this.artistCheckbox_CheckedChanged);
+            this.artistCheckbox.CheckedChanged += new System.EventHandler(this.ArtistCheckbox_CheckedChanged);
             // 
             // trackTitleCheckbox
             // 
@@ -457,7 +457,7 @@
             this.trackTitleCheckbox.TabIndex = 64;
             this.trackTitleCheckbox.Text = "Track Title";
             this.trackTitleCheckbox.UseVisualStyleBackColor = true;
-            this.trackTitleCheckbox.CheckedChanged += new System.EventHandler(this.trackTitleCheckbox_CheckedChanged);
+            this.trackTitleCheckbox.CheckedChanged += new System.EventHandler(this.TrackTitleCheckbox_CheckedChanged);
             // 
             // trackNumberCheckbox
             // 
@@ -472,7 +472,7 @@
             this.trackNumberCheckbox.TabIndex = 65;
             this.trackNumberCheckbox.Text = "Track Number";
             this.trackNumberCheckbox.UseVisualStyleBackColor = true;
-            this.trackNumberCheckbox.CheckedChanged += new System.EventHandler(this.trackNumberCheckbox_CheckedChanged);
+            this.trackNumberCheckbox.CheckedChanged += new System.EventHandler(this.TrackNumberCheckbox_CheckedChanged);
             // 
             // trackTotalCheckbox
             // 
@@ -487,7 +487,7 @@
             this.trackTotalCheckbox.TabIndex = 66;
             this.trackTotalCheckbox.Text = "Total Tracks";
             this.trackTotalCheckbox.UseVisualStyleBackColor = true;
-            this.trackTotalCheckbox.CheckedChanged += new System.EventHandler(this.trackTotalCheckbox_CheckedChanged);
+            this.trackTotalCheckbox.CheckedChanged += new System.EventHandler(this.TrackTotalCheckbox_CheckedChanged);
             // 
             // discNumberCheckbox
             // 
@@ -502,7 +502,7 @@
             this.discNumberCheckbox.TabIndex = 67;
             this.discNumberCheckbox.Text = "Disc Number";
             this.discNumberCheckbox.UseVisualStyleBackColor = true;
-            this.discNumberCheckbox.CheckedChanged += new System.EventHandler(this.discNumberCheckbox_CheckedChanged);
+            this.discNumberCheckbox.CheckedChanged += new System.EventHandler(this.DiscNumberCheckbox_CheckedChanged);
             // 
             // discTotalCheckbox
             // 
@@ -517,7 +517,7 @@
             this.discTotalCheckbox.TabIndex = 68;
             this.discTotalCheckbox.Text = "Total Discs";
             this.discTotalCheckbox.UseVisualStyleBackColor = true;
-            this.discTotalCheckbox.CheckedChanged += new System.EventHandler(this.discTotalCheckbox_CheckedChanged);
+            this.discTotalCheckbox.CheckedChanged += new System.EventHandler(this.DiscTotalCheckbox_CheckedChanged);
             // 
             // albumCheckbox
             // 
@@ -532,7 +532,7 @@
             this.albumCheckbox.TabIndex = 69;
             this.albumCheckbox.Text = "Album Title";
             this.albumCheckbox.UseVisualStyleBackColor = true;
-            this.albumCheckbox.CheckedChanged += new System.EventHandler(this.albumCheckbox_CheckedChanged);
+            this.albumCheckbox.CheckedChanged += new System.EventHandler(this.AlbumCheckbox_CheckedChanged);
             // 
             // explicitCheckbox
             // 
@@ -547,7 +547,7 @@
             this.explicitCheckbox.TabIndex = 76;
             this.explicitCheckbox.Text = "Explicit Advisory*";
             this.explicitCheckbox.UseVisualStyleBackColor = true;
-            this.explicitCheckbox.CheckedChanged += new System.EventHandler(this.explicitCheckbox_CheckedChanged);
+            this.explicitCheckbox.CheckedChanged += new System.EventHandler(this.ExplicitCheckbox_CheckedChanged);
             // 
             // upcCheckbox
             // 
@@ -562,7 +562,7 @@
             this.upcCheckbox.TabIndex = 75;
             this.upcCheckbox.Text = "UPC*";
             this.upcCheckbox.UseVisualStyleBackColor = true;
-            this.upcCheckbox.CheckedChanged += new System.EventHandler(this.upcCheckbox_CheckedChanged);
+            this.upcCheckbox.CheckedChanged += new System.EventHandler(this.UpcCheckbox_CheckedChanged);
             // 
             // isrcCheckbox
             // 
@@ -577,7 +577,7 @@
             this.isrcCheckbox.TabIndex = 74;
             this.isrcCheckbox.Text = "ISRC";
             this.isrcCheckbox.UseVisualStyleBackColor = true;
-            this.isrcCheckbox.CheckedChanged += new System.EventHandler(this.isrcCheckbox_CheckedChanged);
+            this.isrcCheckbox.CheckedChanged += new System.EventHandler(this.IsrcCheckbox_CheckedChanged);
             // 
             // copyrightCheckbox
             // 
@@ -592,7 +592,7 @@
             this.copyrightCheckbox.TabIndex = 73;
             this.copyrightCheckbox.Text = "Copyright";
             this.copyrightCheckbox.UseVisualStyleBackColor = true;
-            this.copyrightCheckbox.CheckedChanged += new System.EventHandler(this.copyrightCheckbox_CheckedChanged);
+            this.copyrightCheckbox.CheckedChanged += new System.EventHandler(this.CopyrightCheckbox_CheckedChanged);
             // 
             // composerCheckbox
             // 
@@ -607,7 +607,7 @@
             this.composerCheckbox.TabIndex = 72;
             this.composerCheckbox.Text = "Composer";
             this.composerCheckbox.UseVisualStyleBackColor = true;
-            this.composerCheckbox.CheckedChanged += new System.EventHandler(this.composerCheckbox_CheckedChanged);
+            this.composerCheckbox.CheckedChanged += new System.EventHandler(this.ComposerCheckbox_CheckedChanged);
             // 
             // genreCheckbox
             // 
@@ -622,7 +622,7 @@
             this.genreCheckbox.TabIndex = 71;
             this.genreCheckbox.Text = "Genre";
             this.genreCheckbox.UseVisualStyleBackColor = true;
-            this.genreCheckbox.CheckedChanged += new System.EventHandler(this.genreCheckbox_CheckedChanged);
+            this.genreCheckbox.CheckedChanged += new System.EventHandler(this.GenreCheckbox_CheckedChanged);
             // 
             // releaseCheckbox
             // 
@@ -637,7 +637,7 @@
             this.releaseCheckbox.TabIndex = 70;
             this.releaseCheckbox.Text = "Release Date";
             this.releaseCheckbox.UseVisualStyleBackColor = true;
-            this.releaseCheckbox.CheckedChanged += new System.EventHandler(this.releaseCheckbox_CheckedChanged);
+            this.releaseCheckbox.CheckedChanged += new System.EventHandler(this.ReleaseCheckbox_CheckedChanged);
             // 
             // commentCheckbox
             // 
@@ -650,7 +650,7 @@
             this.commentCheckbox.TabIndex = 78;
             this.commentCheckbox.Text = "Comment";
             this.commentCheckbox.UseVisualStyleBackColor = true;
-            this.commentCheckbox.CheckedChanged += new System.EventHandler(this.commentCheckbox_CheckedChanged);
+            this.commentCheckbox.CheckedChanged += new System.EventHandler(this.CommentCheckbox_CheckedChanged);
             // 
             // commentTextbox
             // 
@@ -662,7 +662,7 @@
             this.commentTextbox.Name = "commentTextbox";
             this.commentTextbox.Size = new System.Drawing.Size(112, 17);
             this.commentTextbox.TabIndex = 79;
-            this.commentTextbox.TextChanged += new System.EventHandler(this.commentTextbox_TextChanged);
+            this.commentTextbox.TextChanged += new System.EventHandler(this.CommentTextbox_TextChanged);
             // 
             // imageCheckbox
             // 
@@ -677,7 +677,7 @@
             this.imageCheckbox.TabIndex = 80;
             this.imageCheckbox.Text = "Cover Art";
             this.imageCheckbox.UseVisualStyleBackColor = true;
-            this.imageCheckbox.CheckedChanged += new System.EventHandler(this.imageCheckbox_CheckedChanged);
+            this.imageCheckbox.CheckedChanged += new System.EventHandler(this.ImageCheckbox_CheckedChanged);
             // 
             // mp3Checkbox
             // 
@@ -848,6 +848,7 @@
             this.streamableCheckbox.Text = "Streamable Check";
             this.streamableCheckbox.UseVisualStyleBackColor = true;
             this.streamableCheckbox.Visible = false;
+            this.streamableCheckbox.CheckedChanged += new System.EventHandler(this.StreamableCheckbox_CheckedChanged);
             // 
             // secretTextbox
             // 
@@ -924,7 +925,7 @@
             this.artSizeSelect.Name = "artSizeSelect";
             this.artSizeSelect.Size = new System.Drawing.Size(87, 21);
             this.artSizeSelect.TabIndex = 96;
-            this.artSizeSelect.SelectedIndexChanged += new System.EventHandler(this.artSizeSelect_SelectedIndexChanged);
+            this.artSizeSelect.SelectedIndexChanged += new System.EventHandler(this.ArtSizeSelect_SelectedIndexChanged);
             // 
             // artSizeLabel
             // 
@@ -949,7 +950,7 @@
             this.typeCheckbox.TabIndex = 98;
             this.typeCheckbox.Text = "Release Type";
             this.typeCheckbox.UseVisualStyleBackColor = true;
-            this.typeCheckbox.CheckedChanged += new System.EventHandler(this.typeCheckbox_CheckedChanged);
+            this.typeCheckbox.CheckedChanged += new System.EventHandler(this.TypeCheckbox_CheckedChanged);
             // 
             // aboutLabel
             // 

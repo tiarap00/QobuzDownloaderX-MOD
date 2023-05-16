@@ -1,17 +1,14 @@
-﻿using QobuzApiSharp.Models.Content;
-using QobuzDownloaderX.Models;
+﻿using QobuzDownloaderX.Models;
 using QobuzDownloaderX.Properties;
 using QobuzDownloaderX.Shared;
 using QobuzDownloaderX.View;
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using TagLib;
 
 namespace QobuzDownloaderX
 {
@@ -28,65 +25,22 @@ namespace QobuzDownloaderX
             // Remove previous download error log
             logger.RemovePreviousErrorLog();
 
-            downloadManager = new DownloadManager(logger);
+            downloadManager = new DownloadManager(logger, UpdateAlbumTagsUI, UpdateDownloadSpeedLabel)
+            {
+                CheckIfStreamable = streamableCheckbox.Checked
+            };
         }
 
         public string DownloadLogPath { get; set; }
 
-        public string ArtSize { get; set; }
-        public string FileNameTemplateString { get; set; }
-        public string FinalTrackNamePath { get; set; }
-        public string FinalTrackNameVersionPath { get; set; }
-        public string QualityPath { get; set; }
-        public int MaxLength { get; set; }
         public int DevClickEggThingValue { get; set; }
         public int DebugMode { get; set; }
 
-        // Important strings
-        public string DowloadItemID { get; set; }
-
-        public string Stream { get; set; }
-
-        // Info strings for creating paths
-        public string AlbumArtistPath { get; set; }
-        public string PerformerNamePath { get; set; }
-        public string AlbumNamePath { get; set; }
-        public string TrackNamePath { get; set; }
-        public string VersionNamePath { get; set; }
-        public string Path1Full { get; set; }
-        public string Path2Full { get; set; }
-        public string Path3Full { get; set; }
-        public string Path4Full { get; set; }
-
-        // Info / Tagging strings
-        public string TrackVersionName { get; set; }
-        public bool? Advisory { get; set; }
-        public string AlbumArtist { get; set; }
-        public string AlbumName { get; set; }
-        public string PerformerName { get; set; }
-        public string ComposerName { get; set; }
-        public string TrackName { get; set; }
-        public string Copyright { get; set; }
-        public string Genre { get; set; }
-        public string ReleaseDate { get; set; }
-        public string Isrc { get; set; }
-        public string Upc { get; set; }
-        public string FrontCoverImgUrl { get; set; }
-        public string FrontCoverImgTagUrl { get; set; }
-        public string FrontCoverImgBoxUrl { get; set; }
-        public string MediaType { get; set; }
-
-        // Info / Tagging ints
-        public int DiscNumber { get; set; }
-        public int DiscTotal { get; set; }
-        public int TrackNumber { get; set; }
-        public int TrackTotal { get; set; }
-
         // Button color download inactive
-        private Color ReadyButtonBackColor = Color.FromArgb(0, 112, 239); // Windows Blue (Azure Blue)
+        private readonly Color ReadyButtonBackColor = Color.FromArgb(0, 112, 239); // Windows Blue (Azure Blue)
 
         // Button color download active
-        private Color BuzyButtonBackColor = Color.FromArgb(200, 30, 0); // Blue
+        private readonly Color BuzyButtonBackColor = Color.FromArgb(200, 30, 0); // Red
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -137,6 +91,30 @@ namespace QobuzDownloaderX
             string oldText = logoutLabel.Text;
             logoutLabel.Text = oldText.Replace("%name%", Globals.Login.User.DisplayName);
 
+            // Initialize Global Tagging options. Selected ArtSize is automatically set in artSizeSelect change event listener.
+            Globals.TaggingOptions = new TaggingOptions()
+            {
+                WriteAlbumNameTag = Settings.Default.albumTag,
+                WriteAlbumArtistTag = Settings.Default.albumArtistTag,
+                WriteTrackArtistTag = Settings.Default.artistTag,
+                WriteCommentTag = Settings.Default.commentTag,
+                CommentTag = Settings.Default.commentText,
+                WriteComposerTag = Settings.Default.composerTag,
+                WriteCopyrightTag = Settings.Default.copyrightTag,
+                WriteDiskNumberTag = Settings.Default.discTag,
+                WriteDiskTotalTag = Settings.Default.totalDiscsTag,
+                WriteGenreTag = Settings.Default.genreTag,
+                WriteIsrcTag = Settings.Default.isrcTag,
+                WriteMediaTypeTag = Settings.Default.typeTag,
+                WriteExplicitTag = Settings.Default.explicitTag,
+                WriteTrackTitleTag = Settings.Default.trackTitleTag,
+                WriteTrackNumberTag = Settings.Default.trackTag,
+                WriteTrackTotalTag = Settings.Default.totalTracksTag,
+                WriteUpcTag = Settings.Default.upcTag,
+                WriteReleaseYearTag = Settings.Default.yearTag,
+                WriteCoverImageTag = Settings.Default.imageTag
+            };
+
             // Set saved settings to correct places.
             folderBrowserDialog.SelectedPath = Settings.Default.savedFolder;
             albumCheckbox.Checked = Settings.Default.albumTag;
@@ -166,13 +144,11 @@ namespace QobuzDownloaderX
             Globals.AudioFileType = Settings.Default.audioType;
             artSizeSelect.SelectedIndex = Settings.Default.savedArtSize;
             filenameTempSelect.SelectedIndex = Settings.Default.savedFilenameTemplate;
-            FileNameTemplateString = Settings.Default.savedFilenameTemplateString;
-            MaxLength = Settings.Default.savedMaxLength;
+            Globals.FileNameTemplateString = Settings.Default.savedFilenameTemplateString;
+            Globals.MaxLength = Settings.Default.savedMaxLength;
 
             customFormatIDTextbox.Text = Globals.FormatIdString;
-
-            ArtSize = artSizeSelect.Text;
-            maxLengthTextbox.Text = MaxLength.ToString();
+            maxLengthTextbox.Text = Globals.MaxLength.ToString();
 
             // Check if there's no selected path saved.
             if (folderBrowserDialog.SelectedPath == null || folderBrowserDialog.SelectedPath == "")
@@ -193,6 +169,11 @@ namespace QobuzDownloaderX
 
             // Run anything put into the debug events (For Testing)
             debuggingEvents(sender, e);
+        }
+
+        public void UpdateDownloadSpeedLabel(string speed)
+        {
+            downloadSpeedLabel.Invoke(new Action(() => downloadSpeedLabel.Text = speed));
         }
 
         private void debuggingEvents(object sender, EventArgs e)
@@ -352,388 +333,21 @@ namespace QobuzDownloaderX
             Process.Start(@Globals.LoggingDir);
         }
 
-        // Add Metadata to audiofiles in ID3v2 for mp3 and Vorbis Comment for FLAC
-        public void AddMetaDataTags(string tagFilePath, string tagCoverArtFilePath)
+        // Update UI for downloading album
+        public void UpdateAlbumTagsUI(DownloadItemInfo downloadInfo)
         {
-            // Set file to tag
-            var tfile = TagLib.File.Create(tagFilePath);
-            tfile.RemoveTags(TagTypes.Id3v1);
-
-            // Use ID3v2.4 as default mp3 tag version
-            TagLib.Id3v2.Tag.DefaultVersion = 4;
-            TagLib.Id3v2.Tag.ForceDefaultVersion = true;
-
-            switch (Globals.AudioFileType)
-            {
-                case ".mp3":
-
-                    // For custom / troublesome tags.
-                    TagLib.Id3v2.Tag customId3v2 = (TagLib.Id3v2.Tag)tfile.GetTag(TagTypes.Id3v2, true);
-
-                    // Saving cover art to file(s)
-                    if (imageCheckbox.Checked)
-                    {
-                        try
-                        {
-                            // Define cover art to use for MP3 file(s)
-                            TagLib.Id3v2.AttachmentFrame pic = new TagLib.Id3v2.AttachmentFrame
-                            {
-                                TextEncoding = TagLib.StringType.Latin1,
-                                MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg,
-                                Type = TagLib.PictureType.FrontCover,
-                                Data = TagLib.ByteVector.FromPath(tagCoverArtFilePath)
-                            };
-
-                            // Save cover art to MP3 file.
-                            tfile.Tag.Pictures = new TagLib.IPicture[1] { pic };
-                            tfile.Save();
-                        }
-                        catch
-                        {
-                            logger.AddDownloadLogErrorLine($"Cover art tag failed, .jpg still exists?...{Environment.NewLine}", true, true);
-                        }
-                    }
-
-                    // Track Title tag, version is already added to name if available
-                    if (trackTitleCheckbox.Checked) { tfile.Tag.Title = TrackName; }
-
-                    // Album Title tag, version is already added to name if available
-                    if (albumCheckbox.Checked) { tfile.Tag.Album = AlbumName; }
-
-                    // Album Artits tag
-                    if (albumArtistCheckbox.Checked) { tfile.Tag.AlbumArtists = new string[] { AlbumArtist }; }
-
-                    // Track Artist tag
-                    if (artistCheckbox.Checked) { tfile.Tag.Performers = new string[] { PerformerName }; }
-
-                    // Composer tag
-                    if (composerCheckbox.Checked) { tfile.Tag.Composers = new string[] { ComposerName }; }
-
-                    // Release Date tag
-                    if (releaseCheckbox.Checked) { ReleaseDate = ReleaseDate.Substring(0, 4); tfile.Tag.Year = UInt32.Parse(ReleaseDate); }
-
-                    // Genre tag
-                    if (genreCheckbox.Checked) { tfile.Tag.Genres = new string[] { Genre }; }
-
-                    // Disc Number tag
-                    if (discNumberCheckbox.Checked) { tfile.Tag.Disc = Convert.ToUInt32(DiscNumber); }
-
-                    // Total Discs tag
-                    if (discTotalCheckbox.Checked) { tfile.Tag.DiscCount = Convert.ToUInt32(DiscTotal); }
-
-                    // Total Tracks tag
-                    if (trackTotalCheckbox.Checked) { tfile.Tag.TrackCount = Convert.ToUInt32(TrackTotal); }
-
-                    // Track Number tag
-                    // !! Set Track Number after Total Tracks to prevent taglib-sharp from re-formatting the field to a "two-digit zero-filled value" !!
-                    if (trackNumberCheckbox.Checked)
-                    {
-                        // Set TRCK tag manually to prevent using "two-digit zero-filled value"
-                        // See https://github.com/mono/taglib-sharp/pull/240 where this change was introduced in taglib-sharp v2.3
-                        // Original command: tfile.Tag.Track = Convert.ToUInt32(TrackNumber);
-                        customId3v2.SetNumberFrame("TRCK", Convert.ToUInt32(TrackNumber), tfile.Tag.TrackCount);
-                    }
-
-                    // Comment tag
-                    if (commentCheckbox.Checked) { tfile.Tag.Comment = commentTextbox.Text; }
-
-                    // Copyright tag
-                    if (copyrightCheckbox.Checked) { tfile.Tag.Copyright = Copyright; }
-
-                    // ISRC tag
-                    if (isrcCheckbox.Checked) { customId3v2.SetTextFrame("TSRC", Isrc); }
-
-                    // Release Type tag
-                    if (MediaType != null && typeCheckbox.Checked) { customId3v2.SetTextFrame("TMED", MediaType); }
-
-                    // Save all selected tags to file
-                    tfile.Save();
-
-                    break;
-
-                case ".flac":
-
-                    // For custom / troublesome tags.
-                    TagLib.Ogg.XiphComment custom = (TagLib.Ogg.XiphComment)tfile.GetTag(TagLib.TagTypes.Xiph);
-
-                    // Saving cover art to file(s)
-                    if (imageCheckbox.Checked)
-                    {
-                        try
-                        {
-                            // Define cover art to use for FLAC file(s)
-                            TagLib.Id3v2.AttachmentFrame pic = new TagLib.Id3v2.AttachmentFrame
-                            {
-                                TextEncoding = TagLib.StringType.Latin1,
-                                MimeType = System.Net.Mime.MediaTypeNames.Image.Jpeg,
-                                Type = TagLib.PictureType.FrontCover,
-                                Data = TagLib.ByteVector.FromPath(tagCoverArtFilePath)
-                            };
-
-                            // Save cover art to FLAC file.
-                            tfile.Tag.Pictures = new TagLib.IPicture[1] { pic };
-                            tfile.Save();
-                        }
-                        catch
-                        {
-                            logger.AddDownloadLogErrorLine($"Cover art tag failed, .jpg still exists?...{Environment.NewLine}", true, true);
-                        }
-                    }
-
-                    // Track Title tag, version is already added to name if available
-                    if (trackTitleCheckbox.Checked) { tfile.Tag.Title = TrackName; }
-
-                    // Album Title tag, version is already added to name if available
-                    if (albumCheckbox.Checked) { tfile.Tag.Album = AlbumName; }
-
-                    // Album Artist tag
-                    if (albumArtistCheckbox.Checked) { custom.SetField("ALBUMARTIST", AlbumArtist); }
-
-                    // Track Artist tag
-                    if (artistCheckbox.Checked) { custom.SetField("ARTIST", PerformerName); }
-
-                    // Composer tag
-                    if (composerCheckbox.Checked) { custom.SetField("COMPOSER", ComposerName); }
-
-                    // Release Date tag
-                    if (releaseCheckbox.Checked) { custom.SetField("YEAR", ReleaseDate); }
-
-                    // Genre tag
-                    if (genreCheckbox.Checked) { tfile.Tag.Genres = new string[] { Genre }; }
-
-                    // Track Number tag
-                    if (trackNumberCheckbox.Checked)
-                    {
-                        tfile.Tag.Track = Convert.ToUInt32(TrackNumber);
-                        // Override TRACKNUMBER tag again to prevent using "two-digit zero-filled value"
-                        // See https://github.com/mono/taglib-sharp/pull/240 where this change was introduced in taglib-sharp v2.3
-                        custom.SetField("TRACKNUMBER", Convert.ToUInt32(TrackNumber));
-                    }
-
-                    // Disc Number tag
-                    if (discNumberCheckbox.Checked) { tfile.Tag.Disc = Convert.ToUInt32(DiscNumber); }
-
-                    // Total Discs tag
-                    if (discTotalCheckbox.Checked) { tfile.Tag.DiscCount = Convert.ToUInt32(DiscTotal); }
-
-                    // Total Tracks tag
-                    if (trackTotalCheckbox.Checked) { tfile.Tag.TrackCount = Convert.ToUInt32(TrackTotal); }
-
-                    // Comment tag
-                    if (commentCheckbox.Checked) { custom.SetField("COMMENT", commentTextbox.Text); }
-
-                    // Copyright tag
-                    if (copyrightCheckbox.Checked) { custom.SetField("COPYRIGHT", Copyright); }
-                    // UPC tag
-                    if (upcCheckbox.Checked) { custom.SetField("UPC", Upc); }
-
-                    // ISRC tag
-                    if (isrcCheckbox.Checked) { custom.SetField("ISRC", Isrc); }
-
-                    // Release Type tag
-                    if (MediaType != null && typeCheckbox.Checked)
-                    {
-                        custom.SetField("MEDIATYPE", MediaType);
-                    }
-
-                    // Explicit tag
-                    if (explicitCheckbox.Checked)
-                    {
-                        if (Advisory == true) { custom.SetField("ITUNESADVISORY", "1"); } else { custom.SetField("ITUNESADVISORY", "0"); }
-                    }
-
-                    // Save all selected tags to file
-                    tfile.Save();
-
-                    break;
-            }
-        }
-
-        public void CreateTrackDirectories(string basePath, string qualityPath, string albumPathSuffix = "", bool forTracklist = false)
-        {
-            if (forTracklist)
-            {
-                Path1Full = basePath;
-                Path2Full = Path1Full;
-                Path3Full = Path.Combine(basePath, qualityPath);
-                Path4Full = Path3Full;
-            }
-            else
-            {
-                Path1Full = Path.Combine(basePath, AlbumArtistPath);
-                Path2Full = Path.Combine(basePath, AlbumArtistPath, AlbumNamePath + albumPathSuffix);
-                Path3Full = Path.Combine(basePath, AlbumArtistPath, AlbumNamePath + albumPathSuffix, qualityPath);
-
-                // If more than 1 disc, create folders for discs. Otherwise, strings will remain null
-                // Pad discnumber with minimum of 2 integer positions based on total number of disks
-                if (DiscTotal > 1)
-                {
-                    // Create strings for disc folders
-                    string discFolder = "CD " + DiscNumber.ToString().PadLeft(Math.Max(2, (int)Math.Floor(Math.Log10(DiscTotal) + 1)), '0');
-                    Path4Full = Path.Combine(basePath, AlbumArtistPath, AlbumNamePath + albumPathSuffix, qualityPath, discFolder);
-                }
-                else
-                {
-                    Path4Full = Path3Full;
-                }
-            }
-
-            System.IO.Directory.CreateDirectory(Path4Full);
-        }
-
-        // Set Track tagging info, tagbased Paths
-        public void GetTrackTaggingInfo(Track qobuzTrack)
-        {
-            ClearTrackTaggingInfo();
-
-            PerformerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Performer?.Name);
-            // If no performer name, use album artist
-            if (string.IsNullOrEmpty(PerformerName))
-            {
-                PerformerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Album?.Artist?.Name);
-            }
-            ComposerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Composer?.Name);
-            TrackName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Title.Trim());
-            TrackVersionName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Version?.Trim());
-            // Add track version to TrackName
-            TrackName += (TrackVersionName == null ? "" : " (" + TrackVersionName + ")");
-
-            Advisory = qobuzTrack.ParentalWarning;
-            Copyright = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Copyright);
-            Isrc = qobuzTrack.Isrc;
-
-            // Grab tag ints
-            TrackNumber = qobuzTrack.TrackNumber.GetValueOrDefault();
-            DiscNumber = qobuzTrack.MediaNumber.GetValueOrDefault();
-
-            // Paths
-            PerformerNamePath = StringTools.GetSafeFilename(PerformerName);
-            TrackNamePath = StringTools.GetSafeFilename(TrackName);
-        }
-
-        // Set Album tagging info, tagbased Paths
-        public void GetAlbumTaggingInfo(Album qobuzAlbum)
-        {
-            ClearAlbumTaggingInfo();
-
-            AlbumArtist = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Artist.Name);
-            AlbumName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Title.Trim());
-            string albumVersionName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Version?.Trim());
-            // Add album version to AlbumName if present
-            AlbumName += (albumVersionName == null ? "" : " (" + albumVersionName + ")");
-
-            Genre = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Genre.Name);
-            ReleaseDate = StringTools.FormatDateTimeOffset(qobuzAlbum.ReleaseDateStream);
-            Upc = qobuzAlbum.Upc;
-            MediaType = qobuzAlbum.ReleaseType;
-
-            // Grab tag ints
-            TrackTotal = qobuzAlbum.TracksCount.GetValueOrDefault();
-            DiscTotal = qobuzAlbum.MediaCount.GetValueOrDefault();
-
-            // Paths
-            AlbumArtistPath = StringTools.GetSafeFilename(AlbumArtist);
-            AlbumNamePath = StringTools.GetSafeFilename(AlbumName);
-        }
-
-        public void UpdateAlbumTagsUI()
-        {
-            // Update UI
-            albumArtistTextBox.Invoke(new Action(() => albumArtistTextBox.Text = AlbumArtist));
-            albumTextBox.Invoke(new Action(() => albumTextBox.Text = AlbumName));
-            releaseDateTextBox.Invoke(new Action(() => releaseDateTextBox.Text = ReleaseDate));
-            upcTextBox.Invoke(new Action(() => upcTextBox.Text = Upc));
-            totalTracksTextbox.Invoke(new Action(() => totalTracksTextbox.Text = TrackTotal.ToString()));
-        }
-
-        public void ClearTrackTaggingInfo()
-        {
-            // Clear tag strings
-            PerformerName = null;
-            ComposerName = null;
-            TrackName = null;
-            TrackVersionName = null;
-            Advisory = null;
-            Copyright = null;
-            Isrc = null;
-
-            // Clear tag ints
-            TrackNumber = 0;
-            DiscNumber = 0;
-
-            // Clear tagbased Paths
-            TrackNamePath = null;
-        }
-
-        public void ClearAlbumTaggingInfo()
-        {
-            // Clear tag strings
-            AlbumArtist = null;
-            AlbumName = null;
-            Genre = null;
-            ReleaseDate = null;
-            Upc = null;
-            MediaType = null;
-
-            // Clear tag ints
-            TrackTotal = 0;
-            DiscTotal = 0;
-
-            // Clear tagbased Paths
-            AlbumArtistPath = null;
-            AlbumNamePath = null;
-        }
-
-        public void GetAlbumCoverArtUrls(Album qobuzAlbum)
-        {
-            // Grab cover art link
-            FrontCoverImgUrl = qobuzAlbum.Image.Large;
-            // Get 150x150 artwork for cover art box
-            FrontCoverImgBoxUrl = FrontCoverImgUrl.Replace("_600.jpg", "_150.jpg");
-            // Get selected artwork size for tagging
-            FrontCoverImgTagUrl = FrontCoverImgUrl.Replace("_600.jpg", $"_{ArtSize}.jpg");
-            // Get max sized artwork ("_org.jpg" is compressed version of the original "_org.jpg")
-            FrontCoverImgUrl = FrontCoverImgUrl.Replace("_600.jpg", "_org.jpg");
-
-            albumArtPicBox.Invoke(new Action(() => albumArtPicBox.ImageLocation = FrontCoverImgBoxUrl));
-        }
-
-        public bool IsStreamable(Track qobuzTrack, bool inPlaylist = false)
-        {
-            bool tryToStream = true;
-
-            if (qobuzTrack.Streamable == false)
-            {
-                switch (streamableCheckbox.Checked)
-                {
-                    case true:
-                        string trackReference = inPlaylist ? $"{qobuzTrack.Performer?.Name} - {qobuzTrack.Title}" : qobuzTrack.TrackNumber.GetValueOrDefault().ToString();
-                        TrackName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Title.Trim());
-                        logger.AddDownloadLogLine($"Track {trackReference} is not available for streaming. Unable to download.\r\n", tryToStream, tryToStream);
-                        tryToStream = false;
-                        break;
-
-                    default:
-                        logger.AddDownloadLogLine("Track is not available for streaming. But streamable check is being ignored for debugging, or messed up releases. Attempting to download...\r\n", tryToStream, tryToStream);
-                        break;
-                }
-            }
-
-            return tryToStream;
-        }
-
-        public void PrepareAlbumDownload(Album qobuzAlbum)
-        {
-            // Grab sample rate and bit depth for album track is from.
-            (string quality, string qualityPathLocal) = QualityStringMappings.GetQualityStrings(Globals.FormatIdString, qobuzAlbum);
-            QualityPath = qualityPathLocal;
-
-            // Display album quality in quality textbox.
-            qualityTextbox.Invoke(new Action(() => qualityTextbox.Text = quality));
-
-            GetAlbumCoverArtUrls(qobuzAlbum);
-            GetAlbumTaggingInfo(qobuzAlbum);
-            UpdateAlbumTagsUI();
+            //  Display album art
+            albumArtPicBox.Invoke(new Action(() => albumArtPicBox.ImageLocation = downloadInfo.FrontCoverImgBoxUrl));
+
+            // Display album quality in Quality textbox.
+            qualityTextbox.Invoke(new Action(() => qualityTextbox.Text = downloadInfo.DisplayQuality));
+
+            // Display album info textfields
+            albumArtistTextBox.Invoke(new Action(() => albumArtistTextBox.Text = downloadInfo.AlbumArtist));
+            albumTextBox.Invoke(new Action(() => albumTextBox.Text = downloadInfo.AlbumName));
+            releaseDateTextBox.Invoke(new Action(() => releaseDateTextBox.Text = downloadInfo.ReleaseDate));
+            upcTextBox.Invoke(new Action(() => upcTextBox.Text = downloadInfo.Upc));
+            totalTracksTextbox.Invoke(new Action(() => totalTracksTextbox.Text = downloadInfo.TrackTotal.ToString()));
         }
 
         private void tagsLabel_Click(object sender, EventArgs e)
@@ -752,124 +366,143 @@ namespace QobuzDownloaderX
             }
         }
 
-        private void albumCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void AlbumCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.albumTag = albumCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteAlbumNameTag = albumCheckbox.Checked;
         }
 
-        private void albumArtistCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void AlbumArtistCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.albumArtistTag = albumArtistCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteAlbumArtistTag = albumArtistCheckbox.Checked;
         }
 
-        private void trackTitleCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void TrackTitleCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.trackTitleTag = trackTitleCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteTrackTitleTag = trackTitleCheckbox.Checked;
         }
 
-        private void artistCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void ArtistCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.artistTag = artistCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteTrackArtistTag = artistCheckbox.Checked;
         }
 
-        private void trackNumberCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void TrackNumberCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            Settings.Default.trackTag = trackTitleCheckbox.Checked;
+            Settings.Default.trackTag = trackNumberCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteTrackNumberTag = trackNumberCheckbox.Checked;
         }
 
-        private void trackTotalCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void TrackTotalCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.totalTracksTag = trackTotalCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteTrackTotalTag = trackTotalCheckbox.Checked;
         }
 
-        private void discNumberCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void DiscNumberCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.discTag = discNumberCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteDiskNumberTag = discNumberCheckbox.Checked;
         }
 
-        private void discTotalCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void DiscTotalCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.totalDiscsTag = discTotalCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteDiskTotalTag = discTotalCheckbox.Checked;
         }
 
-        private void releaseCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void ReleaseCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.yearTag = releaseCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteReleaseYearTag = releaseCheckbox.Checked;
         }
 
-        private void genreCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void GenreCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.genreTag = genreCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteGenreTag = genreCheckbox.Checked;
         }
 
-        private void composerCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void ComposerCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.composerTag = composerCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteComposerTag = composerCheckbox.Checked;
         }
 
-        private void copyrightCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void CopyrightCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.copyrightTag = copyrightCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteCopyrightTag = copyrightCheckbox.Checked;
         }
 
-        private void isrcCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void IsrcCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.isrcTag = isrcCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteIsrcTag = isrcCheckbox.Checked;
         }
 
-        private void typeCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void TypeCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.typeTag = typeCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteMediaTypeTag = typeCheckbox.Checked;
         }
 
-        private void upcCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void UpcCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.upcTag = upcCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteUpcTag = upcCheckbox.Checked;
         }
 
-        private void explicitCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void ExplicitCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.explicitTag = explicitCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteExplicitTag = explicitCheckbox.Checked;
         }
 
-        private void commentCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void CommentCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.commentTag = commentCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteCommentTag = commentCheckbox.Checked;
         }
 
-        private void imageCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void ImageCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             Settings.Default.imageTag = imageCheckbox.Checked;
             Settings.Default.Save();
+            Globals.TaggingOptions.WriteCoverImageTag = imageCheckbox.Checked;
         }
 
-        private void commentTextbox_TextChanged(object sender, EventArgs e)
+        private void CommentTextbox_TextChanged(object sender, EventArgs e)
         {
             Settings.Default.commentText = commentTextbox.Text;
             Settings.Default.Save();
+            Globals.TaggingOptions.CommentTag = commentTextbox.Text;
         }
 
-        private void artSizeSelect_SelectedIndexChanged(object sender, EventArgs e)
+        private void ArtSizeSelect_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Set ArtSize to selected value, and save selected option to settings.
-            ArtSize = artSizeSelect.Text;
+            Globals.TaggingOptions.ArtSize = artSizeSelect.Text;
             Settings.Default.savedArtSize = artSizeSelect.SelectedIndex;
             Settings.Default.Save();
         }
@@ -879,19 +512,19 @@ namespace QobuzDownloaderX
             // Set filename template to selected value, and save selected option to settings.
             if (filenameTempSelect.SelectedIndex == 0)
             {
-                FileNameTemplateString = " ";
+                Globals.FileNameTemplateString = " ";
             }
             else if (filenameTempSelect.SelectedIndex == 1)
             {
-                FileNameTemplateString = " - ";
+                Globals.FileNameTemplateString = " - ";
             }
             else
             {
-                FileNameTemplateString = " ";
+                Globals.FileNameTemplateString = " ";
             }
 
             Settings.Default.savedFilenameTemplate = filenameTempSelect.SelectedIndex;
-            Settings.Default.savedFilenameTemplateString = FileNameTemplateString;
+            Settings.Default.savedFilenameTemplateString = Globals.FileNameTemplateString;
             Settings.Default.Save();
         }
 
@@ -908,16 +541,16 @@ namespace QobuzDownloaderX
                     Settings.Default.savedMaxLength = Convert.ToInt32(maxLengthTextbox.Text);
                     Settings.Default.Save();
 
-                    MaxLength = Convert.ToInt32(maxLengthTextbox.Text);
+                    Globals.MaxLength = Convert.ToInt32(maxLengthTextbox.Text);
                 }
                 catch (Exception)
                 {
-                    MaxLength = 36;
+                    Globals.MaxLength = 36;
                 }
             }
             else
             {
-                MaxLength = 36;
+                Globals.MaxLength = 36;
             }
         }
 
@@ -1171,6 +804,11 @@ namespace QobuzDownloaderX
         private void enableBtnsButton_Click(object sender, EventArgs e)
         {
             UpdateControlsDownloadEnd();
+        }
+
+        private void StreamableCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            downloadManager.CheckIfStreamable = streamableCheckbox.Checked;
         }
     }
 }

@@ -75,9 +75,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\DownloadItem.cs" />
+    <Compile Include="Models\Download\DownloadItemInfo.cs" />
+    <Compile Include="Models\Download\DownloadItemPaths.cs" />
+    <Compile Include="Models\Download\DownloadItem.cs" />
     <Compile Include="Shared\DownloadLogger.cs" />
     <Compile Include="Shared\DownloadManager.cs" />
+    <Compile Include="Shared\Tools\AudioFileTagger.cs" />
+    <Compile Include="Shared\TaggingOptions.cs" />
     <Compile Include="Shared\GoodiesFileType.cs" />
     <Compile Include="Models\UI\SearchResultRow.cs" />
     <Compile Include="Shared\QobuzApiServiceManager.cs" />
@@ -219,6 +223,7 @@
   <ItemGroup>
     <None Include="Resources\qobuz_logo_store.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

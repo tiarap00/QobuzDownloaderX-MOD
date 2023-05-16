@@ -36,7 +36,7 @@ namespace QobuzDownloaderX.Shared
                 throw new KeyNotFoundException($"QualityFormatID '{formatIdString}' not found.");
         }
 
-        public static (string quality, string qualityPath) GetQualityStrings(string formatIdString)
+        public static (string displayQuality, string pathSafeQuality) GetQualityStrings(string formatIdString)
         {
             if (qualityMappings.TryGetValue(formatIdString, out var value))
                 return value;
@@ -44,7 +44,7 @@ namespace QobuzDownloaderX.Shared
                 throw new KeyNotFoundException($"QualityFormatID '{formatIdString}' not found.");
         }
 
-        public static (string quality, string qualityPath) GetQualityStrings(string formatIdString, Album qobuzAlbum)
+        public static (string displayQuality, string pathSafeQuality) GetQualityStrings(string formatIdString, Album qobuzAlbum)
         {
             // Get Max bitDepth & sampleRate from API result.
             double bitDepth = qobuzAlbum.MaximumBitDepth.GetValueOrDefault();
@@ -59,10 +59,11 @@ namespace QobuzDownloaderX.Shared
                 return GetQualityStrings(formatIdString);
             }
 
-            var quality = "FLAC (" + bitDepth + "bit/" + sampleRate + "kHz)";
-            var qualityPath = quality.Replace(@"\", "-").Replace("/", "-");
+            var displayQuality = "FLAC (" + bitDepth + "bit/" + sampleRate + "kHz)";
+            var pathSafeQuality = displayQuality.Replace(@"\", "-").Replace("/", "-");
 
-            return (quality, qualityPath);
+            return (displayQuality, pathSafeQuality);
         }
+
     }
 }
