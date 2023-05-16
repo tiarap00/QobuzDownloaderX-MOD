@@ -10,11 +10,12 @@ namespace QobuzDownloaderX.Shared
         // Pre-compiled supported download URL patterns
         private static readonly Regex[] DownloadUrlRegExes = {
             new Regex("https:\\/\\/(?:.*?).qobuz.com\\/(?<Type>.*?)\\/(?<id>.*?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled),
+            new Regex("https:\\/\\/(?:.*?).qobuz.com\\/(?:.*?)\\/(?<Type>.*?)\\/(?<Slug>.*?)\\/(?<AlbumsTag>download-streaming-albums)\\/(?<id>.*?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled),
             new Regex("https:\\/\\/(?:.*?).qobuz.com\\/(?:.*?)\\/(?<Type>.*?)\\/(?<Slug>.*?)\\/(?<id>.*?)$", RegexOptions.IgnoreCase | RegexOptions.Compiled)
         };
 
-        // Supported types of links
-        public static readonly string[] LinkTypes = { "album", "track", "artist", "label", "user", "playlist" };
+        // Supported types of links. "interpreter" = "artist" in store links
+        public static readonly string[] LinkTypes = { "album", "track", "artist", "label", "user", "playlist", "interpreter" };
 
         public static DownloadItem ParseDownloadUrl(string downloadUrl)
         {
@@ -36,6 +37,9 @@ namespace QobuzDownloaderX.Shared
                     // Valid Type found, set DownloadItem values
                     downloadItem.Type = matches.Result("${Type}");
                     downloadItem.Id = matches.Result("${id}")?.TrimEnd('/');
+
+                    // In store links, "interpreter" = "artist"
+                    if (downloadItem.Type == "interpreter") downloadItem.Type = "artist";
 
                     break;
                 }
