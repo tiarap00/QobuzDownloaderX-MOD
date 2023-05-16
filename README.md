@@ -4,7 +4,7 @@
 
 -----
 
-![QobuzDownloaderX-MOD Main window](./-assets/QBDLX3.png?raw=true)
+![QobuzDownloaderX-MOD Main window](./-assets/QBDLX4.png?raw=true)
 
 # About
 
