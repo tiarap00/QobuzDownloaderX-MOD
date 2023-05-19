@@ -1,6 +1,10 @@
-# This is a fork of [QobuzDownloaderX](https://github.com/ImAiiR/QobuzDownloaderX) by [AiiR](https://github.com/ImAiiR)
-
 ![QBDLX-MOD Logo](./QobuzDownloaderX/Resources/qbdlx.png?raw=true)
+
+[![Latest Version](https://img.shields.io/github/v/release/DJDoubleD/QobuzDownloaderX-MOD?color=blue)](../../releases/latest)
+[![Release date](https://img.shields.io/github/release-date/DJDoubleD/QobuzDownloaderX-MOD)](../../releases/latest)
+[![Total Downloads](https://img.shields.io/github/downloads/DJDoubleD/QobuzDownloaderX-MOD/total?color=blue)](../../releases)
+[![C#](https://img.shields.io/badge/c%23-%23239120.svg?flat&logo=c-sharp&logoColor=white)](https://learn.microsoft.com/en-us/dotnet/csharp/)
+[![License](https://img.shields.io/github/license/DJDoubleD/QobuzDownloaderX-MOD?flat)](./LICENSE)
 
 -----
 
@@ -12,12 +16,13 @@ QobuzDownloaderX-MOD is a program for downloading music streams from the streami
 
 You can not download anything with a free account.
 
-This Modded version of the original QobuzDownloaderX was created for educational purposes.  
+This Modded version of the [original QobuzDownloaderX](https://github.com/ImAiiR/QobuzDownloaderX) by [AiiR](https://github.com/ImAiiR) was created for educational purposes.  
 Some changes include:  
 
 - Isolated Qobuz API interaction to a separate library project [QobuzApiSharp](https://github.com/DJDoubleD/QobuzApiSharp).
-- Complete refactoring of backend code (in an attempt to simplify and optimize).
+- Complete refactoring of backend code.
 - Added completely revamped search function.
+- Lots of new features and bugfixes
 
 See release notes in [releases](../../releases) section for full overview of all fixes and changes.
 
