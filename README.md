@@ -2,7 +2,8 @@
 
 [![Latest Version](https://img.shields.io/github/v/release/DJDoubleD/QobuzDownloaderX-MOD?color=blue)](../../releases/latest)
 [![Release date](https://img.shields.io/github/release-date/DJDoubleD/QobuzDownloaderX-MOD)](../../releases/latest)
-[![Total Downloads](https://img.shields.io/github/downloads/DJDoubleD/QobuzDownloaderX-MOD/total?color=blue)](../../releases)
+[![Downloads Latest](https://img.shields.io/github/downloads/DJDoubleD/QobuzDownloaderX-MOD/latest/total?color=blue&label=downloads%20latest)](../../releases)
+[![Downloads Total](https://img.shields.io/github/downloads/DJDoubleD/QobuzDownloaderX-MOD/total?color=blue&label=downloads%20total)](../../releases)
 [![C#](https://img.shields.io/badge/c%23-%23239120.svg?flat&logo=c-sharp&logoColor=white)](https://learn.microsoft.com/en-us/dotnet/csharp/)
 [![License](https://img.shields.io/github/license/DJDoubleD/QobuzDownloaderX-MOD?flat)](./LICENSE)
 
@@ -24,7 +25,8 @@ Some changes include:
 - Added completely revamped search function.
 - Lots of new features and bugfixes
 
-See release notes in [releases](../../releases) section for full overview of all fixes and changes.
+See release notes in [releases](../../releases) section for full overview of all fixes and changes.  
+Check out the [Wiki](../../wiki) for more information about using QBDLX-MOD.
 
 # Disclaimer & Legal
 
