@@ -213,7 +213,7 @@
       <Version>13.0.3</Version>
     </PackageReference>
     <PackageReference Include="QobuzApiSharp">
-      <Version>0.0.3</Version>
+      <Version>0.0.4</Version>
     </PackageReference>
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
   </ItemGroup>

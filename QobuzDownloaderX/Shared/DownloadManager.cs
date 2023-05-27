@@ -307,37 +307,52 @@ namespace QobuzDownloaderX.Shared
             return true;
         }
 
-        private async Task<bool> DownloadAlbumAsync(CancellationToken cancellationToken, Album qobuzAlbum, string basePath, bool loadTracks = false, string albumPathSuffix = "")
+        private async Task<bool> DownloadAlbumAsync(CancellationToken cancellationToken, Album qobuzAlbum, string basePath, string albumPathSuffix = "")
         {
             bool noErrorsOccured = true;
 
-            if (loadTracks)
-            {
-                // Get Album model object with tracks for when tracks aren't already loaded in Album model
-                qobuzAlbum = ExecuteApiCall(apiService => apiService.GetAlbum(qobuzAlbum.Id, true));
-            }
+            // Get Album model object with first batch of tracks
+            const int tracksLimit = 20;
+            qobuzAlbum = ExecuteApiCall(apiService => apiService.GetAlbum(qobuzAlbum.Id, true, null, tracksLimit, 0));
 
-            // If API call failed or empty Album was provided, abort Album Download
-            if (qobuzAlbum == null || string.IsNullOrEmpty(qobuzAlbum.Id)) { return false; }
+            // If API call failed, abort Album Download
+            if (string.IsNullOrEmpty(qobuzAlbum.Id)) { return false; }
 
             // Get all album information and update UI fields via callback
             DownloadInfo.SetAlbumDownloadInfo(qobuzAlbum);
             UpdateAlbumUiTags.Invoke(DownloadInfo);
 
-            // Download all tracks of the Album, clean albumArt tag file after last track
-            int trackCount = qobuzAlbum.TracksCount ?? 0;
+            // Download all tracks of the Album in batches of {tracksLimit}, clean albumArt tag file after last track
+            int tracksTotal = qobuzAlbum.Tracks.Total ?? 0;
+            int tracksPageOffset = qobuzAlbum.Tracks.Offset ?? 0;
+            int tracksLoaded = qobuzAlbum.Tracks.Items?.Count ?? 0;
 
-            for (int i = 0; i < trackCount; i++)
+            for (int i = 0; i < tracksLoaded; i++)
             {
                 // User requested task cancellation!
                 cancellationToken.ThrowIfCancellationRequested();
 
+                bool isLastTrackOfAlbum = (i + tracksPageOffset) == (tracksTotal - 1);
                 Track qobuzTrack = qobuzAlbum.Tracks.Items[i];
 
                 // Nested Album objects in Tracks are not always fully populated, inject current qobuzAlbum in Track to be downloaded
                 qobuzTrack.Album = qobuzAlbum;
 
-                if (!await DownloadTrackAsync(cancellationToken, qobuzTrack, basePath, false, true, i == trackCount - 1, albumPathSuffix)) noErrorsOccured = false;
+                if (!await DownloadTrackAsync(cancellationToken, qobuzTrack, basePath, false, true, isLastTrackOfAlbum, albumPathSuffix)) noErrorsOccured = false;
+
+                if (i == (tracksLoaded - 1) && tracksTotal > (i + tracksPageOffset))
+                {
+                    // load next page of tracks
+                    tracksPageOffset += tracksLimit;
+                    qobuzAlbum = ExecuteApiCall(apiService => apiService.GetAlbum(qobuzAlbum.Id, true, null, tracksLimit, tracksPageOffset));
+
+                    // If API call failed, abort Album Download
+                    if (string.IsNullOrEmpty(qobuzAlbum.Id)) { return false; }
+
+                    // Reset 0-based counter for looping next batch of tracks
+                    i = -1;
+                    tracksLoaded = qobuzAlbum.Tracks.Items?.Count ?? 0;
+                }
             }
 
             // Look for digital booklet(s) in "Goodies"
@@ -353,7 +368,7 @@ namespace QobuzDownloaderX.Shared
 
             List<Goody> booklets = qobuzAlbum.Goodies?.Where(g => g.FileFormatId == (int)GoodiesFileType.BOOKLET).ToList();
 
-            if (booklets?.Any() == false)
+            if (booklets == null || !booklets.Any())
             {
                 // No booklets found, just return
                 return noErrorsOccured;
@@ -438,7 +453,7 @@ namespace QobuzDownloaderX.Shared
                 logger.AddDownloadLogLine($"Starting Downloads for album \"{qobuzAlbum.Title}\" with ID: <{qobuzAlbum.Id}>...", true, true);
                 logger.AddEmptyDownloadLogLine(true, true);
 
-                bool albumDownloadOK = await DownloadAlbumAsync(cancellationToken, qobuzAlbum, basePath, true, $" [{qobuzAlbum.Id}]");
+                bool albumDownloadOK = await DownloadAlbumAsync(cancellationToken, qobuzAlbum, basePath, $" [{qobuzAlbum.Id}]");
 
                 // If album download failed, mark error occured and continue
                 if (!albumDownloadOK) noAlbumErrorsOccured = false;
@@ -595,8 +610,8 @@ namespace QobuzDownloaderX.Shared
 
             try
             {
-                // Get Album model object
-                Album qobuzAlbum = ExecuteApiCall(apiService => apiService.GetAlbum(DownloadInfo.DowloadItemID, true));
+                // Get Album model object without tracks (tracks are loaded in batches later)
+                Album qobuzAlbum = ExecuteApiCall(apiService => apiService.GetAlbum(DownloadInfo.DowloadItemID, true, null, 0));
 
                 // If API call failed, abort
                 if (qobuzAlbum == null) { return; }
