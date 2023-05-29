@@ -312,7 +312,7 @@ namespace QobuzDownloaderX.Shared
             bool noErrorsOccured = true;
 
             // Get Album model object with first batch of tracks
-            const int tracksLimit = 20;
+            const int tracksLimit = 50;
             qobuzAlbum = ExecuteApiCall(apiService => apiService.GetAlbum(qobuzAlbum.Id, true, null, tracksLimit, 0));
 
             // If API call failed, abort Album Download
@@ -349,6 +349,9 @@ namespace QobuzDownloaderX.Shared
                     // If API call failed, abort Album Download
                     if (string.IsNullOrEmpty(qobuzAlbum.Id)) { return false; }
 
+                    // If Album Track Items is empty, Qobuz max API offset might be reached
+                    if (qobuzAlbum.Tracks?.Items?.Any() != true) break;
+
                     // Reset 0-based counter for looping next batch of tracks
                     i = -1;
                     tracksLoaded = qobuzAlbum.Tracks.Items?.Count ?? 0;
@@ -368,7 +371,7 @@ namespace QobuzDownloaderX.Shared
 
             List<Goody> booklets = qobuzAlbum.Goodies?.Where(g => g.FileFormatId == (int)GoodiesFileType.BOOKLET).ToList();
 
-            if (booklets == null || !booklets.Any())
+            if (booklets == null || booklets?.Any() != true)
             {
                 // No booklets found, just return
                 return noErrorsOccured;
@@ -465,6 +468,78 @@ namespace QobuzDownloaderX.Shared
             }
 
             return noAlbumErrorsOccured;
+        }
+
+        // Convert Release to Album for download.
+        private async Task<bool> DownloadReleasesAsync(CancellationToken cancellationToken, string basePath, List<Release> releases)
+        {
+            bool noAlbumErrorsOccured = true;
+
+            foreach (Release qobuzRelease in releases)
+            {
+                // User requested task cancellation!
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // Fetch Album object corresponding to release
+                Album qobuzAlbum = ExecuteApiCall(apiService => apiService.GetAlbum(qobuzRelease.Id, true, null, 0, 0));
+
+                // If API call failed, mark error occured and continue with next album
+                if (string.IsNullOrEmpty(qobuzAlbum.Id)) { noAlbumErrorsOccured = false; continue; }
+
+                // Empty output, then say Starting Downloads.
+                logger.ClearUiLogComponent();
+                logger.AddEmptyDownloadLogLine(true, false);
+                logger.AddDownloadLogLine($"Starting Downloads for album \"{qobuzAlbum.Title}\" with ID: <{qobuzAlbum.Id}>...", true, true);
+                logger.AddEmptyDownloadLogLine(true, true);
+
+                bool albumDownloadOK = await DownloadAlbumAsync(cancellationToken, qobuzAlbum, basePath, $" [{qobuzAlbum.Id}]");
+
+                // If album download failed, mark error occured and continue
+                if (!albumDownloadOK) noAlbumErrorsOccured = false;
+            }
+
+            return noAlbumErrorsOccured;
+        }
+
+        private async Task<bool> DownloadArtistReleasesAsync(CancellationToken cancellationToken, Artist qobuzArtist, string basePath, string releaseType, bool isEndOfDownloadJob)
+        {
+            bool noErrorsOccured = true;
+
+            // Get ReleasesList model object with first batch of releases
+            const int releasesLimit = 100;
+            int releasesOffset = 0;
+            ReleasesList releasesList = ExecuteApiCall(apiService => apiService.GetReleaseList(qobuzArtist.Id.ToString(), true, releaseType, "release_date", "desc", 0, releasesLimit, releasesOffset));
+
+            // If API call failed, abort Artist Download
+            if (releasesList == null) { return false; }
+
+            bool continueDownload = true;
+
+            while (continueDownload)
+            {
+                // User requested task cancellation!
+                cancellationToken.ThrowIfCancellationRequested();
+
+                // If releases download failed, mark artist error occured and continue with next artist
+                if (!await DownloadReleasesAsync(cancellationToken, basePath, releasesList.Items)) noErrorsOccured = false;
+
+                if (releasesList.HasMore)
+                {
+                    // Fetch next batch of releases
+                    releasesOffset += releasesLimit;
+                    releasesList = ExecuteApiCall(apiService => apiService.GetReleaseList(qobuzArtist.Id.ToString(), true, releaseType, "release_date", "desc", 0, releasesLimit, releasesOffset));
+                } else
+                {
+                    continueDownload = false;
+                }
+            }
+
+            if (isEndOfDownloadJob)
+            {
+                logger.LogFinishedDownloadJob(noErrorsOccured);
+            }
+
+            return noErrorsOccured;
         }
 
         public async Task StartDownloadItemTaskAsync(DownloadItem downloadItem, DownloadTaskStatusChanged downloadStartedCallback, DownloadTaskStatusChanged downloadStoppedCallback)
@@ -645,14 +720,14 @@ namespace QobuzDownloaderX.Shared
             try
             {
                 // Get Artist model object
-                Artist qobuzArtist = ExecuteApiCall(apiService => apiService.GetArtist(DownloadInfo.DowloadItemID, true, "albums", "release_desc", 999999));
+                Artist qobuzArtist = ExecuteApiCall(apiService => apiService.GetArtist(DownloadInfo.DowloadItemID, true));
 
                 // If API call failed, abort
                 if (qobuzArtist == null) { return; }
 
                 logger.AddDownloadLogLine($"Starting Downloads for artist \"{qobuzArtist.Name}\" with ID: <{qobuzArtist.Id}>...", true, true);
 
-                await DownloadAlbumsAsync(cancellationToken, artistBasePath, qobuzArtist.Albums.Items, true);
+                await DownloadArtistReleasesAsync(cancellationToken, qobuzArtist, artistBasePath, "all", true);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -674,15 +749,41 @@ namespace QobuzDownloaderX.Shared
 
             // Empty output, then say Grabbing IDs.
             logger.ClearUiLogComponent();
-            logger.AddDownloadLogLine("Grabbing Label info...", true, true);
+            logger.AddDownloadLogLine("Grabbing Label albums...", true, true);
 
             try
             {
-                // Get Label model object
-                QobuzApiSharp.Models.Content.Label qobuzLabel = ExecuteApiCall(apiService => apiService.GetLabel(DownloadInfo.DowloadItemID, true, "albums", 999999));
+                // Initialise full Album list
+                QobuzApiSharp.Models.Content.Label qobuzLabel = null;
+                List <Album> labelAlbums = new List<Album>();
+                const int albumLimit = 500;
+                int albumsOffset = 0;
 
-                // If API call failed, abort
-                if (qobuzLabel == null) { return; }
+                while (true)
+                {
+                    // Get Label model object with albums
+                    qobuzLabel = ExecuteApiCall(apiService => apiService.GetLabel(DownloadInfo.DowloadItemID, true, "albums", albumLimit, albumsOffset));
+
+                    // If API call failed, abort
+                    if (qobuzLabel == null) { return; }
+
+                    // If resulting Label has no Album Items, Qobuz API maximum offset is reached
+                    if (qobuzLabel.Albums?.Items?.Any() != true) break;
+
+                    labelAlbums.AddRange(qobuzLabel.Albums.Items);
+
+                    // Exit loop when all albums are loaded or the Qobuz imposed limit of 10000 is reached
+                    if ((qobuzLabel.Albums?.Total ?? 0) == labelAlbums.Count) break;
+
+                    albumsOffset += albumLimit;
+                }
+
+                // If label has no albums, log and abort
+                if (!labelAlbums.Any())
+                {
+                    logger.AddDownloadLogLine($"No albums found for label \"{qobuzLabel.Name}\" with ID: <{qobuzLabel.Id}>, nothing to download.", true, true);
+                    return;
+                }
 
                 logger.AddDownloadLogLine($"Starting Downloads for label \"{qobuzLabel.Name}\" with ID: <{qobuzLabel.Id}>...", true, true);
 
@@ -690,7 +791,7 @@ namespace QobuzDownloaderX.Shared
                 string safeLabelName = StringTools.GetSafeFilename(StringTools.DecodeEncodedNonAsciiCharacters(qobuzLabel.Name));
                 labelBasePath = Path.Combine(labelBasePath, safeLabelName);
 
-                await DownloadAlbumsAsync(cancellationToken, labelBasePath, qobuzLabel.Albums.Items, true);
+                await DownloadAlbumsAsync(cancellationToken, labelBasePath, labelAlbums, true);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -714,17 +815,43 @@ namespace QobuzDownloaderX.Shared
 
             // Empty output, then say Grabbing IDs.
             logger.ClearUiLogComponent();
-            logger.AddDownloadLogLine("Grabbing Favorite Album IDs...", true, true);
+            logger.AddDownloadLogLine("Grabbing Favorite Albums...", true, true);
 
             try
             {
-                // Get UserFavorites model object
-                UserFavorites qobuzUserFavorites = ExecuteApiCall(apiService => apiService.GetUserFavorites(DownloadInfo.DowloadItemID, "albums", 999999));
+                // Initialise full Album list
+                List<Album> favoriteAlbums = new List<Album>();
+                const int albumLimit = 500;
+                int albumsOffset = 0;
 
-                // If API call failed, abort
-                if (qobuzUserFavorites == null) { return; }
+                while (true)
+                {
+                    // Get UserFavorites model object with albums
+                    UserFavorites qobuzUserFavorites = ExecuteApiCall(apiService => apiService.GetUserFavorites(DownloadInfo.DowloadItemID, "albums", albumLimit, albumsOffset));
 
-                await DownloadAlbumsAsync(cancellationToken, favoritesBasePath, qobuzUserFavorites.Albums.Items, true);
+                    // If API call failed, abort
+                    if (qobuzUserFavorites == null) { return; }
+
+                    // If resulting UserFavorites has no Album Items, Qobuz API maximum offset is reached
+                    if (qobuzUserFavorites.Albums?.Items?.Any() != true) break;
+
+                    favoriteAlbums.AddRange(qobuzUserFavorites.Albums.Items);
+
+                    // Exit loop when all albums are loaded
+                    if ((qobuzUserFavorites.Albums?.Total ?? 0) == favoriteAlbums.Count)  break;
+                    
+                    albumsOffset += albumLimit;
+                }
+
+                // If user has no favorite albums, log and abort
+                if (!favoriteAlbums.Any())
+                {
+                    logger.AddDownloadLogLine("No favorite albums found, nothing to download.", true, true);
+                    return;
+                }
+
+                // Download all favorite albums
+                await DownloadAlbumsAsync(cancellationToken, favoritesBasePath, favoriteAlbums, true);
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
@@ -752,27 +879,27 @@ namespace QobuzDownloaderX.Shared
             {
                 bool noArtistErrorsOccured = true;
 
-                // Get UserFavorites model object
-                UserFavorites qobuzUserFavorites = ExecuteApiCall(apiService => apiService.GetUserFavorites(DownloadInfo.DowloadItemID, "artists", 999999));
+                // Get UserFavoritesIds model object, getting Id's allows all results at once.
+                UserFavoritesIds qobuzUserFavoritesIds = ExecuteApiCall(apiService => apiService.GetUserFavoriteIds(DownloadInfo.DowloadItemID, "artists"));
 
                 // If API call failed, abort
-                if (qobuzUserFavorites == null) { return; }
+                if (qobuzUserFavoritesIds == null) { return; }
 
                 // If user has no favorite artists, log and abort
-                if (qobuzUserFavorites.Artists?.Total == 0)
+                if (qobuzUserFavoritesIds.Artists?.Any() != true)
                 {
-                    logger.AddEmptyDownloadLogLine(true, true);
                     logger.AddDownloadLogLine("No favorite artists found, nothing to download.", true, true);
                     return;
                 }
 
-                foreach (Artist favoriteArtist in qobuzUserFavorites.Artists.Items)
+                // Download favorite artists
+                foreach (int favoriteArtistId in qobuzUserFavoritesIds.Artists)
                 {
                     // User requested task cancellation!
                     cancellationToken.ThrowIfCancellationRequested();
 
                     // Get Artist model object
-                    Artist qobuzArtist = ExecuteApiCall(apiService => apiService.GetArtist(favoriteArtist.Id.ToString(), true, "albums", "release_desc", 999999));
+                    Artist qobuzArtist = ExecuteApiCall(apiService => apiService.GetArtist(favoriteArtistId.ToString(), true));
 
                     // If API call failed, mark artist error occured and continue with next artist
                     if (qobuzArtist == null) { noArtistErrorsOccured = false; continue; }
@@ -781,7 +908,7 @@ namespace QobuzDownloaderX.Shared
                     logger.AddDownloadLogLine($"Starting Downloads for artist \"{qobuzArtist.Name}\" with ID: <{qobuzArtist.Id}>...", true, true);
 
                     // If albums download failed, mark artist error occured and continue with next artist
-                    if (!await DownloadAlbumsAsync(cancellationToken, favoritesBasePath, qobuzArtist.Albums.Items, false)) noArtistErrorsOccured = false;
+                    if (!await DownloadArtistReleasesAsync(cancellationToken, qobuzArtist, favoritesBasePath, "all", false)) noArtistErrorsOccured = false;
                 }
 
                 logger.LogFinishedDownloadJob(noArtistErrorsOccured);
@@ -813,14 +940,14 @@ namespace QobuzDownloaderX.Shared
             {
                 bool noTrackErrorsOccured = true;
 
-                // Get UserFavoritesIds model object, getting Id's allows more results.
-                UserFavoritesIds qobuzUserFavoritesIds = ExecuteApiCall(apiService => apiService.GetUserFavoriteIds(DownloadInfo.DowloadItemID, "tracks", 999999));
+                // Get UserFavoritesIds model object, getting Id's allows all results at once.
+                UserFavoritesIds qobuzUserFavoritesIds = ExecuteApiCall(apiService => apiService.GetUserFavoriteIds(DownloadInfo.DowloadItemID, "tracks"));
 
                 // If API call failed, abort
                 if (qobuzUserFavoritesIds == null) { return; }
 
                 // If user has no favorite tracks, log and abort
-                if (qobuzUserFavoritesIds.Tracks?.Count == 0)
+                if (qobuzUserFavoritesIds.Tracks?.Any() != true)
                 {
                     logger.AddDownloadLogLine("No favorite tracks found, nothing to download.", true, true);
                     return;
@@ -865,16 +992,23 @@ namespace QobuzDownloaderX.Shared
 
             // Empty screen output, then say Grabbing info.
             logger.ClearUiLogComponent();
-            logger.AddDownloadLogLine("Grabbing Playlist info...", true, true);
+            logger.AddDownloadLogLine("Grabbing Playlist tracks...", true, true);
             logger.AddEmptyDownloadLogLine(true, true);
 
             try
             {
-                // Get Playlist model object
-                Playlist qobuzPlaylist = ExecuteApiCall(apiService => apiService.GetPlaylist(DownloadInfo.DowloadItemID, true, "tracks", 10000));
+                // Get Playlist model object with all track_ids
+                Playlist qobuzPlaylist = ExecuteApiCall(apiService => apiService.GetPlaylist(DownloadInfo.DowloadItemID, true, "track_ids", 10000));
 
                 // If API call failed, abort
                 if (qobuzPlaylist == null) { return; }
+
+                // If playlist empty, log and abort
+                if (qobuzPlaylist.TrackIds?.Any() != true)
+                {
+                    logger.AddDownloadLogLine($"Playlist \"{qobuzPlaylist.Name}\" is empty, nothing to download.", true, true);
+                    return;
+                }
 
                 logger.AddDownloadLogLine($"Playlist \"{qobuzPlaylist.Name}\" found. Starting Downloads...", true, true);
                 logger.AddEmptyDownloadLogLine(true, true);
@@ -906,19 +1040,23 @@ namespace QobuzDownloaderX.Shared
 
                 bool noTrackErrorsOccured = true;
 
-                // Download Playlist tracks
-                foreach (Track playlistTrack in qobuzPlaylist.Tracks.Items)
+                // TODO: create/initialize m3u playlist file
+
+                // Download Playlist tracks in sorted order
+                foreach (var kvp in qobuzPlaylist.TrackIds.OrderBy(x => x.Key))
                 {
                     // User requested task cancellation!
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    if (!IsStreamable(playlistTrack, true)) continue;
-
                     // Fetch full Track info
-                    Track qobuzTrack = ExecuteApiCall(apiService => apiService.GetTrack(playlistTrack.Id.GetValueOrDefault().ToString(), true));
+                    Track qobuzTrack = ExecuteApiCall(apiService => apiService.GetTrack(kvp.Value.ToString(), true));
 
                     // If API call failed, log and continue with next track
                     if (qobuzTrack == null) { noTrackErrorsOccured = false; continue; }
+
+                    if (!IsStreamable(qobuzTrack, true)) continue;
+
+                    // TODO: add to m3u playlist file
 
                     if (! await DownloadTrackAsync(cancellationToken, qobuzTrack, playlistBasePath, true, false, true)) noTrackErrorsOccured = false;
                 }

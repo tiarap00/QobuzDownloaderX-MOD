@@ -213,7 +213,7 @@
       <Version>13.0.3</Version>
     </PackageReference>
     <PackageReference Include="QobuzApiSharp">
-      <Version>0.0.4</Version>
+      <Version>0.0.5</Version>
     </PackageReference>
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
   </ItemGroup>
@@ -223,7 +223,6 @@
   <ItemGroup>
     <None Include="Resources\qobuz_logo_store.png" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
