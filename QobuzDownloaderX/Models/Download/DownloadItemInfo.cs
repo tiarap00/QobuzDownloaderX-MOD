@@ -32,11 +32,12 @@ namespace QobuzDownloaderX.Models
         public string FrontCoverImgBoxUrl { get; set; }
         public string MediaType { get; set; }
 
-        // Info / Tagging ints
+        // Info / Tagging numbers
         public int DiscNumber { get; set; }
         public int DiscTotal { get; set; }
         public int TrackNumber { get; set; }
         public int TrackTotal { get; set; }
+        public long Duration { get; set; }
 
         public DownloadItemInfo()
         {
@@ -60,7 +61,7 @@ namespace QobuzDownloaderX.Models
             Upc = null;
             MediaType = null;
 
-            // Clear tag ints
+            // Clear tag numbers
             TrackTotal = 0;
             DiscTotal = 0;
 
@@ -80,9 +81,10 @@ namespace QobuzDownloaderX.Models
             Copyright = null;
             Isrc = null;
 
-            // Clear tag ints
+            // Clear tag numberes
             TrackNumber = 0;
             DiscNumber = 0;
+            Duration = 0;
 
             // Clear tagbased Paths
             CurrentDownloadPaths.TrackNamePath = null;
@@ -155,9 +157,10 @@ namespace QobuzDownloaderX.Models
             Copyright = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Copyright);
             Isrc = qobuzTrack.Isrc;
 
-            // Grab tag ints
+            // Grab tag numbers
             TrackNumber = qobuzTrack.TrackNumber.GetValueOrDefault();
             DiscNumber = qobuzTrack.MediaNumber.GetValueOrDefault();
+            Duration = qobuzTrack.Duration.GetValueOrDefault();
 
             // Paths
             SetTrackPaths();

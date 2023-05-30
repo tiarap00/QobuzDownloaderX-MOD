@@ -1,4 +1,6 @@
-﻿using QobuzApiSharp.Exceptions;
+﻿using PlaylistsNET.Content;
+using PlaylistsNET.Models;
+using QobuzApiSharp.Exceptions;
 using QobuzApiSharp.Models.Content;
 using QobuzApiSharp.Service;
 using QobuzDownloaderX.Models;
@@ -205,10 +207,12 @@ namespace QobuzDownloaderX.Shared
             // Shorten full filename if over MaxLength to avoid errors with file names being too long
             DownloadPaths.FinalTrackNamePath = StringTools.TrimToMaxLength(DownloadPaths.FinalTrackNamePath, Globals.MaxLength);
 
-            // Check if the file already exists
-            string checkFile = Path.Combine(trackPath, DownloadPaths.FinalTrackNamePath + Globals.AudioFileType);
+            // Construct Full filename & file path
+            DownloadPaths.FullTrackFileName = DownloadPaths.FinalTrackNamePath + Globals.AudioFileType;
+            DownloadPaths.FullTrackFilePath = Path.Combine(trackPath, DownloadPaths.FullTrackFileName);
 
-            if (System.IO.File.Exists(checkFile))
+            // Check if the file already exists
+            if (System.IO.File.Exists(DownloadPaths.FullTrackFilePath))
             {
                 string message = $"File for \"{DownloadPaths.FinalTrackNamePath}\" already exists. Skipping.\r\n";
                 logger.AddDownloadLogLine(message, true, true);
@@ -231,7 +235,6 @@ namespace QobuzDownloaderX.Shared
             try
             {
                 // Create file path strings
-                string filePath = Path.Combine(trackPath, DownloadPaths.FinalTrackNamePath + Globals.AudioFileType);
                 string coverArtFilePath = Path.Combine(DownloadPaths.Path3Full, "Cover.jpg");
                 string coverArtTagFilePath = Path.Combine(DownloadPaths.Path3Full, Globals.TaggingOptions.ArtSize + ".jpg");
 
@@ -240,7 +243,7 @@ namespace QobuzDownloaderX.Shared
                     httpClient.DefaultRequestHeaders.Add("User-Agent", Globals.USER_AGENT);
 
                     // Save streamed file from link
-                    await DownloadFileAsync(httpClient, streamUrl, filePath);
+                    await DownloadFileAsync(httpClient, streamUrl, DownloadPaths.FullTrackFilePath);
 
                     // Download selected cover art size for tagging files (if not exists)
                     if (!System.IO.File.Exists(coverArtTagFilePath))
@@ -272,7 +275,7 @@ namespace QobuzDownloaderX.Shared
                 }
 
                 // Tag metadata to downloaded track.
-                AudioFileTagger.AddMetaDataTags(DownloadInfo, filePath, coverArtTagFilePath, logger);
+                AudioFileTagger.AddMetaDataTags(DownloadInfo, DownloadPaths.FullTrackFilePath, coverArtTagFilePath, logger);
 
                 // Remove temp tagging art file if requested and exists.
                 if (removeTagArtFileAfterDownload && System.IO.File.Exists(coverArtTagFilePath))
@@ -1040,26 +1043,32 @@ namespace QobuzDownloaderX.Shared
 
                 bool noTrackErrorsOccured = true;
 
-                // TODO: create/initialize m3u playlist file
+                // Start new m3u Playlist file.
+                M3uPlaylist m3uPlaylist = new M3uPlaylist();
+                m3uPlaylist.IsExtended = true;
 
-                // Download Playlist tracks in sorted order
-                foreach (var kvp in qobuzPlaylist.TrackIds.OrderBy(x => x.Key))
+                // Download Playlist tracks
+                foreach (long trackId in qobuzPlaylist.TrackIds)
                 {
                     // User requested task cancellation!
                     cancellationToken.ThrowIfCancellationRequested();
 
                     // Fetch full Track info
-                    Track qobuzTrack = ExecuteApiCall(apiService => apiService.GetTrack(kvp.Value.ToString(), true));
+                    Track qobuzTrack = ExecuteApiCall(apiService => apiService.GetTrack(trackId.ToString(), true));
 
                     // If API call failed, log and continue with next track
                     if (qobuzTrack == null) { noTrackErrorsOccured = false; continue; }
 
                     if (!IsStreamable(qobuzTrack, true)) continue;
 
-                    // TODO: add to m3u playlist file
+                    if (!await DownloadTrackAsync(cancellationToken, qobuzTrack, playlistBasePath, true, false, true)) noTrackErrorsOccured = false;
 
-                    if (! await DownloadTrackAsync(cancellationToken, qobuzTrack, playlistBasePath, true, false, true)) noTrackErrorsOccured = false;
+                    AddTrackToPlaylistFile(m3uPlaylist, DownloadInfo, DownloadPaths);
                 }
+
+                // Write m3u playlist to file, override if exists
+                string m3uPlaylistFile = Path.Combine(playlistBasePath, $"{qobuzPlaylist.Name}.m3u8");
+                System.IO.File.WriteAllText(m3uPlaylistFile, PlaylistToTextHelper.ToText(m3uPlaylist), System.Text.Encoding.UTF8);
 
                 logger.LogFinishedDownloadJob(noTrackErrorsOccured);
 
@@ -1074,6 +1083,20 @@ namespace QobuzDownloaderX.Shared
                 logger.ClearUiLogComponent();
                 logger.LogDownloadTaskException("Playlist", downloadEx);
             }
+        }
+
+        public void AddTrackToPlaylistFile(M3uPlaylist m3uPlaylist, DownloadItemInfo downloadInfo, DownloadItemPaths downloadPaths)
+        {
+            // If the TrackFile doesn't exist, skip.
+            if (!System.IO.File.Exists(downloadPaths.FullTrackFilePath)) return;
+
+            // Add successfully downloaded file to m3u playlist
+            m3uPlaylist.PlaylistEntries.Add(new M3uPlaylistEntry()
+            {
+                Path = downloadPaths.FullTrackFilePath,
+                Duration = TimeSpan.FromSeconds(DownloadInfo.Duration),
+                Title = $"{downloadInfo.PerformerName} - {downloadInfo.TrackName}"
+            });
         }
 
         public void CreateTrackDirectories(string basePath, string qualityPath, string albumPathSuffix = "", bool forTracklist = false)
