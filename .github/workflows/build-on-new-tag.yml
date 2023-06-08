@@ -1,4 +1,4 @@
-name: Build QobuzDownloaderX-MOD
+name: Automatic Build on Tag update
 
 on:
   push:
