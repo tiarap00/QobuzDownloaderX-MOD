@@ -1017,8 +1017,8 @@ namespace QobuzDownloaderX.Shared
                 logger.AddEmptyDownloadLogLine(true, true);
 
                 // Create Playlist root directory.
-                string playlistNamePath = StringTools.GetSafeFilename(StringTools.DecodeEncodedNonAsciiCharacters(qobuzPlaylist.Name));
-                playlistNamePath = StringTools.TrimToMaxLength(playlistNamePath, Globals.MaxLength);
+                string playlistSafeName = StringTools.GetSafeFilename(StringTools.DecodeEncodedNonAsciiCharacters(qobuzPlaylist.Name));
+                string playlistNamePath = StringTools.TrimToMaxLength(playlistSafeName, Globals.MaxLength);
                 playlistBasePath = Path.Combine(playlistBasePath, "- Playlists", playlistNamePath);
                 System.IO.Directory.CreateDirectory(playlistBasePath);
 
@@ -1067,7 +1067,7 @@ namespace QobuzDownloaderX.Shared
                 }
 
                 // Write m3u playlist to file, override if exists
-                string m3uPlaylistFile = Path.Combine(playlistBasePath, $"{qobuzPlaylist.Name}.m3u8");
+                string m3uPlaylistFile = Path.Combine(playlistBasePath, $"{playlistSafeName}.m3u8");
                 System.IO.File.WriteAllText(m3uPlaylistFile, PlaylistToTextHelper.ToText(m3uPlaylist), System.Text.Encoding.UTF8);
 
                 logger.LogFinishedDownloadJob(noTrackErrorsOccured);
