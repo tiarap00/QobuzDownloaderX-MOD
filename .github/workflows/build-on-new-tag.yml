@@ -1,0 +1,38 @@
+name: Build QobuzDownloaderX-MOD
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: windows-2019
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3.5.0
+
+    # - name: Setup .NET
+    #   uses: actions/setup-dotnet@v1.5.0
+    #   with:
+    #     dotnet-version: 4.8
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.3.1
+
+    - name: Setup NuGet
+      uses: nuget/setup-nuget@v1.2.0
+    
+    - name: Restore NuGet Packages
+      run: nuget restore QobuzDownloaderX.sln
+
+    - name: Build Solutions
+      run: |
+        msbuild.exe QobuzDownloaderX.sln /p:platform="Any CPU" /p:configuration="Release"
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: QBDLX-MOD_${{ github.event.release.tag_name }}
+        path: QobuzDownloaderX\bin\Release
