@@ -73,7 +73,12 @@ namespace QobuzDownloaderX
                 output.Invoke(new Action(() => output.AppendText("Periodicity - " + Globals.Login.User.Subscription.Periodicity + "\r\n")));
                 output.Invoke(new Action(() => output.AppendText("==========================\r\n\r\n")));
             }
-            else
+            else if (Globals.Login.User.Credential.Parameters.Source == "household" && Globals.Login.User.Credential.Parameters.HiresStreaming == true)
+            {
+                output.Invoke(new Action(() => output.AppendText("Active Family sub-account, unknown End Date \r\n")));
+                output.Invoke(new Action(() => output.AppendText("Credential Label - " + Globals.Login.User.Credential.Label + "\r\n")));
+                output.Invoke(new Action(() => output.AppendText("==========================\r\n\r\n")));
+            } else
             {
                 output.Invoke(new Action(() => output.AppendText("No active subscriptions, only sample downloads possible!\r\n")));
                 output.Invoke(new Action(() => output.AppendText("==========================\r\n\r\n")));
@@ -100,6 +105,12 @@ namespace QobuzDownloaderX
                 WriteCommentTag = Settings.Default.commentTag,
                 CommentTag = Settings.Default.commentText,
                 WriteComposerTag = Settings.Default.composerTag,
+                WriteProducerTag = Settings.Default.producerTag,
+                WriteLabelTag = Settings.Default.labelTag,
+                WriteInvolvedPeopleTag = Settings.Default.involvedPeopleTag,
+                MergePerformers = Settings.Default.mergePerformers,
+                PrimaryListSeparator = Settings.Default.initialListSeparator,
+                ListEndSeparator = Settings.Default.listEndSeparator,
                 WriteCopyrightTag = Settings.Default.copyrightTag,
                 WriteDiskNumberTag = Settings.Default.discTag,
                 WriteDiskTotalTag = Settings.Default.totalDiscsTag,
@@ -123,6 +134,10 @@ namespace QobuzDownloaderX
             commentCheckbox.Checked = Settings.Default.commentTag;
             commentTextbox.Text = Settings.Default.commentText;
             composerCheckbox.Checked = Settings.Default.composerTag;
+            producerCheckbox.Checked = Settings.Default.producerTag;
+            labelCheckbox.Checked = Settings.Default.labelTag;
+            involvedPeopleCheckBox.Checked = Settings.Default.involvedPeopleTag;
+            mergePerformersCheckBox.Checked = Settings.Default.mergePerformers;
             copyrightCheckbox.Checked = Settings.Default.copyrightTag;
             discNumberCheckbox.Checked = Settings.Default.discTag;
             discTotalCheckbox.Checked = Settings.Default.totalDiscsTag;
@@ -149,6 +164,8 @@ namespace QobuzDownloaderX
 
             customFormatIDTextbox.Text = Globals.FormatIdString;
             maxLengthTextbox.Text = Globals.MaxLength.ToString();
+            InitialListSeparatorTextbox.Text = Settings.Default.initialListSeparator;
+            ListEndSeparatorTextbox.Text = Settings.Default.listEndSeparator;
 
             // Check if there's no selected path saved.
             if (folderBrowserDialog.SelectedPath == null || folderBrowserDialog.SelectedPath == "")
@@ -355,10 +372,10 @@ namespace QobuzDownloaderX
             if (this.Height == 533)
             {
                 //New Height
-                this.Height = 632;
+                this.Height = 660;
                 tagsLabel.Text = "🠉 Choose which tags to save (click me) 🠉";
             }
-            else if (this.Height == 632)
+            else if (this.Height == 660)
             {
                 //New Height
                 this.Height = 533;
@@ -534,9 +551,9 @@ namespace QobuzDownloaderX
             {
                 try
                 {
-                    if (Convert.ToInt32(maxLengthTextbox.Text) > 110)
+                    if (Convert.ToInt32(maxLengthTextbox.Text) > 150)
                     {
-                        maxLengthTextbox.Text = "110";
+                        maxLengthTextbox.Text = "150";
                     }
                     Settings.Default.savedMaxLength = Convert.ToInt32(maxLengthTextbox.Text);
                     Settings.Default.Save();
@@ -545,12 +562,72 @@ namespace QobuzDownloaderX
                 }
                 catch (Exception)
                 {
-                    Globals.MaxLength = 36;
+                    Globals.MaxLength = 100;
                 }
             }
             else
             {
-                Globals.MaxLength = 36;
+                Globals.MaxLength = 100;
+            }
+        }
+
+        private void ProducerCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.producerTag = producerCheckbox.Checked;
+            Settings.Default.Save();
+            Globals.TaggingOptions.WriteProducerTag = producerCheckbox.Checked;
+        }
+
+        private void LabelCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.labelTag = labelCheckbox.Checked;
+            Settings.Default.Save();
+            Globals.TaggingOptions.WriteLabelTag = labelCheckbox.Checked;
+        }
+
+        private void InvolvedPeopleCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.involvedPeopleTag = involvedPeopleCheckBox.Checked;
+            Settings.Default.Save();
+            Globals.TaggingOptions.WriteInvolvedPeopleTag = involvedPeopleCheckBox.Checked;
+        }
+
+        private void MergePerformersCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.mergePerformers = mergePerformersCheckBox.Checked;
+            Settings.Default.Save();
+            Globals.TaggingOptions.MergePerformers = mergePerformersCheckBox.Checked;
+        }
+
+        private void InitialListSeparatorTextbox_TextChanged(object sender, EventArgs e)
+        {
+            if (InitialListSeparatorTextbox.Text != null)
+            {
+                Settings.Default.initialListSeparator = InitialListSeparatorTextbox.Text;
+                Settings.Default.Save();
+                Globals.TaggingOptions.PrimaryListSeparator = InitialListSeparatorTextbox.Text;
+            }
+            else
+            {
+                Settings.Default.initialListSeparator = ", ";
+                Settings.Default.Save();
+                Globals.TaggingOptions.PrimaryListSeparator = InitialListSeparatorTextbox.Text;
+            }
+        }
+
+        private void ListEndSeparatorTextbox_TextChanged(object sender, EventArgs e)
+        {
+            if (ListEndSeparatorTextbox.Text != null)
+            {
+                Settings.Default.listEndSeparator = ListEndSeparatorTextbox.Text;
+                Settings.Default.Save();
+                Globals.TaggingOptions.ListEndSeparator = ListEndSeparatorTextbox.Text;
+            }
+            else
+            {
+                Settings.Default.listEndSeparator = " & ";
+                Settings.Default.Save();
+                Globals.TaggingOptions.ListEndSeparator = ListEndSeparatorTextbox.Text;
             }
         }
 

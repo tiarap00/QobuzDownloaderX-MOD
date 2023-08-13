@@ -20,7 +20,13 @@
         public bool WriteExplicitTag { get; set; }
         public bool WriteCommentTag { get; set; }
         public bool WriteCoverImageTag { get; set; }
+        public bool WriteProducerTag { get; set; }
+        public bool WriteLabelTag { get; set; }
+        public bool WriteInvolvedPeopleTag { get; set; }
+        public bool MergePerformers { get; set; }
         public string CommentTag { get; set; }
         public string ArtSize { get; set; }
+        public string PrimaryListSeparator { get; set; }
+        public string ListEndSeparator { get; set; }
     }
 }

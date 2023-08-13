@@ -54,17 +54,53 @@ namespace QobuzDownloaderX.Shared
                     // Album Title tag, version is already added to name if available
                     if (Globals.TaggingOptions.WriteAlbumNameTag) { tfile.Tag.Album = fileInfo.AlbumName; }
 
-                    // Album Artits tag
-                    if (Globals.TaggingOptions.WriteAlbumArtistTag) { tfile.Tag.AlbumArtists = new string[] { fileInfo.AlbumArtist }; }
+                    // Album Artist tag
+                    if (Globals.TaggingOptions.WriteAlbumArtistTag)
+                    {
+                        if (Globals.TaggingOptions.MergePerformers)
+                        {
+                            tfile.Tag.AlbumArtists = new string[] { fileInfo.AlbumArtist };
+                        }
+                        else
+                        {
+                            tfile.Tag.AlbumArtists = fileInfo.AlbumArtists;
+                        }
+                    }
 
                     // Track Artist tag
-                    if (Globals.TaggingOptions.WriteTrackArtistTag) { tfile.Tag.Performers = new string[] { fileInfo.PerformerName }; }
+                    if (Globals.TaggingOptions.WriteTrackArtistTag)
+                    {
+                        if (Globals.TaggingOptions.MergePerformers)
+                        {
+                            tfile.Tag.Performers = new string[] { fileInfo.PerformerName };
+                        }
+                        else
+                        {
+                            tfile.Tag.Performers = fileInfo.PerformerNames;
+                        }
+                    }
 
                     // Composer tag
-                    if (Globals.TaggingOptions.WriteComposerTag) { tfile.Tag.Composers = new string[] { fileInfo.ComposerName }; }
+                    if (Globals.TaggingOptions.WriteComposerTag)
+                    {
+                        if (Globals.TaggingOptions.MergePerformers)
+                        {
+                            tfile.Tag.Composers = new string[] { fileInfo.ComposerName };
+                        }
+                        else
+                        {
+                            tfile.Tag.Composers = fileInfo.ComposerNames;
+                        }
+                    }
 
-                    // Release Date tag
-                    if (Globals.TaggingOptions.WriteReleaseYearTag) 
+                    // Label tag
+                    if (Globals.TaggingOptions.WriteLabelTag) { tfile.Tag.Publisher = fileInfo.LabelName; }
+
+                    // InvolvedPeople tag
+                    if (Globals.TaggingOptions.WriteInvolvedPeopleTag) { customId3v2.SetTextFrame("TIPL", fileInfo.InvolvedPeople); }
+
+                    // Release Year tag
+                    if (Globals.TaggingOptions.WriteReleaseYearTag)
                     {
                         fileInfo.ReleaseDate = fileInfo.ReleaseDate.Substring(0, 4);
                         tfile.Tag.Year = UInt32.Parse(fileInfo.ReleaseDate);
@@ -99,7 +135,7 @@ namespace QobuzDownloaderX.Shared
                     if (Globals.TaggingOptions.WriteCopyrightTag) { tfile.Tag.Copyright = fileInfo.Copyright; }
 
                     // ISRC tag
-                    if (Globals.TaggingOptions.WriteIsrcTag) { customId3v2.SetTextFrame("TSRC", fileInfo.Isrc); }
+                    if (Globals.TaggingOptions.WriteIsrcTag) { tfile.Tag.ISRC = fileInfo.Isrc; }
 
                     // Release Type tag
                     if (fileInfo.MediaType != null && Globals.TaggingOptions.WriteMediaTypeTag) { customId3v2.SetTextFrame("TMED", fileInfo.MediaType); }
@@ -145,16 +181,72 @@ namespace QobuzDownloaderX.Shared
                     if (Globals.TaggingOptions.WriteAlbumNameTag) { tfile.Tag.Album = fileInfo.AlbumName; }
 
                     // Album Artist tag
-                    if (Globals.TaggingOptions.WriteAlbumArtistTag) { custom.SetField("ALBUMARTIST", fileInfo.AlbumArtist); }
+                    if (Globals.TaggingOptions.WriteAlbumArtistTag)
+                    {
+                        if (Globals.TaggingOptions.MergePerformers)
+                        {
+                            tfile.Tag.AlbumArtists = new string[] { fileInfo.AlbumArtist };
+                        }
+                        else
+                        {
+                            tfile.Tag.AlbumArtists = fileInfo.AlbumArtists;
+                        }
+                    }
 
                     // Track Artist tag
-                    if (Globals.TaggingOptions.WriteTrackArtistTag) { custom.SetField("ARTIST", fileInfo.PerformerName); }
+                    if (Globals.TaggingOptions.WriteTrackArtistTag)
+                    {
+                        if (Globals.TaggingOptions.MergePerformers)
+                        {
+                            tfile.Tag.Performers = new string[] { fileInfo.PerformerName };
+                        }
+                        else
+                        {
+                            tfile.Tag.Performers = fileInfo.PerformerNames;
+                        }
+                    }
 
                     // Composer tag
-                    if (Globals.TaggingOptions.WriteComposerTag) { custom.SetField("COMPOSER", fileInfo.ComposerName); }
+                    if (Globals.TaggingOptions.WriteComposerTag)
+                    {
+                        if (Globals.TaggingOptions.MergePerformers)
+                        {
+                            tfile.Tag.Composers = new string[] { fileInfo.ComposerName };
+                        }
+                        else
+                        {
+                            tfile.Tag.Composers = fileInfo.ComposerNames;
+                        }
+                    }
 
-                    // Release Date tag
-                    if (Globals.TaggingOptions.WriteReleaseYearTag) { custom.SetField("YEAR", fileInfo.ReleaseDate); }
+                    // Label tag
+                    if (Globals.TaggingOptions.WriteLabelTag) { tfile.Tag.Publisher = fileInfo.LabelName; }
+
+                    // Producer tag
+                    if (Globals.TaggingOptions.WriteProducerTag)
+                    {
+                        if (Globals.TaggingOptions.MergePerformers)
+                        {
+                            custom.SetField("PRODUCER", fileInfo.ProducerName);
+                        }
+                        else
+                        {
+                            custom.SetField("PRODUCER", fileInfo.ProducerNames);
+                        }
+                    }
+
+                    // InvolvedPeople tag
+                    if (Globals.TaggingOptions.WriteInvolvedPeopleTag) { custom.SetField("INVOLVEDPEOPLE", fileInfo.InvolvedPeople); }
+
+                    // Original Release Date tag
+                    if (Globals.TaggingOptions.WriteReleaseYearTag) { custom.SetField("ORIGINALRELEASETIME", fileInfo.ReleaseDate); }
+
+                    // Release Year tag
+                    if (Globals.TaggingOptions.WriteReleaseYearTag)
+                    {
+                        fileInfo.ReleaseDate = fileInfo.ReleaseDate.Substring(0, 4);
+                        tfile.Tag.Year = UInt32.Parse(fileInfo.ReleaseDate);
+                    }
 
                     // Genre tag
                     if (Globals.TaggingOptions.WriteGenreTag) { tfile.Tag.Genres = new string[] { fileInfo.Genre }; }
@@ -178,15 +270,16 @@ namespace QobuzDownloaderX.Shared
                     if (Globals.TaggingOptions.WriteTrackTotalTag) { tfile.Tag.TrackCount = Convert.ToUInt32(fileInfo.TrackTotal); }
 
                     // Comment tag
-                    if (Globals.TaggingOptions.WriteCommentTag) { custom.SetField("COMMENT", Globals.TaggingOptions.CommentTag); }
+                    if (Globals.TaggingOptions.WriteCommentTag) { tfile.Tag.Comment = Globals.TaggingOptions.CommentTag; }
 
                     // Copyright tag
-                    if (Globals.TaggingOptions.WriteCopyrightTag) { custom.SetField("COPYRIGHT", fileInfo.Copyright); }
+                    if (Globals.TaggingOptions.WriteCopyrightTag) { tfile.Tag.Copyright = fileInfo.Copyright; }
+
                     // UPC tag
                     if (Globals.TaggingOptions.WriteUpcTag) { custom.SetField("UPC", fileInfo.Upc); }
 
                     // ISRC tag
-                    if (Globals.TaggingOptions.WriteIsrcTag) { custom.SetField("ISRC", fileInfo.Isrc); }
+                    if (Globals.TaggingOptions.WriteIsrcTag) { tfile.Tag.ISRC = fileInfo.Isrc; }
 
                     // Release Type tag
                     if (fileInfo.MediaType != null && Globals.TaggingOptions.WriteMediaTypeTag)

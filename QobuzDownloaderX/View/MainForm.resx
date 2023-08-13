@@ -120,6 +120,20 @@
   <metadata name="folderBrowserDialog.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>13, 1</value>
   </metadata>
+  <metadata name="mergeListsToolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>174, 1</value>
+  </metadata>
+  <data name="mergePerformersCheckBox.ToolTip" xml:space="preserve">
+    <value>If checked, performers tags that can contain lists, will be merged into 1 single value.
+Each value will be separated from the next using the defined PrimaryListSeparator value,
+except for the last value in a list, which will be separated from the previous using the ListEndSeparator.
+Any featured artists will be added at the end of the list, preceded with "Feat.".
+
+If unchecked, the tags AlbumArtist, TrackArtist (performer), Composer &amp; Producer,
+will be written to the files as lists using the default tagging method.
+Qobuz's default result will be used for file &amp; folder names.
+</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>25</value>
   </metadata>

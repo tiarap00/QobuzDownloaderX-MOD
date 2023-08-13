@@ -1,5 +1,7 @@
 ﻿using QobuzApiSharp.Models.Content;
 using QobuzDownloaderX.Shared;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace QobuzDownloaderX.Models
 {
@@ -9,6 +11,7 @@ namespace QobuzDownloaderX.Models
 
         // Important strings
         public string DowloadItemID { get; set; }
+
         public string Stream { get; set; }
 
         // Info for creating paths
@@ -16,11 +19,19 @@ namespace QobuzDownloaderX.Models
 
         // Info / Tagging strings
         public string TrackVersionName { get; set; }
+
         public bool? Advisory { get; set; }
         public string AlbumArtist { get; set; }
+        public string[] AlbumArtists { get; set; }
         public string AlbumName { get; set; }
         public string PerformerName { get; set; }
+        public string[] PerformerNames { get; set; }
         public string ComposerName { get; set; }
+        public string[] ComposerNames { get; set; }
+        public string ProducerName { get; set; }
+        public string[] ProducerNames { get; set; }
+        public string LabelName { get; set; }
+        public string InvolvedPeople { get; set; }
         public string TrackName { get; set; }
         public string Copyright { get; set; }
         public string Genre { get; set; }
@@ -34,6 +45,7 @@ namespace QobuzDownloaderX.Models
 
         // Info / Tagging numbers
         public int DiscNumber { get; set; }
+
         public int DiscTotal { get; set; }
         public int TrackNumber { get; set; }
         public int TrackTotal { get; set; }
@@ -55,7 +67,9 @@ namespace QobuzDownloaderX.Models
         {
             // Clear tag strings
             AlbumArtist = null;
+            AlbumArtists = null;
             AlbumName = null;
+            LabelName = null;
             Genre = null;
             ReleaseDate = null;
             Upc = null;
@@ -74,7 +88,12 @@ namespace QobuzDownloaderX.Models
         {
             // Clear tag strings
             PerformerName = null;
+            PerformerNames = null;
             ComposerName = null;
+            ComposerNames = null;
+            ProducerName = null;
+            ProducerNames = null;
+            InvolvedPeople = null;
             TrackName = null;
             TrackVersionName = null;
             Advisory = null;
@@ -107,11 +126,26 @@ namespace QobuzDownloaderX.Models
         {
             ClearAlbumTaggingInfo();
 
-            AlbumArtist = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Artist.Name);
+            AlbumArtists = GetArtistNames(qobuzAlbum.Artists, InvolvedPersonRoleType.MainArtist);
+            string[] featuredArtists = GetArtistNames(qobuzAlbum.Artists, InvolvedPersonRoleType.FeaturedArtist);
+            string albumArtists = MergeFeaturedArtistsWithMainArtists(AlbumArtists, featuredArtists);
+            // Add Features Artists to Album Artists.
+            AlbumArtists = AlbumArtists.Concat(featuredArtists).ToArray();
+            if (!string.IsNullOrEmpty(albumArtists) && Globals.TaggingOptions.MergePerformers)
+            {
+                // User Main-Artists by default
+                AlbumArtist = albumArtists;
+            }
+            else
+            {
+                AlbumArtist = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Artist.Name);
+            }
+
             AlbumName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Title.Trim());
             string albumVersionName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Version?.Trim());
             // Add album version to AlbumName if present
             AlbumName += (albumVersionName == null ? "" : " (" + albumVersionName + ")");
+            LabelName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Label.Name);
 
             Genre = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Genre.Name);
             ReleaseDate = StringTools.FormatDateTimeOffset(qobuzAlbum.ReleaseDateStream);
@@ -141,13 +175,42 @@ namespace QobuzDownloaderX.Models
         {
             ClearTrackTaggingInfo();
 
-            PerformerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Performer?.Name);
+            PerformersParser performersParser = new PerformersParser(qobuzTrack.Performers);
+
+            PerformerNames = performersParser.GetPerformersWithRole(InvolvedPersonRoleType.MainArtist);
+            string[] featuredArtists = performersParser.GetPerformersWithRole(InvolvedPersonRoleType.FeaturedArtist);
+            string trackArtists = MergeFeaturedArtistsWithMainArtists(PerformerNames, featuredArtists);
+            // Add Features Artists to Album Artists.
+            PerformerNames = PerformerNames.Concat(featuredArtists).ToArray();
+            if (!string.IsNullOrEmpty(trackArtists) && Globals.TaggingOptions.MergePerformers)
+            {
+                // User MainArtist Performers by default
+                PerformerName = trackArtists;
+            }
+            else
+            {
+                PerformerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Performer?.Name);
+            }
             // If no performer name, use album artist
             if (string.IsNullOrEmpty(PerformerName))
             {
                 PerformerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Album?.Artist?.Name);
             }
-            ComposerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Composer?.Name);
+
+            ComposerNames = performersParser.GetPerformersWithRole(InvolvedPersonRoleType.Composer).ToArray();
+            string composers = StringTools.MergeDoubleDelimitedList(ComposerNames, Globals.TaggingOptions.PrimaryListSeparator, Globals.TaggingOptions.ListEndSeparator);
+            if (!string.IsNullOrEmpty(composers) && Globals.TaggingOptions.MergePerformers)
+            {
+                ComposerName = composers;
+            }
+            else
+            {
+                ComposerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Composer?.Name);
+            }
+
+            ProducerNames = performersParser.GetPerformersWithRole(InvolvedPersonRoleType.Producer).ToArray();
+            ProducerName = StringTools.MergeDoubleDelimitedList(ProducerNames, Globals.TaggingOptions.PrimaryListSeparator, Globals.TaggingOptions.ListEndSeparator);
+            InvolvedPeople = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Performers);
             TrackName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Title.Trim());
             TrackVersionName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Version?.Trim());
             // Add track version to TrackName
@@ -171,6 +234,35 @@ namespace QobuzDownloaderX.Models
         {
             CurrentDownloadPaths.PerformerNamePath = StringTools.TrimToMaxLength(StringTools.GetSafeFilename(PerformerName), Globals.MaxLength);
             CurrentDownloadPaths.TrackNamePath = StringTools.GetSafeFilename(TrackName);
+        }
+
+        /// <summary>
+        /// Get the Artist names with given role as an array
+        /// </summary>
+        /// <param name="artists"></param>
+        /// <param name="role"></param>
+        /// <returns></returns>
+        public string[] GetArtistNames(List<Artist> artists, InvolvedPersonRoleType role)
+        {
+            return artists.Where(artist => artist.Roles.Exists(roleString => InvolvedPersonRoleMapping.GetRoleByString(roleString) == role))
+                .Select(artist => artist.Name)
+                .ToArray();
+        }
+
+        public string MergeFeaturedArtistsWithMainArtists(string[] mainArtists, string[] featuresArtists)
+        { 
+            string mergedMainArtists = StringTools.MergeDoubleDelimitedList(mainArtists, Globals.TaggingOptions.PrimaryListSeparator, Globals.TaggingOptions.ListEndSeparator);
+            string mergedFeaturedArtists = StringTools.MergeDoubleDelimitedList(featuresArtists, Globals.TaggingOptions.PrimaryListSeparator, Globals.TaggingOptions.ListEndSeparator);
+
+            if (string.IsNullOrEmpty(mergedFeaturedArtists))
+            {
+                return mergedMainArtists;
+            }
+            else
+            {
+                return $"{mergedMainArtists} Feat. {mergedFeaturedArtists}";
+            }
+
         }
     }
 }

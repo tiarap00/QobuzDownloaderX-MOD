@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace QobuzDownloaderX.Shared
@@ -74,7 +75,28 @@ namespace QobuzDownloaderX.Shared
             return duration.TotalHours < 1 ?
                 $"{duration:mm\\:ss}" :
                 $"{duration:hh\\:mm\\:ss}";
+        }
 
+        public static string MergeDoubleDelimitedList(string[] stringList, string initialDelimiter, string finalDelimiter)
+        {
+            if (stringList != null)
+            {
+                string result;
+                if (stringList.Length > 1)
+                {
+                    result = string.Join(initialDelimiter, stringList.Take(stringList.Length - 1)) + finalDelimiter + stringList.LastOrDefault();
+                }
+                else
+                {
+                    result = stringList.FirstOrDefault();
+                }
+
+                return DecodeEncodedNonAsciiCharacters(result);
+            }
+            else
+            {
+                return "";
+            }
         }
     }
 }

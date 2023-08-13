@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(QobuzDownloaderX));
             this.selectFolderButton = new System.Windows.Forms.Button();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
@@ -112,6 +113,17 @@
             this.testURLBox = new System.Windows.Forms.TextBox();
             this.openLogFolderButton = new System.Windows.Forms.Button();
             this.downloadSpeedLabel = new System.Windows.Forms.Label();
+            this.panel10 = new System.Windows.Forms.Panel();
+            this.labelCheckbox = new System.Windows.Forms.CheckBox();
+            this.InitialListSeparatorTextbox = new System.Windows.Forms.TextBox();
+            this.involvedPeopleCheckBox = new System.Windows.Forms.CheckBox();
+            this.producerCheckbox = new System.Windows.Forms.CheckBox();
+            this.PrimaryListSeparatorLabel = new System.Windows.Forms.Label();
+            this.ListEndSeparatorLabel = new System.Windows.Forms.Label();
+            this.panel11 = new System.Windows.Forms.Panel();
+            this.ListEndSeparatorTextbox = new System.Windows.Forms.TextBox();
+            this.mergePerformersCheckBox = new System.Windows.Forms.CheckBox();
+            this.mergeListsToolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.albumArtPicBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.logoBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.profilePictureBox)).BeginInit();
@@ -240,6 +252,7 @@
             this.albumArtistTextBox.ReadOnly = true;
             this.albumArtistTextBox.Size = new System.Drawing.Size(150, 20);
             this.albumArtistTextBox.TabIndex = 42;
+            this.albumArtistTextBox.TabStop = false;
             this.albumArtistTextBox.WordWrap = false;
             // 
             // albumTextBox
@@ -253,6 +266,7 @@
             this.albumTextBox.ReadOnly = true;
             this.albumTextBox.Size = new System.Drawing.Size(150, 20);
             this.albumTextBox.TabIndex = 44;
+            this.albumTextBox.TabStop = false;
             this.albumTextBox.WordWrap = false;
             // 
             // label3
@@ -276,6 +290,7 @@
             this.releaseDateTextBox.ReadOnly = true;
             this.releaseDateTextBox.Size = new System.Drawing.Size(150, 20);
             this.releaseDateTextBox.TabIndex = 46;
+            this.releaseDateTextBox.TabStop = false;
             this.releaseDateTextBox.WordWrap = false;
             // 
             // label4
@@ -299,6 +314,7 @@
             this.upcTextBox.ReadOnly = true;
             this.upcTextBox.Size = new System.Drawing.Size(150, 20);
             this.upcTextBox.TabIndex = 48;
+            this.upcTextBox.TabStop = false;
             this.upcTextBox.WordWrap = false;
             // 
             // label5
@@ -354,6 +370,7 @@
             this.totalTracksTextbox.ReadOnly = true;
             this.totalTracksTextbox.Size = new System.Drawing.Size(150, 20);
             this.totalTracksTextbox.TabIndex = 56;
+            this.totalTracksTextbox.TabStop = false;
             this.totalTracksTextbox.WordWrap = false;
             // 
             // totalTracksLabel
@@ -377,6 +394,7 @@
             this.qualityTextbox.ReadOnly = true;
             this.qualityTextbox.Size = new System.Drawing.Size(150, 20);
             this.qualityTextbox.TabIndex = 59;
+            this.qualityTextbox.TabStop = false;
             this.qualityTextbox.WordWrap = false;
             // 
             // qualityLabel
@@ -409,7 +427,7 @@
             this.tagsLabel.Location = new System.Drawing.Point(12, 501);
             this.tagsLabel.Name = "tagsLabel";
             this.tagsLabel.Size = new System.Drawing.Size(914, 23);
-            this.tagsLabel.TabIndex = 7;
+            this.tagsLabel.TabIndex = 12;
             this.tagsLabel.Text = "🠋 Choose which tags to save (click me) 🠋";
             this.tagsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.tagsLabel.Click += new System.EventHandler(this.tagsLabel_Click);
@@ -424,7 +442,7 @@
             this.albumArtistCheckbox.Location = new System.Drawing.Point(12, 540);
             this.albumArtistCheckbox.Name = "albumArtistCheckbox";
             this.albumArtistCheckbox.Size = new System.Drawing.Size(81, 17);
-            this.albumArtistCheckbox.TabIndex = 62;
+            this.albumArtistCheckbox.TabIndex = 13;
             this.albumArtistCheckbox.Text = "Album Artist";
             this.albumArtistCheckbox.UseVisualStyleBackColor = true;
             this.albumArtistCheckbox.CheckedChanged += new System.EventHandler(this.AlbumArtistCheckbox_CheckedChanged);
@@ -439,7 +457,7 @@
             this.artistCheckbox.Location = new System.Drawing.Point(183, 540);
             this.artistCheckbox.Name = "artistCheckbox";
             this.artistCheckbox.Size = new System.Drawing.Size(80, 17);
-            this.artistCheckbox.TabIndex = 63;
+            this.artistCheckbox.TabIndex = 15;
             this.artistCheckbox.Text = "Track Artist";
             this.artistCheckbox.UseVisualStyleBackColor = true;
             this.artistCheckbox.CheckedChanged += new System.EventHandler(this.ArtistCheckbox_CheckedChanged);
@@ -454,7 +472,7 @@
             this.trackTitleCheckbox.Location = new System.Drawing.Point(269, 540);
             this.trackTitleCheckbox.Name = "trackTitleCheckbox";
             this.trackTitleCheckbox.Size = new System.Drawing.Size(77, 17);
-            this.trackTitleCheckbox.TabIndex = 64;
+            this.trackTitleCheckbox.TabIndex = 16;
             this.trackTitleCheckbox.Text = "Track Title";
             this.trackTitleCheckbox.UseVisualStyleBackColor = true;
             this.trackTitleCheckbox.CheckedChanged += new System.EventHandler(this.TrackTitleCheckbox_CheckedChanged);
@@ -466,10 +484,10 @@
             this.trackNumberCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.trackNumberCheckbox.FlatAppearance.BorderSize = 0;
             this.trackNumberCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.trackNumberCheckbox.Location = new System.Drawing.Point(104, 568);
+            this.trackNumberCheckbox.Location = new System.Drawing.Point(104, 595);
             this.trackNumberCheckbox.Name = "trackNumberCheckbox";
             this.trackNumberCheckbox.Size = new System.Drawing.Size(94, 17);
-            this.trackNumberCheckbox.TabIndex = 65;
+            this.trackNumberCheckbox.TabIndex = 29;
             this.trackNumberCheckbox.Text = "Track Number";
             this.trackNumberCheckbox.UseVisualStyleBackColor = true;
             this.trackNumberCheckbox.CheckedChanged += new System.EventHandler(this.TrackNumberCheckbox_CheckedChanged);
@@ -481,10 +499,10 @@
             this.trackTotalCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.trackTotalCheckbox.FlatAppearance.BorderSize = 0;
             this.trackTotalCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.trackTotalCheckbox.Location = new System.Drawing.Point(12, 568);
+            this.trackTotalCheckbox.Location = new System.Drawing.Point(12, 595);
             this.trackTotalCheckbox.Name = "trackTotalCheckbox";
             this.trackTotalCheckbox.Size = new System.Drawing.Size(86, 17);
-            this.trackTotalCheckbox.TabIndex = 66;
+            this.trackTotalCheckbox.TabIndex = 28;
             this.trackTotalCheckbox.Text = "Total Tracks";
             this.trackTotalCheckbox.UseVisualStyleBackColor = true;
             this.trackTotalCheckbox.CheckedChanged += new System.EventHandler(this.TrackTotalCheckbox_CheckedChanged);
@@ -496,10 +514,10 @@
             this.discNumberCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.discNumberCheckbox.FlatAppearance.BorderSize = 0;
             this.discNumberCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.discNumberCheckbox.Location = new System.Drawing.Point(289, 568);
+            this.discNumberCheckbox.Location = new System.Drawing.Point(289, 595);
             this.discNumberCheckbox.Name = "discNumberCheckbox";
             this.discNumberCheckbox.Size = new System.Drawing.Size(87, 17);
-            this.discNumberCheckbox.TabIndex = 67;
+            this.discNumberCheckbox.TabIndex = 31;
             this.discNumberCheckbox.Text = "Disc Number";
             this.discNumberCheckbox.UseVisualStyleBackColor = true;
             this.discNumberCheckbox.CheckedChanged += new System.EventHandler(this.DiscNumberCheckbox_CheckedChanged);
@@ -511,10 +529,10 @@
             this.discTotalCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.discTotalCheckbox.FlatAppearance.BorderSize = 0;
             this.discTotalCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.discTotalCheckbox.Location = new System.Drawing.Point(204, 568);
+            this.discTotalCheckbox.Location = new System.Drawing.Point(204, 595);
             this.discTotalCheckbox.Name = "discTotalCheckbox";
             this.discTotalCheckbox.Size = new System.Drawing.Size(79, 17);
-            this.discTotalCheckbox.TabIndex = 68;
+            this.discTotalCheckbox.TabIndex = 30;
             this.discTotalCheckbox.Text = "Total Discs";
             this.discTotalCheckbox.UseVisualStyleBackColor = true;
             this.discTotalCheckbox.CheckedChanged += new System.EventHandler(this.DiscTotalCheckbox_CheckedChanged);
@@ -529,7 +547,7 @@
             this.albumCheckbox.Location = new System.Drawing.Point(99, 540);
             this.albumCheckbox.Name = "albumCheckbox";
             this.albumCheckbox.Size = new System.Drawing.Size(78, 17);
-            this.albumCheckbox.TabIndex = 69;
+            this.albumCheckbox.TabIndex = 14;
             this.albumCheckbox.Text = "Album Title";
             this.albumCheckbox.UseVisualStyleBackColor = true;
             this.albumCheckbox.CheckedChanged += new System.EventHandler(this.AlbumCheckbox_CheckedChanged);
@@ -541,10 +559,10 @@
             this.explicitCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.explicitCheckbox.FlatAppearance.BorderSize = 0;
             this.explicitCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.explicitCheckbox.Location = new System.Drawing.Point(458, 568);
+            this.explicitCheckbox.Location = new System.Drawing.Point(458, 595);
             this.explicitCheckbox.Name = "explicitCheckbox";
             this.explicitCheckbox.Size = new System.Drawing.Size(106, 17);
-            this.explicitCheckbox.TabIndex = 76;
+            this.explicitCheckbox.TabIndex = 33;
             this.explicitCheckbox.Text = "Explicit Advisory*";
             this.explicitCheckbox.UseVisualStyleBackColor = true;
             this.explicitCheckbox.CheckedChanged += new System.EventHandler(this.ExplicitCheckbox_CheckedChanged);
@@ -559,7 +577,7 @@
             this.upcCheckbox.Location = new System.Drawing.Point(763, 540);
             this.upcCheckbox.Name = "upcCheckbox";
             this.upcCheckbox.Size = new System.Drawing.Size(52, 17);
-            this.upcCheckbox.TabIndex = 75;
+            this.upcCheckbox.TabIndex = 22;
             this.upcCheckbox.Text = "UPC*";
             this.upcCheckbox.UseVisualStyleBackColor = true;
             this.upcCheckbox.CheckedChanged += new System.EventHandler(this.UpcCheckbox_CheckedChanged);
@@ -574,7 +592,7 @@
             this.isrcCheckbox.Location = new System.Drawing.Point(821, 540);
             this.isrcCheckbox.Name = "isrcCheckbox";
             this.isrcCheckbox.Size = new System.Drawing.Size(51, 17);
-            this.isrcCheckbox.TabIndex = 74;
+            this.isrcCheckbox.TabIndex = 23;
             this.isrcCheckbox.Text = "ISRC";
             this.isrcCheckbox.UseVisualStyleBackColor = true;
             this.isrcCheckbox.CheckedChanged += new System.EventHandler(this.IsrcCheckbox_CheckedChanged);
@@ -589,7 +607,7 @@
             this.copyrightCheckbox.Location = new System.Drawing.Point(687, 540);
             this.copyrightCheckbox.Name = "copyrightCheckbox";
             this.copyrightCheckbox.Size = new System.Drawing.Size(70, 17);
-            this.copyrightCheckbox.TabIndex = 73;
+            this.copyrightCheckbox.TabIndex = 21;
             this.copyrightCheckbox.Text = "Copyright";
             this.copyrightCheckbox.UseVisualStyleBackColor = true;
             this.copyrightCheckbox.CheckedChanged += new System.EventHandler(this.CopyrightCheckbox_CheckedChanged);
@@ -604,7 +622,7 @@
             this.composerCheckbox.Location = new System.Drawing.Point(608, 540);
             this.composerCheckbox.Name = "composerCheckbox";
             this.composerCheckbox.Size = new System.Drawing.Size(73, 17);
-            this.composerCheckbox.TabIndex = 72;
+            this.composerCheckbox.TabIndex = 20;
             this.composerCheckbox.Text = "Composer";
             this.composerCheckbox.UseVisualStyleBackColor = true;
             this.composerCheckbox.CheckedChanged += new System.EventHandler(this.ComposerCheckbox_CheckedChanged);
@@ -619,7 +637,7 @@
             this.genreCheckbox.Location = new System.Drawing.Point(547, 540);
             this.genreCheckbox.Name = "genreCheckbox";
             this.genreCheckbox.Size = new System.Drawing.Size(55, 17);
-            this.genreCheckbox.TabIndex = 71;
+            this.genreCheckbox.TabIndex = 19;
             this.genreCheckbox.Text = "Genre";
             this.genreCheckbox.UseVisualStyleBackColor = true;
             this.genreCheckbox.CheckedChanged += new System.EventHandler(this.GenreCheckbox_CheckedChanged);
@@ -634,7 +652,7 @@
             this.releaseCheckbox.Location = new System.Drawing.Point(450, 540);
             this.releaseCheckbox.Name = "releaseCheckbox";
             this.releaseCheckbox.Size = new System.Drawing.Size(91, 17);
-            this.releaseCheckbox.TabIndex = 70;
+            this.releaseCheckbox.TabIndex = 18;
             this.releaseCheckbox.Text = "Release Date";
             this.releaseCheckbox.UseVisualStyleBackColor = true;
             this.releaseCheckbox.CheckedChanged += new System.EventHandler(this.ReleaseCheckbox_CheckedChanged);
@@ -644,10 +662,10 @@
             this.commentCheckbox.AutoSize = true;
             this.commentCheckbox.FlatAppearance.BorderSize = 0;
             this.commentCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.commentCheckbox.Location = new System.Drawing.Point(570, 568);
+            this.commentCheckbox.Location = new System.Drawing.Point(570, 595);
             this.commentCheckbox.Name = "commentCheckbox";
             this.commentCheckbox.Size = new System.Drawing.Size(70, 17);
-            this.commentCheckbox.TabIndex = 78;
+            this.commentCheckbox.TabIndex = 34;
             this.commentCheckbox.Text = "Comment";
             this.commentCheckbox.UseVisualStyleBackColor = true;
             this.commentCheckbox.CheckedChanged += new System.EventHandler(this.CommentCheckbox_CheckedChanged);
@@ -657,11 +675,11 @@
             this.commentTextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.commentTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.commentTextbox.ForeColor = System.Drawing.Color.White;
-            this.commentTextbox.Location = new System.Drawing.Point(646, 566);
+            this.commentTextbox.Location = new System.Drawing.Point(646, 593);
             this.commentTextbox.Multiline = true;
             this.commentTextbox.Name = "commentTextbox";
             this.commentTextbox.Size = new System.Drawing.Size(112, 17);
-            this.commentTextbox.TabIndex = 79;
+            this.commentTextbox.TabIndex = 35;
             this.commentTextbox.TextChanged += new System.EventHandler(this.CommentTextbox_TextChanged);
             // 
             // imageCheckbox
@@ -671,10 +689,10 @@
             this.imageCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.imageCheckbox.FlatAppearance.BorderSize = 0;
             this.imageCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.imageCheckbox.Location = new System.Drawing.Point(382, 568);
+            this.imageCheckbox.Location = new System.Drawing.Point(382, 595);
             this.imageCheckbox.Name = "imageCheckbox";
             this.imageCheckbox.Size = new System.Drawing.Size(70, 17);
-            this.imageCheckbox.TabIndex = 80;
+            this.imageCheckbox.TabIndex = 32;
             this.imageCheckbox.Text = "Cover Art";
             this.imageCheckbox.UseVisualStyleBackColor = true;
             this.imageCheckbox.CheckedChanged += new System.EventHandler(this.ImageCheckbox_CheckedChanged);
@@ -686,7 +704,7 @@
             this.mp3Checkbox.Location = new System.Drawing.Point(243, 61);
             this.mp3Checkbox.Name = "mp3Checkbox";
             this.mp3Checkbox.Size = new System.Drawing.Size(69, 17);
-            this.mp3Checkbox.TabIndex = 81;
+            this.mp3Checkbox.TabIndex = 7;
             this.mp3Checkbox.Text = "MP3 320";
             this.mp3Checkbox.UseVisualStyleBackColor = true;
             this.mp3Checkbox.CheckedChanged += new System.EventHandler(this.mp3Checkbox_CheckedChanged);
@@ -698,7 +716,7 @@
             this.flacLowCheckbox.Location = new System.Drawing.Point(318, 61);
             this.flacLowCheckbox.Name = "flacLowCheckbox";
             this.flacLowCheckbox.Size = new System.Drawing.Size(93, 17);
-            this.flacLowCheckbox.TabIndex = 82;
+            this.flacLowCheckbox.TabIndex = 8;
             this.flacLowCheckbox.Text = "FLAC 16/44.1";
             this.flacLowCheckbox.UseVisualStyleBackColor = true;
             this.flacLowCheckbox.CheckedChanged += new System.EventHandler(this.flacLowCheckbox_CheckedChanged);
@@ -710,7 +728,7 @@
             this.flacMidCheckbox.Location = new System.Drawing.Point(417, 61);
             this.flacMidCheckbox.Name = "flacMidCheckbox";
             this.flacMidCheckbox.Size = new System.Drawing.Size(84, 17);
-            this.flacMidCheckbox.TabIndex = 83;
+            this.flacMidCheckbox.TabIndex = 9;
             this.flacMidCheckbox.Text = "FLAC 24/96";
             this.flacMidCheckbox.UseVisualStyleBackColor = true;
             this.flacMidCheckbox.CheckedChanged += new System.EventHandler(this.flacMidCheckbox_CheckedChanged);
@@ -724,7 +742,7 @@
             this.flacHighCheckbox.Location = new System.Drawing.Point(507, 61);
             this.flacHighCheckbox.Name = "flacHighCheckbox";
             this.flacHighCheckbox.Size = new System.Drawing.Size(90, 17);
-            this.flacHighCheckbox.TabIndex = 84;
+            this.flacHighCheckbox.TabIndex = 10;
             this.flacHighCheckbox.Text = "FLAC 24/192";
             this.flacHighCheckbox.UseVisualStyleBackColor = true;
             this.flacHighCheckbox.CheckedChanged += new System.EventHandler(this.flacHighCheckbox_CheckedChanged);
@@ -733,7 +751,7 @@
             // 
             this.mp3WarnLabel.AutoSize = true;
             this.mp3WarnLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.mp3WarnLabel.Location = new System.Drawing.Point(744, 596);
+            this.mp3WarnLabel.Location = new System.Drawing.Point(744, 621);
             this.mp3WarnLabel.Name = "mp3WarnLabel";
             this.mp3WarnLabel.Size = new System.Drawing.Size(182, 13);
             this.mp3WarnLabel.TabIndex = 85;
@@ -830,7 +848,7 @@
             // panel8
             // 
             this.panel8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.panel8.Location = new System.Drawing.Point(646, 585);
+            this.panel8.Location = new System.Drawing.Point(646, 612);
             this.panel8.Name = "panel8";
             this.panel8.Size = new System.Drawing.Size(112, 1);
             this.panel8.TabIndex = 90;
@@ -894,7 +912,7 @@
             this.logoutLabel.Location = new System.Drawing.Point(41, 506);
             this.logoutLabel.Name = "logoutLabel";
             this.logoutLabel.Size = new System.Drawing.Size(161, 13);
-            this.logoutLabel.TabIndex = 8;
+            this.logoutLabel.TabIndex = 11;
             this.logoutLabel.Text = "Logged in as %name%, Log out?";
             this.logoutLabel.Click += new System.EventHandler(this.logoutLabel_Click);
             this.logoutLabel.MouseLeave += new System.EventHandler(this.logoutLabel_MouseLeave);
@@ -921,17 +939,17 @@
             "150",
             "100",
             "50"});
-            this.artSizeSelect.Location = new System.Drawing.Point(113, 593);
+            this.artSizeSelect.Location = new System.Drawing.Point(113, 621);
             this.artSizeSelect.Name = "artSizeSelect";
             this.artSizeSelect.Size = new System.Drawing.Size(87, 21);
-            this.artSizeSelect.TabIndex = 96;
+            this.artSizeSelect.TabIndex = 36;
             this.artSizeSelect.SelectedIndexChanged += new System.EventHandler(this.ArtSizeSelect_SelectedIndexChanged);
             // 
             // artSizeLabel
             // 
             this.artSizeLabel.AutoSize = true;
             this.artSizeLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.artSizeLabel.Location = new System.Drawing.Point(12, 596);
+            this.artSizeLabel.Location = new System.Drawing.Point(12, 624);
             this.artSizeLabel.Name = "artSizeLabel";
             this.artSizeLabel.Size = new System.Drawing.Size(207, 13);
             this.artSizeLabel.TabIndex = 97;
@@ -947,7 +965,7 @@
             this.typeCheckbox.Location = new System.Drawing.Point(352, 540);
             this.typeCheckbox.Name = "typeCheckbox";
             this.typeCheckbox.Size = new System.Drawing.Size(92, 17);
-            this.typeCheckbox.TabIndex = 98;
+            this.typeCheckbox.TabIndex = 17;
             this.typeCheckbox.Text = "Release Type";
             this.typeCheckbox.UseVisualStyleBackColor = true;
             this.typeCheckbox.CheckedChanged += new System.EventHandler(this.TypeCheckbox_CheckedChanged);
@@ -1002,7 +1020,7 @@
             // 
             this.maxLengthLabel.AutoSize = true;
             this.maxLengthLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.maxLengthLabel.Location = new System.Drawing.Point(444, 596);
+            this.maxLengthLabel.Location = new System.Drawing.Point(444, 624);
             this.maxLengthLabel.Name = "maxLengthLabel";
             this.maxLengthLabel.Size = new System.Drawing.Size(121, 13);
             this.maxLengthLabel.TabIndex = 102;
@@ -1011,7 +1029,7 @@
             // panel9
             // 
             this.panel9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.panel9.Location = new System.Drawing.Point(567, 610);
+            this.panel9.Location = new System.Drawing.Point(567, 638);
             this.panel9.Name = "panel9";
             this.panel9.Size = new System.Drawing.Size(68, 1);
             this.panel9.TabIndex = 92;
@@ -1021,22 +1039,22 @@
             this.maxLengthTextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.maxLengthTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.maxLengthTextbox.ForeColor = System.Drawing.Color.White;
-            this.maxLengthTextbox.Location = new System.Drawing.Point(567, 596);
+            this.maxLengthTextbox.Location = new System.Drawing.Point(567, 624);
             this.maxLengthTextbox.Multiline = true;
             this.maxLengthTextbox.Name = "maxLengthTextbox";
             this.maxLengthTextbox.Size = new System.Drawing.Size(68, 17);
-            this.maxLengthTextbox.TabIndex = 91;
+            this.maxLengthTextbox.TabIndex = 38;
             this.maxLengthTextbox.TextChanged += new System.EventHandler(this.maxLengthTextbox_TextChanged);
             // 
             // maxLengthWarnLabel
             // 
             this.maxLengthWarnLabel.AutoSize = true;
             this.maxLengthWarnLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.maxLengthWarnLabel.Location = new System.Drawing.Point(819, 610);
+            this.maxLengthWarnLabel.Location = new System.Drawing.Point(819, 635);
             this.maxLengthWarnLabel.Name = "maxLengthWarnLabel";
             this.maxLengthWarnLabel.Size = new System.Drawing.Size(107, 13);
             this.maxLengthWarnLabel.TabIndex = 103;
-            this.maxLengthWarnLabel.Text = "** = Max value is 110";
+            this.maxLengthWarnLabel.Text = "** = Max value is 150";
             // 
             // customFormatPanel
             // 
@@ -1079,17 +1097,17 @@
             this.filenameTempSelect.Items.AddRange(new object[] {
             "00 Trackname",
             "00 - Trackname"});
-            this.filenameTempSelect.Location = new System.Drawing.Point(325, 593);
+            this.filenameTempSelect.Location = new System.Drawing.Point(325, 621);
             this.filenameTempSelect.Name = "filenameTempSelect";
             this.filenameTempSelect.Size = new System.Drawing.Size(108, 21);
-            this.filenameTempSelect.TabIndex = 107;
+            this.filenameTempSelect.TabIndex = 37;
             this.filenameTempSelect.SelectedIndexChanged += new System.EventHandler(this.filenameTempSelect_SelectedIndexChanged);
             // 
             // label7
             // 
             this.label7.AutoSize = true;
             this.label7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.label7.Location = new System.Drawing.Point(225, 596);
+            this.label7.Location = new System.Drawing.Point(225, 624);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(99, 13);
             this.label7.TabIndex = 108;
@@ -1130,12 +1148,152 @@
             this.downloadSpeedLabel.Text = "Idle";
             this.downloadSpeedLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // panel10
+            // 
+            this.panel10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.panel10.Location = new System.Drawing.Point(474, 583);
+            this.panel10.Name = "panel10";
+            this.panel10.Size = new System.Drawing.Size(15, 1);
+            this.panel10.TabIndex = 115;
+            // 
+            // labelCheckbox
+            // 
+            this.labelCheckbox.AutoSize = true;
+            this.labelCheckbox.Checked = true;
+            this.labelCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.labelCheckbox.FlatAppearance.BorderSize = 0;
+            this.labelCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.labelCheckbox.Location = new System.Drawing.Point(90, 567);
+            this.labelCheckbox.Name = "labelCheckbox";
+            this.labelCheckbox.Size = new System.Drawing.Size(52, 17);
+            this.labelCheckbox.TabIndex = 25;
+            this.labelCheckbox.Text = "Label";
+            this.labelCheckbox.UseVisualStyleBackColor = true;
+            this.labelCheckbox.CheckedChanged += new System.EventHandler(this.LabelCheckbox_CheckedChanged);
+            // 
+            // InitialListSeparatorTextbox
+            // 
+            this.InitialListSeparatorTextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
+            this.InitialListSeparatorTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.InitialListSeparatorTextbox.ForeColor = System.Drawing.Color.White;
+            this.InitialListSeparatorTextbox.Location = new System.Drawing.Point(474, 564);
+            this.InitialListSeparatorTextbox.MaxLength = 3;
+            this.InitialListSeparatorTextbox.Multiline = true;
+            this.InitialListSeparatorTextbox.Name = "InitialListSeparatorTextbox";
+            this.InitialListSeparatorTextbox.Size = new System.Drawing.Size(15, 17);
+            this.InitialListSeparatorTextbox.TabIndex = 27;
+            this.InitialListSeparatorTextbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.InitialListSeparatorTextbox.TextChanged += new System.EventHandler(this.InitialListSeparatorTextbox_TextChanged);
+            // 
+            // involvedPeopleCheckBox
+            // 
+            this.involvedPeopleCheckBox.AutoSize = true;
+            this.involvedPeopleCheckBox.Checked = true;
+            this.involvedPeopleCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.involvedPeopleCheckBox.FlatAppearance.BorderSize = 0;
+            this.involvedPeopleCheckBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.involvedPeopleCheckBox.Location = new System.Drawing.Point(147, 567);
+            this.involvedPeopleCheckBox.Name = "involvedPeopleCheckBox";
+            this.involvedPeopleCheckBox.Size = new System.Drawing.Size(103, 17);
+            this.involvedPeopleCheckBox.TabIndex = 26;
+            this.involvedPeopleCheckBox.Text = "Involved People";
+            this.involvedPeopleCheckBox.UseVisualStyleBackColor = true;
+            this.involvedPeopleCheckBox.CheckedChanged += new System.EventHandler(this.InvolvedPeopleCheckbox_CheckedChanged);
+            // 
+            // producerCheckbox
+            // 
+            this.producerCheckbox.AutoSize = true;
+            this.producerCheckbox.Checked = true;
+            this.producerCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.producerCheckbox.FlatAppearance.BorderSize = 0;
+            this.producerCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.producerCheckbox.Location = new System.Drawing.Point(12, 567);
+            this.producerCheckbox.Name = "producerCheckbox";
+            this.producerCheckbox.Size = new System.Drawing.Size(73, 17);
+            this.producerCheckbox.TabIndex = 24;
+            this.producerCheckbox.Text = "Producer*";
+            this.producerCheckbox.UseVisualStyleBackColor = true;
+            this.producerCheckbox.CheckedChanged += new System.EventHandler(this.ProducerCheckbox_CheckedChanged);
+            // 
+            // PrimaryListSeparatorLabel
+            // 
+            this.PrimaryListSeparatorLabel.AutoSize = true;
+            this.PrimaryListSeparatorLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.PrimaryListSeparatorLabel.Location = new System.Drawing.Point(367, 568);
+            this.PrimaryListSeparatorLabel.Name = "PrimaryListSeparatorLabel";
+            this.PrimaryListSeparatorLabel.Size = new System.Drawing.Size(103, 13);
+            this.PrimaryListSeparatorLabel.TabIndex = 100;
+            this.PrimaryListSeparatorLabel.Text = "PrimaryListSeparator";
+            // 
+            // ListEndSeparatorLabel
+            // 
+            this.ListEndSeparatorLabel.AutoSize = true;
+            this.ListEndSeparatorLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.ListEndSeparatorLabel.Location = new System.Drawing.Point(501, 568);
+            this.ListEndSeparatorLabel.Name = "ListEndSeparatorLabel";
+            this.ListEndSeparatorLabel.Size = new System.Drawing.Size(88, 13);
+            this.ListEndSeparatorLabel.TabIndex = 117;
+            this.ListEndSeparatorLabel.Text = "ListEndSeparator";
+            // 
+            // panel11
+            // 
+            this.panel11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.panel11.Location = new System.Drawing.Point(594, 583);
+            this.panel11.Name = "panel11";
+            this.panel11.Size = new System.Drawing.Size(15, 1);
+            this.panel11.TabIndex = 118;
+            // 
+            // ListEndSeparatorTextbox
+            // 
+            this.ListEndSeparatorTextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
+            this.ListEndSeparatorTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ListEndSeparatorTextbox.ForeColor = System.Drawing.Color.White;
+            this.ListEndSeparatorTextbox.Location = new System.Drawing.Point(594, 564);
+            this.ListEndSeparatorTextbox.MaxLength = 3;
+            this.ListEndSeparatorTextbox.Multiline = true;
+            this.ListEndSeparatorTextbox.Name = "ListEndSeparatorTextbox";
+            this.ListEndSeparatorTextbox.Size = new System.Drawing.Size(15, 17);
+            this.ListEndSeparatorTextbox.TabIndex = 116;
+            this.ListEndSeparatorTextbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // mergePerformersCheckBox
+            // 
+            this.mergePerformersCheckBox.AutoSize = true;
+            this.mergePerformersCheckBox.Checked = true;
+            this.mergePerformersCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.mergePerformersCheckBox.FlatAppearance.BorderSize = 0;
+            this.mergePerformersCheckBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.mergePerformersCheckBox.Location = new System.Drawing.Point(255, 567);
+            this.mergePerformersCheckBox.Name = "mergePerformersCheckBox";
+            this.mergePerformersCheckBox.Size = new System.Drawing.Size(109, 17);
+            this.mergePerformersCheckBox.TabIndex = 119;
+            this.mergePerformersCheckBox.Text = "Merge Performers";
+            this.mergeListsToolTip.SetToolTip(this.mergePerformersCheckBox, resources.GetString("mergePerformersCheckBox.ToolTip"));
+            this.mergePerformersCheckBox.UseVisualStyleBackColor = true;
+            this.mergePerformersCheckBox.CheckedChanged += new System.EventHandler(this.MergePerformersCheckbox_CheckedChanged);
+            // 
+            // mergeListsToolTip
+            // 
+            this.mergeListsToolTip.AutoPopDelay = 32000;
+            this.mergeListsToolTip.InitialDelay = 500;
+            this.mergeListsToolTip.ReshowDelay = 100;
+            // 
             // QobuzDownloaderX
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
-            this.ClientSize = new System.Drawing.Size(938, 632);
+            this.ClientSize = new System.Drawing.Size(938, 660);
+            this.Controls.Add(this.mergePerformersCheckBox);
+            this.Controls.Add(this.ListEndSeparatorLabel);
+            this.Controls.Add(this.panel11);
+            this.Controls.Add(this.ListEndSeparatorTextbox);
+            this.Controls.Add(this.PrimaryListSeparatorLabel);
+            this.Controls.Add(this.panel10);
+            this.Controls.Add(this.labelCheckbox);
+            this.Controls.Add(this.InitialListSeparatorTextbox);
+            this.Controls.Add(this.involvedPeopleCheckBox);
+            this.Controls.Add(this.producerCheckbox);
             this.Controls.Add(this.downloadSpeedLabel);
             this.Controls.Add(this.openLogFolderButton);
             this.Controls.Add(this.filenameTempSelect);
@@ -1320,6 +1478,17 @@
         private System.Windows.Forms.TextBox testURLBox;
         private System.Windows.Forms.Button openLogFolderButton;
         public System.Windows.Forms.Label downloadSpeedLabel;
+        private System.Windows.Forms.Panel panel10;
+        private System.Windows.Forms.CheckBox labelCheckbox;
+        private System.Windows.Forms.TextBox InitialListSeparatorTextbox;
+        private System.Windows.Forms.CheckBox involvedPeopleCheckBox;
+        private System.Windows.Forms.CheckBox producerCheckbox;
+        private System.Windows.Forms.Label PrimaryListSeparatorLabel;
+        private System.Windows.Forms.Label ListEndSeparatorLabel;
+        private System.Windows.Forms.Panel panel11;
+        private System.Windows.Forms.TextBox ListEndSeparatorTextbox;
+        private System.Windows.Forms.CheckBox mergePerformersCheckBox;
+        private System.Windows.Forms.ToolTip mergeListsToolTip;
     }
 }
 
