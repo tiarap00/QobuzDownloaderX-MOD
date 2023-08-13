@@ -80,6 +80,8 @@
     <Compile Include="Models\Download\DownloadItem.cs" />
     <Compile Include="Shared\DownloadLogger.cs" />
     <Compile Include="Shared\DownloadManager.cs" />
+    <Compile Include="Shared\InvolvedPersonRoleType.cs" />
+    <Compile Include="Shared\Tools\InvolvedPersonRoleMapping.cs" />
     <Compile Include="Shared\Tools\AudioFileTagger.cs" />
     <Compile Include="Shared\TaggingOptions.cs" />
     <Compile Include="Shared\GoodiesFileType.cs" />
@@ -90,6 +92,7 @@
     <Compile Include="Shared\Tools\DownloadUrlParser.cs" />
     <Compile Include="Shared\Tools\QualityStringMappings.cs" />
     <Compile Include="Shared\Tools\ControlTools.cs" />
+    <Compile Include="Shared\Tools\PerformersParser.cs" />
     <Compile Include="Shared\Tools\StringTools.cs" />
     <Compile Include="Shared\Globals.cs" />
     <Compile Include="View\HeadlessForm.cs">
