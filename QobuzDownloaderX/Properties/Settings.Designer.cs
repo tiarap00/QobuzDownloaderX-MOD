@@ -12,7 +12,7 @@ namespace QobuzDownloaderX.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.5.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.7.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -445,7 +445,7 @@ namespace QobuzDownloaderX.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("36")]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
         public int savedMaxLength {
             get {
                 return ((int)(this["savedMaxLength"]));
@@ -476,6 +476,78 @@ namespace QobuzDownloaderX.Properties {
             }
             set {
                 this["savedFilenameTemplateString"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool producerTag {
+            get {
+                return ((bool)(this["producerTag"]));
+            }
+            set {
+                this["producerTag"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool labelTag {
+            get {
+                return ((bool)(this["labelTag"]));
+            }
+            set {
+                this["labelTag"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool involvedPeopleTag {
+            get {
+                return ((bool)(this["involvedPeopleTag"]));
+            }
+            set {
+                this["involvedPeopleTag"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(", ")]
+        public string initialListSeparator {
+            get {
+                return ((string)(this["initialListSeparator"]));
+            }
+            set {
+                this["initialListSeparator"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute(" & ")]
+        public string listEndSeparator {
+            get {
+                return ((string)(this["listEndSeparator"]));
+            }
+            set {
+                this["listEndSeparator"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool mergePerformers {
+            get {
+                return ((bool)(this["mergePerformers"]));
+            }
+            set {
+                this["mergePerformers"] = value;
             }
         }
     }
