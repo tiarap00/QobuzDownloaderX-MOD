@@ -8,6 +8,7 @@ using QobuzDownloaderX.Models.Content;
 using QobuzDownloaderX.Properties;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -131,8 +132,7 @@ namespace QobuzDownloaderX.Shared
                 using (FileStream streamToWriteTo = System.IO.File.Create(filePath))
                 {
                     long totalBytesRead = 0;
-                    DateTime startTime = DateTime.Now;
-                    DateTime lastUpdateTime = DateTime.Now;
+                    Stopwatch stopwatch = Stopwatch.StartNew();
                     byte[] buffer = new byte[8192]; // Use an 8KB buffer size for copying data
                     bool firstBufferRead = false;
 
@@ -144,13 +144,12 @@ namespace QobuzDownloaderX.Shared
 
                         // Calculate download speed
                         totalBytesRead += bytesRead;
-                        double speed = (totalBytesRead / 1024d / 1024d) / DateTime.Now.Subtract(startTime).TotalSeconds;
+                        double speed = totalBytesRead / 1024d / 1024d / stopwatch.Elapsed.TotalSeconds;
 
                         // Update the downloadSpeedLabel with the current speed at download start and then max. every 100 ms, with 3 decimal places
-                        if (!firstBufferRead || DateTime.Now.Subtract(lastUpdateTime).TotalMilliseconds >= 100)
+                        if (!firstBufferRead || stopwatch.ElapsedMilliseconds >= 100)
                         {
                             UpdateUiDownloadSpeed.Invoke($"Downloading... {speed:F3} MB/s");
-                            lastUpdateTime = DateTime.Now;
                         }
 
                         firstBufferRead = true;
