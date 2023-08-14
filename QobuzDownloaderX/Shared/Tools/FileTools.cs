@@ -31,5 +31,13 @@ namespace QobuzDownloaderX.Shared
 
             return logDirPath;
         }
+
+        public static string GetInitializedSettingsDir()
+        {
+            string settingsDirPath = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "settings");
+            if (!System.IO.Directory.Exists(settingsDirPath)) System.IO.Directory.CreateDirectory(settingsDirPath);
+
+            return settingsDirPath;
+        }
     }
 }

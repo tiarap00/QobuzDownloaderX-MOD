@@ -2,136 +2,136 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="QobuzDownloaderX.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="savedFolder" Type="System.String" Scope="User">
+    <Setting Name="savedFolder" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="savedAppID" Type="System.String" Scope="User">
+    <Setting Name="savedAppID" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="savedEmail" Type="System.String" Scope="User">
+    <Setting Name="savedEmail" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="savedPassword" Type="System.String" Scope="User">
+    <Setting Name="savedPassword" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="savedFormatID" Type="System.String" Scope="User">
+    <Setting Name="savedFormatID" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="UpgradeRequired" Type="System.Boolean" Scope="User">
+    <Setting Name="UpgradeRequired" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="albumTag" Type="System.Boolean" Scope="User">
+    <Setting Name="albumTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="artistTag" Type="System.Boolean" Scope="User">
+    <Setting Name="artistTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="albumArtistTag" Type="System.Boolean" Scope="User">
+    <Setting Name="albumArtistTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="trackTag" Type="System.Boolean" Scope="User">
+    <Setting Name="trackTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="totalTracksTag" Type="System.Boolean" Scope="User">
+    <Setting Name="totalTracksTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="discTag" Type="System.Boolean" Scope="User">
+    <Setting Name="discTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="totalDiscsTag" Type="System.Boolean" Scope="User">
+    <Setting Name="totalDiscsTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="genreTag" Type="System.Boolean" Scope="User">
+    <Setting Name="genreTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="isrcTag" Type="System.Boolean" Scope="User">
+    <Setting Name="isrcTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="upcTag" Type="System.Boolean" Scope="User">
+    <Setting Name="upcTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="copyrightTag" Type="System.Boolean" Scope="User">
+    <Setting Name="copyrightTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="yearTag" Type="System.Boolean" Scope="User">
+    <Setting Name="yearTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="explicitTag" Type="System.Boolean" Scope="User">
+    <Setting Name="explicitTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="imageTag" Type="System.Boolean" Scope="User">
+    <Setting Name="imageTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="commentTag" Type="System.Boolean" Scope="User">
+    <Setting Name="commentTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="composerTag" Type="System.Boolean" Scope="User">
+    <Setting Name="composerTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="trackTitleTag" Type="System.Boolean" Scope="User">
+    <Setting Name="trackTitleTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="commentText" Type="System.String" Scope="User">
+    <Setting Name="commentText" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="quality1" Type="System.Boolean" Scope="User">
+    <Setting Name="quality1" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="quality2" Type="System.Boolean" Scope="User">
+    <Setting Name="quality2" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="quality3" Type="System.Boolean" Scope="User">
+    <Setting Name="quality3" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="quality4" Type="System.Boolean" Scope="User">
+    <Setting Name="quality4" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="qualityFormat" Type="System.String" Scope="User">
+    <Setting Name="qualityFormat" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">27</Value>
     </Setting>
-    <Setting Name="audioType" Type="System.String" Scope="User">
+    <Setting Name="audioType" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">.flac</Value>
     </Setting>
-    <Setting Name="savedUserID" Type="System.String" Scope="User">
+    <Setting Name="savedUserID" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="savedUserAuthToken" Type="System.String" Scope="User">
+    <Setting Name="savedUserAuthToken" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="savedAltLoginValue" Type="System.String" Scope="User">
+    <Setting Name="savedAltLoginValue" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="savedArtSize" Type="System.Int32" Scope="User">
+    <Setting Name="savedArtSize" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
     </Setting>
-    <Setting Name="typeTag" Type="System.Boolean" Scope="User">
+    <Setting Name="typeTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="savedMaxLength" Type="System.Int32" Scope="User">
+    <Setting Name="savedMaxLength" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">100</Value>
     </Setting>
-    <Setting Name="savedFilenameTemplate" Type="System.Int32" Scope="User">
+    <Setting Name="savedFilenameTemplate" Roaming="true" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>
-    <Setting Name="savedFilenameTemplateString" Type="System.String" Scope="User">
+    <Setting Name="savedFilenameTemplateString" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)"> - </Value>
     </Setting>
-    <Setting Name="producerTag" Type="System.Boolean" Scope="User">
+    <Setting Name="producerTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="labelTag" Type="System.Boolean" Scope="User">
+    <Setting Name="labelTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="involvedPeopleTag" Type="System.Boolean" Scope="User">
+    <Setting Name="involvedPeopleTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="initialListSeparator" Type="System.String" Scope="User">
+    <Setting Name="initialListSeparator" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)">, </Value>
     </Setting>
-    <Setting Name="listEndSeparator" Type="System.String" Scope="User">
+    <Setting Name="listEndSeparator" Roaming="true" Type="System.String" Scope="User">
       <Value Profile="(Default)"> &amp; </Value>
     </Setting>
-    <Setting Name="mergePerformers" Type="System.Boolean" Scope="User">
+    <Setting Name="mergePerformers" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
