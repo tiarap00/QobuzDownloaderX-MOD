@@ -106,7 +106,7 @@ namespace QobuzDownloaderX
             {
                 emailTextbox.ForeColor = Color.FromArgb(186, 186, 186);
             }
-            if (emailTextbox.Text == null | emailTextbox.Text == "")
+            if (emailTextbox.Text == null || emailTextbox.Text == "")
             {
                 emailTextbox.ForeColor = Color.FromArgb(88, 92, 102);
                 emailTextbox.Text = "Email";
@@ -117,7 +117,7 @@ namespace QobuzDownloaderX
             {
                 userIdTextbox.ForeColor = Color.FromArgb(186, 186, 186);
             }
-            if (userIdTextbox.Text == null | userIdTextbox.Text == "")
+            if (userIdTextbox.Text == null || userIdTextbox.Text == "")
             {
                 userIdTextbox.ForeColor = Color.FromArgb(88, 92, 102);
                 userIdTextbox.Text = "user_id";
@@ -130,7 +130,7 @@ namespace QobuzDownloaderX
                 passwordTextbox.UseSystemPasswordChar = false;
                 passwordTextbox.ForeColor = Color.FromArgb(186, 186, 186);
             }
-            if (passwordTextbox.Text == null | passwordTextbox.Text == "")
+            if (passwordTextbox.Text == null || passwordTextbox.Text == "")
             {
                 passwordTextbox.ForeColor = Color.FromArgb(88, 92, 102);
                 passwordTextbox.UseSystemPasswordChar = true;
@@ -144,7 +144,7 @@ namespace QobuzDownloaderX
                 userAuthTokenTextbox.UseSystemPasswordChar = false;
                 userAuthTokenTextbox.ForeColor = Color.FromArgb(186, 186, 186);
             }
-            if (userAuthTokenTextbox.Text == null | userAuthTokenTextbox.Text == "")
+            if (userAuthTokenTextbox.Text == null || userAuthTokenTextbox.Text == "")
             {
                 userAuthTokenTextbox.ForeColor = Color.FromArgb(88, 92, 102);
                 userAuthTokenTextbox.UseSystemPasswordChar = true;
@@ -511,7 +511,7 @@ namespace QobuzDownloaderX
 
         private void EmailTextbox_Leave(object sender, EventArgs e)
         {
-            if (emailTextbox.Text == null | emailTextbox.Text == "")
+            if (emailTextbox.Text == null || emailTextbox.Text == "")
             {
                 emailTextbox.ForeColor = Color.FromArgb(88, 92, 102);
                 emailTextbox.Text = "Email";
@@ -545,7 +545,7 @@ namespace QobuzDownloaderX
 
         private void PasswordTextbox_Leave(object sender, EventArgs e)
         {
-            if (passwordTextbox.Text == null | passwordTextbox.Text == "")
+            if (passwordTextbox.Text == null || passwordTextbox.Text == "")
             {
                 passwordTextbox.ForeColor = Color.FromArgb(88, 92, 102);
                 passwordTextbox.UseSystemPasswordChar = true;
@@ -568,7 +568,7 @@ namespace QobuzDownloaderX
 
         private void UserIdTextbox_Leave(object sender, EventArgs e)
         {
-            if (userIdTextbox.Text == null | userIdTextbox.Text == "")
+            if (userIdTextbox.Text == null || userIdTextbox.Text == "")
             {
                 userIdTextbox.ForeColor = Color.FromArgb(88, 92, 102);
                 userIdTextbox.Text = "user_id";
@@ -592,7 +592,7 @@ namespace QobuzDownloaderX
 
         private void UserAuthTokenTextbox_Leave(object sender, EventArgs e)
         {
-            if (userAuthTokenTextbox.Text == null | userAuthTokenTextbox.Text == "")
+            if (userAuthTokenTextbox.Text == null || userAuthTokenTextbox.Text == "")
             {
                 userAuthTokenTextbox.ForeColor = Color.FromArgb(88, 92, 102);
                 userAuthTokenTextbox.UseSystemPasswordChar = true;
