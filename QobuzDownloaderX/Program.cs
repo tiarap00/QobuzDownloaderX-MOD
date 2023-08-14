@@ -1,4 +1,5 @@
-﻿using QobuzDownloaderX.Shared;
+﻿using Bluegrams.Application;
+using QobuzDownloaderX.Shared;
 using System;
 using System.Globalization;
 using System.Windows.Forms;
@@ -13,6 +14,10 @@ namespace QobuzDownloaderX
         [STAThread]
         private static void Main()
         {
+            // Make the default settings class portable
+            PortableJsonSettingsProvider.SettingsDirectory = FileTools.GetInitializedSettingsDir();
+            PortableJsonSettingsProvider.ApplyProvider(Properties.Settings.Default);
+
             // Use en-US formatting everywhere for consistency
             var culture = CultureInfo.GetCultureInfo("en-US");
 

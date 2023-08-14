@@ -57,12 +57,16 @@ namespace QobuzDownloaderX
             // Bring to center of screen.
             CenterToScreen();
 
+            /* 
+             * Only needed when using the default .NET SettingsProvider, not applicable when using PortableJsonSettingsProvider
+            // Initialise new settings with values from previous version when assembly version changes.
             if (Properties.Settings.Default.UpgradeRequired)
             {
                 Properties.Settings.Default.Upgrade();
                 Properties.Settings.Default.UpgradeRequired = false;
                 Properties.Settings.Default.Save();
             }
+            */
 
             // Set saved settings to correct places.
             emailTextbox.Text = Settings.Default.savedEmail;
