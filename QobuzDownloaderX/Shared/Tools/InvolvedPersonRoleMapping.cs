@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace QobuzDownloaderX.Shared
 {
@@ -9,15 +11,17 @@ namespace QobuzDownloaderX.Shared
         private static readonly Dictionary<InvolvedPersonRoleType, List<string>> RoleMappings = new Dictionary<InvolvedPersonRoleType, List<string>>
         {
             { InvolvedPersonRoleType.Miscellaneous, new List<string> { "A&R Director", "A&R", "AAndRAdministrator", "Additional Production",
-                "AHH", "Assistant Mixer", "AssistantEngineer", "Asst. Recording Engineer", "AssociatedPerformer", "Author", "Bass Guitar", "Co-Producer",
-                "Drums", "Engineer", "Guitar", "Keyboards", "Masterer", "Mastering Engineer", "MasteringEngineer", "Misc.Prod.", "Mixer", "Mixing Engineer",
-                "Music Production", "Orchestra", "Percussion", "Programming", "Programmer", "RecordingEngineer", "Soloist", "StudioPersonnel", "Trumpet",
-                "Violin", "Vocals", "Writer"} }, // Default if not mapped!
+                "AHH", "Assistant Mixer", "AssistantEngineer", "Assistant Producer", "Asst. Recording Engineer", "AssociatedPerformer", 
+                "Author", "Choir", "Chorus Master", "Contractor", "Co-Producer", "Engineer", "Masterer", "Mastering Engineer", "MasteringEngineer",
+                "Misc.Prod.", "Mixer", "Mixing Engineer", "Music Production", "Orchestra", "Performance Arranger", "Programming", "Programmer",
+                "RecordingEngineer", "Soloist", "StudioPersonnel", "Vocals", "Writer"} }, // Default if not mapped!
             { InvolvedPersonRoleType.Composer, new List<string> { "Composer", "ComposerLyricist", "Composer-Lyricist" } },
             { InvolvedPersonRoleType.Conductor, new List<string> { "Conductor" } },
             { InvolvedPersonRoleType.FeaturedArtist, new List<string> {"FeaturedArtist", "Featuring", "featured-artist" } },
+            { InvolvedPersonRoleType.Instruments, new List<string> { "Bass Guitar", "Cello", "Drums", "Guitar", "Horn", "Keyboards", "Percussion",
+                "Piano", "Trombone", "Tuba", "Trumpet", "Viola", "Violin" } },
             { InvolvedPersonRoleType.Lyricist, new List<string> { "Lyricist", "ComposerLyricist", "Composer-Lyricist" } },
-            { InvolvedPersonRoleType.MainArtist, new List<string> { "MainArtist", "main-artist" } },
+            { InvolvedPersonRoleType.MainArtist, new List<string> { "MainArtist", "main-artist", "Performer" } },
             { InvolvedPersonRoleType.MixArtist, new List<string> { "Remixer", "Re-Mixer"} },
             { InvolvedPersonRoleType.Producer, new List<string> { "Producer"} },
             { InvolvedPersonRoleType.Publisher, new List<string> { "Publisher", "MusicPublisher" } }

@@ -140,6 +140,11 @@ namespace QobuzDownloaderX.Models
             {
                 AlbumArtist = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Artist.Name);
             }
+            // Qobuz doesn't return an array of Albumartists for compilations, so use singular AlbumArtist
+            if (AlbumArtists.Length < 1)
+            {
+                AlbumArtists = new string[] { AlbumArtist };
+            }
 
             AlbumName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Title.Trim());
             string albumVersionName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzAlbum.Version?.Trim());
@@ -196,6 +201,11 @@ namespace QobuzDownloaderX.Models
             {
                 PerformerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Album?.Artist?.Name);
             }
+            // Qobuz could return an unknown role for the Track Artists. Use singular PerformerName as fallback
+            if (PerformerNames.Length < 1)
+            {
+                PerformerNames = new string[] { PerformerName };
+            }
 
             ComposerNames = performersParser.GetPerformersWithRole(InvolvedPersonRoleType.Composer).ToArray();
             string composers = StringTools.MergeDoubleDelimitedList(ComposerNames, Globals.TaggingOptions.PrimaryListSeparator, Globals.TaggingOptions.ListEndSeparator);
@@ -206,6 +216,11 @@ namespace QobuzDownloaderX.Models
             else
             {
                 ComposerName = StringTools.DecodeEncodedNonAsciiCharacters(qobuzTrack.Composer?.Name);
+            }
+            // Qobuz could return an unknown role for the Composers. Use singular ComposerName as fallback
+            if (ComposerNames.Length < 1)
+            {
+                ComposerNames = new string[] { ComposerName };
             }
 
             ProducerNames = performersParser.GetPerformersWithRole(InvolvedPersonRoleType.Producer).ToArray();

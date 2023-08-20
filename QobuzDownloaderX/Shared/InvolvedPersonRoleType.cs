@@ -5,6 +5,7 @@
         Composer,
         Conductor,
         FeaturedArtist,
+        Instruments,
         Lyricist,
         MainArtist,
         Miscellaneous,
