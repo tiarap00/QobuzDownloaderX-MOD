@@ -594,5 +594,17 @@ namespace QobuzDownloaderX.Properties {
                 this["mergePerformers"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool releaseDateTag {
+            get {
+                return ((bool)(this["releaseDateTag"]));
+            }
+            set {
+                this["releaseDateTag"] = value;
+            }
+        }
     }
 }

@@ -11,6 +11,7 @@
         public bool WriteDiskNumberTag { get; set; }
         public bool WriteDiskTotalTag { get; set; }
         public bool WriteReleaseYearTag { get; set; }
+        public bool WriteReleaseDateTag { get; set; }
         public bool WriteGenreTag { get; set; }
         public bool WriteComposerTag { get; set; }
         public bool WriteCopyrightTag { get; set; }

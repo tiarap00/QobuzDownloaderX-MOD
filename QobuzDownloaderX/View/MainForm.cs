@@ -123,6 +123,7 @@ namespace QobuzDownloaderX
                 WriteTrackTotalTag = Settings.Default.totalTracksTag,
                 WriteUpcTag = Settings.Default.upcTag,
                 WriteReleaseYearTag = Settings.Default.yearTag,
+                WriteReleaseDateTag = Settings.Default.releaseDateTag,
                 WriteCoverImageTag = Settings.Default.imageTag
             };
 
@@ -149,7 +150,8 @@ namespace QobuzDownloaderX
             trackNumberCheckbox.Checked = Settings.Default.trackTag;
             trackTotalCheckbox.Checked = Settings.Default.totalTracksTag;
             upcCheckbox.Checked = Settings.Default.upcTag;
-            releaseCheckbox.Checked = Settings.Default.yearTag;
+            releasYearCheckbox.Checked = Settings.Default.yearTag;
+            releaseDateCheckbox.Checked = Settings.Default.releaseDateTag;
             imageCheckbox.Checked = Settings.Default.imageTag;
             mp3Checkbox.Checked = Settings.Default.quality1;
             flacLowCheckbox.Checked = Settings.Default.quality2;
@@ -439,11 +441,18 @@ namespace QobuzDownloaderX
             Globals.TaggingOptions.WriteDiskTotalTag = discTotalCheckbox.Checked;
         }
 
-        private void ReleaseCheckbox_CheckedChanged(object sender, EventArgs e)
+        private void ReleaseYearCheckbox_CheckedChanged(object sender, EventArgs e)
         {
-            Settings.Default.yearTag = releaseCheckbox.Checked;
+            Settings.Default.yearTag = releasYearCheckbox.Checked;
             Settings.Default.Save();
-            Globals.TaggingOptions.WriteReleaseYearTag = releaseCheckbox.Checked;
+            Globals.TaggingOptions.WriteReleaseYearTag = releasYearCheckbox.Checked;
+        }
+
+        private void ReleaseDateCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.releaseDateTag = releaseDateCheckbox.Checked;
+            Settings.Default.Save();
+            Globals.TaggingOptions.WriteReleaseDateTag = releaseDateCheckbox.Checked;
         }
 
         private void GenreCheckbox_CheckedChanged(object sender, EventArgs e)

@@ -70,7 +70,7 @@
             this.copyrightCheckbox = new System.Windows.Forms.CheckBox();
             this.composerCheckbox = new System.Windows.Forms.CheckBox();
             this.genreCheckbox = new System.Windows.Forms.CheckBox();
-            this.releaseCheckbox = new System.Windows.Forms.CheckBox();
+            this.releasYearCheckbox = new System.Windows.Forms.CheckBox();
             this.commentCheckbox = new System.Windows.Forms.CheckBox();
             this.commentTextbox = new System.Windows.Forms.TextBox();
             this.imageCheckbox = new System.Windows.Forms.CheckBox();
@@ -124,6 +124,7 @@
             this.ListEndSeparatorTextbox = new System.Windows.Forms.TextBox();
             this.mergePerformersCheckBox = new System.Windows.Forms.CheckBox();
             this.mergeListsToolTip = new System.Windows.Forms.ToolTip(this.components);
+            this.releaseDateCheckbox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.albumArtPicBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.logoBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.profilePictureBox)).BeginInit();
@@ -454,7 +455,7 @@
             this.artistCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.artistCheckbox.FlatAppearance.BorderSize = 0;
             this.artistCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.artistCheckbox.Location = new System.Drawing.Point(183, 540);
+            this.artistCheckbox.Location = new System.Drawing.Point(181, 540);
             this.artistCheckbox.Name = "artistCheckbox";
             this.artistCheckbox.Size = new System.Drawing.Size(80, 17);
             this.artistCheckbox.TabIndex = 15;
@@ -469,7 +470,7 @@
             this.trackTitleCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.trackTitleCheckbox.FlatAppearance.BorderSize = 0;
             this.trackTitleCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.trackTitleCheckbox.Location = new System.Drawing.Point(269, 540);
+            this.trackTitleCheckbox.Location = new System.Drawing.Point(266, 540);
             this.trackTitleCheckbox.Name = "trackTitleCheckbox";
             this.trackTitleCheckbox.Size = new System.Drawing.Size(77, 17);
             this.trackTitleCheckbox.TabIndex = 16;
@@ -544,7 +545,7 @@
             this.albumCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.albumCheckbox.FlatAppearance.BorderSize = 0;
             this.albumCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.albumCheckbox.Location = new System.Drawing.Point(99, 540);
+            this.albumCheckbox.Location = new System.Drawing.Point(98, 540);
             this.albumCheckbox.Name = "albumCheckbox";
             this.albumCheckbox.Size = new System.Drawing.Size(78, 17);
             this.albumCheckbox.TabIndex = 14;
@@ -574,7 +575,7 @@
             this.upcCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.upcCheckbox.FlatAppearance.BorderSize = 0;
             this.upcCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.upcCheckbox.Location = new System.Drawing.Point(763, 540);
+            this.upcCheckbox.Location = new System.Drawing.Point(771, 540);
             this.upcCheckbox.Name = "upcCheckbox";
             this.upcCheckbox.Size = new System.Drawing.Size(52, 17);
             this.upcCheckbox.TabIndex = 22;
@@ -589,7 +590,7 @@
             this.isrcCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.isrcCheckbox.FlatAppearance.BorderSize = 0;
             this.isrcCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.isrcCheckbox.Location = new System.Drawing.Point(821, 540);
+            this.isrcCheckbox.Location = new System.Drawing.Point(828, 540);
             this.isrcCheckbox.Name = "isrcCheckbox";
             this.isrcCheckbox.Size = new System.Drawing.Size(51, 17);
             this.isrcCheckbox.TabIndex = 23;
@@ -604,7 +605,7 @@
             this.copyrightCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.copyrightCheckbox.FlatAppearance.BorderSize = 0;
             this.copyrightCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.copyrightCheckbox.Location = new System.Drawing.Point(687, 540);
+            this.copyrightCheckbox.Location = new System.Drawing.Point(696, 540);
             this.copyrightCheckbox.Name = "copyrightCheckbox";
             this.copyrightCheckbox.Size = new System.Drawing.Size(70, 17);
             this.copyrightCheckbox.TabIndex = 21;
@@ -619,7 +620,7 @@
             this.composerCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.composerCheckbox.FlatAppearance.BorderSize = 0;
             this.composerCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.composerCheckbox.Location = new System.Drawing.Point(608, 540);
+            this.composerCheckbox.Location = new System.Drawing.Point(12, 567);
             this.composerCheckbox.Name = "composerCheckbox";
             this.composerCheckbox.Size = new System.Drawing.Size(73, 17);
             this.composerCheckbox.TabIndex = 20;
@@ -634,7 +635,7 @@
             this.genreCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.genreCheckbox.FlatAppearance.BorderSize = 0;
             this.genreCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.genreCheckbox.Location = new System.Drawing.Point(547, 540);
+            this.genreCheckbox.Location = new System.Drawing.Point(636, 540);
             this.genreCheckbox.Name = "genreCheckbox";
             this.genreCheckbox.Size = new System.Drawing.Size(55, 17);
             this.genreCheckbox.TabIndex = 19;
@@ -642,20 +643,20 @@
             this.genreCheckbox.UseVisualStyleBackColor = true;
             this.genreCheckbox.CheckedChanged += new System.EventHandler(this.GenreCheckbox_CheckedChanged);
             // 
-            // releaseCheckbox
+            // releasYearCheckbox
             // 
-            this.releaseCheckbox.AutoSize = true;
-            this.releaseCheckbox.Checked = true;
-            this.releaseCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.releaseCheckbox.FlatAppearance.BorderSize = 0;
-            this.releaseCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.releaseCheckbox.Location = new System.Drawing.Point(450, 540);
-            this.releaseCheckbox.Name = "releaseCheckbox";
-            this.releaseCheckbox.Size = new System.Drawing.Size(91, 17);
-            this.releaseCheckbox.TabIndex = 18;
-            this.releaseCheckbox.Text = "Release Date";
-            this.releaseCheckbox.UseVisualStyleBackColor = true;
-            this.releaseCheckbox.CheckedChanged += new System.EventHandler(this.ReleaseCheckbox_CheckedChanged);
+            this.releasYearCheckbox.AutoSize = true;
+            this.releasYearCheckbox.Checked = true;
+            this.releasYearCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.releasYearCheckbox.FlatAppearance.BorderSize = 0;
+            this.releasYearCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.releasYearCheckbox.Location = new System.Drawing.Point(445, 540);
+            this.releasYearCheckbox.Name = "releasYearCheckbox";
+            this.releasYearCheckbox.Size = new System.Drawing.Size(90, 17);
+            this.releasYearCheckbox.TabIndex = 18;
+            this.releasYearCheckbox.Text = "Release Year";
+            this.releasYearCheckbox.UseVisualStyleBackColor = true;
+            this.releasYearCheckbox.CheckedChanged += new System.EventHandler(this.ReleaseYearCheckbox_CheckedChanged);
             // 
             // commentCheckbox
             // 
@@ -962,7 +963,7 @@
             this.typeCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.typeCheckbox.FlatAppearance.BorderSize = 0;
             this.typeCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.typeCheckbox.Location = new System.Drawing.Point(352, 540);
+            this.typeCheckbox.Location = new System.Drawing.Point(348, 540);
             this.typeCheckbox.Name = "typeCheckbox";
             this.typeCheckbox.Size = new System.Drawing.Size(92, 17);
             this.typeCheckbox.TabIndex = 17;
@@ -1151,7 +1152,7 @@
             // panel10
             // 
             this.panel10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.panel10.Location = new System.Drawing.Point(474, 583);
+            this.panel10.Location = new System.Drawing.Point(549, 583);
             this.panel10.Name = "panel10";
             this.panel10.Size = new System.Drawing.Size(15, 1);
             this.panel10.TabIndex = 115;
@@ -1163,7 +1164,7 @@
             this.labelCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.labelCheckbox.FlatAppearance.BorderSize = 0;
             this.labelCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.labelCheckbox.Location = new System.Drawing.Point(90, 567);
+            this.labelCheckbox.Location = new System.Drawing.Point(166, 567);
             this.labelCheckbox.Name = "labelCheckbox";
             this.labelCheckbox.Size = new System.Drawing.Size(52, 17);
             this.labelCheckbox.TabIndex = 25;
@@ -1176,7 +1177,7 @@
             this.InitialListSeparatorTextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.InitialListSeparatorTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.InitialListSeparatorTextbox.ForeColor = System.Drawing.Color.White;
-            this.InitialListSeparatorTextbox.Location = new System.Drawing.Point(474, 564);
+            this.InitialListSeparatorTextbox.Location = new System.Drawing.Point(549, 564);
             this.InitialListSeparatorTextbox.MaxLength = 3;
             this.InitialListSeparatorTextbox.Multiline = true;
             this.InitialListSeparatorTextbox.Name = "InitialListSeparatorTextbox";
@@ -1192,7 +1193,7 @@
             this.involvedPeopleCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.involvedPeopleCheckBox.FlatAppearance.BorderSize = 0;
             this.involvedPeopleCheckBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.involvedPeopleCheckBox.Location = new System.Drawing.Point(147, 567);
+            this.involvedPeopleCheckBox.Location = new System.Drawing.Point(222, 567);
             this.involvedPeopleCheckBox.Name = "involvedPeopleCheckBox";
             this.involvedPeopleCheckBox.Size = new System.Drawing.Size(103, 17);
             this.involvedPeopleCheckBox.TabIndex = 26;
@@ -1207,7 +1208,7 @@
             this.producerCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.producerCheckbox.FlatAppearance.BorderSize = 0;
             this.producerCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.producerCheckbox.Location = new System.Drawing.Point(12, 567);
+            this.producerCheckbox.Location = new System.Drawing.Point(89, 567);
             this.producerCheckbox.Name = "producerCheckbox";
             this.producerCheckbox.Size = new System.Drawing.Size(73, 17);
             this.producerCheckbox.TabIndex = 24;
@@ -1219,7 +1220,7 @@
             // 
             this.PrimaryListSeparatorLabel.AutoSize = true;
             this.PrimaryListSeparatorLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.PrimaryListSeparatorLabel.Location = new System.Drawing.Point(367, 568);
+            this.PrimaryListSeparatorLabel.Location = new System.Drawing.Point(442, 568);
             this.PrimaryListSeparatorLabel.Name = "PrimaryListSeparatorLabel";
             this.PrimaryListSeparatorLabel.Size = new System.Drawing.Size(103, 13);
             this.PrimaryListSeparatorLabel.TabIndex = 100;
@@ -1229,7 +1230,7 @@
             // 
             this.ListEndSeparatorLabel.AutoSize = true;
             this.ListEndSeparatorLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.ListEndSeparatorLabel.Location = new System.Drawing.Point(501, 568);
+            this.ListEndSeparatorLabel.Location = new System.Drawing.Point(576, 568);
             this.ListEndSeparatorLabel.Name = "ListEndSeparatorLabel";
             this.ListEndSeparatorLabel.Size = new System.Drawing.Size(88, 13);
             this.ListEndSeparatorLabel.TabIndex = 117;
@@ -1238,7 +1239,7 @@
             // panel11
             // 
             this.panel11.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.panel11.Location = new System.Drawing.Point(594, 583);
+            this.panel11.Location = new System.Drawing.Point(669, 583);
             this.panel11.Name = "panel11";
             this.panel11.Size = new System.Drawing.Size(15, 1);
             this.panel11.TabIndex = 118;
@@ -1248,7 +1249,7 @@
             this.ListEndSeparatorTextbox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.ListEndSeparatorTextbox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.ListEndSeparatorTextbox.ForeColor = System.Drawing.Color.White;
-            this.ListEndSeparatorTextbox.Location = new System.Drawing.Point(594, 564);
+            this.ListEndSeparatorTextbox.Location = new System.Drawing.Point(669, 564);
             this.ListEndSeparatorTextbox.MaxLength = 3;
             this.ListEndSeparatorTextbox.Multiline = true;
             this.ListEndSeparatorTextbox.Name = "ListEndSeparatorTextbox";
@@ -1263,7 +1264,7 @@
             this.mergePerformersCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.mergePerformersCheckBox.FlatAppearance.BorderSize = 0;
             this.mergePerformersCheckBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
-            this.mergePerformersCheckBox.Location = new System.Drawing.Point(255, 567);
+            this.mergePerformersCheckBox.Location = new System.Drawing.Point(329, 567);
             this.mergePerformersCheckBox.Name = "mergePerformersCheckBox";
             this.mergePerformersCheckBox.Size = new System.Drawing.Size(109, 17);
             this.mergePerformersCheckBox.TabIndex = 119;
@@ -1277,6 +1278,21 @@
             this.mergeListsToolTip.AutoPopDelay = 32000;
             this.mergeListsToolTip.InitialDelay = 500;
             this.mergeListsToolTip.ReshowDelay = 100;
+            // 
+            // releaseDateCheckbox
+            // 
+            this.releaseDateCheckbox.AutoSize = true;
+            this.releaseDateCheckbox.Checked = true;
+            this.releaseDateCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.releaseDateCheckbox.FlatAppearance.BorderSize = 0;
+            this.releaseDateCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.releaseDateCheckbox.Location = new System.Drawing.Point(540, 540);
+            this.releaseDateCheckbox.Name = "releaseDateCheckbox";
+            this.releaseDateCheckbox.Size = new System.Drawing.Size(91, 17);
+            this.releaseDateCheckbox.TabIndex = 18;
+            this.releaseDateCheckbox.Text = "Release Date";
+            this.releaseDateCheckbox.UseVisualStyleBackColor = true;
+            this.releaseDateCheckbox.CheckedChanged += new System.EventHandler(this.ReleaseDateCheckbox_CheckedChanged);
             // 
             // QobuzDownloaderX
             // 
@@ -1341,7 +1357,8 @@
             this.Controls.Add(this.copyrightCheckbox);
             this.Controls.Add(this.composerCheckbox);
             this.Controls.Add(this.genreCheckbox);
-            this.Controls.Add(this.releaseCheckbox);
+            this.Controls.Add(this.releaseDateCheckbox);
+            this.Controls.Add(this.releasYearCheckbox);
             this.Controls.Add(this.albumCheckbox);
             this.Controls.Add(this.discTotalCheckbox);
             this.Controls.Add(this.discNumberCheckbox);
@@ -1434,7 +1451,7 @@
         private System.Windows.Forms.CheckBox copyrightCheckbox;
         private System.Windows.Forms.CheckBox composerCheckbox;
         private System.Windows.Forms.CheckBox genreCheckbox;
-        private System.Windows.Forms.CheckBox releaseCheckbox;
+        private System.Windows.Forms.CheckBox releasYearCheckbox;
         private System.Windows.Forms.CheckBox commentCheckbox;
         private System.Windows.Forms.TextBox commentTextbox;
         private System.Windows.Forms.CheckBox imageCheckbox;
@@ -1489,6 +1506,7 @@
         private System.Windows.Forms.TextBox ListEndSeparatorTextbox;
         private System.Windows.Forms.CheckBox mergePerformersCheckBox;
         private System.Windows.Forms.ToolTip mergeListsToolTip;
+        private System.Windows.Forms.CheckBox releaseDateCheckbox;
     }
 }
 

@@ -99,12 +99,11 @@ namespace QobuzDownloaderX.Shared
                     // InvolvedPeople tag
                     if (Globals.TaggingOptions.WriteInvolvedPeopleTag) { customId3v2.SetTextFrame("TIPL", fileInfo.InvolvedPeople); }
 
-                    // Release Year tag
-                    if (Globals.TaggingOptions.WriteReleaseYearTag)
-                    {
-                        fileInfo.ReleaseDate = fileInfo.ReleaseDate.Substring(0, 4);
-                        tfile.Tag.Year = UInt32.Parse(fileInfo.ReleaseDate);
-                    }
+                    // Release Year tag (writes to "TDRC" (recording date) Frame)
+                    if (Globals.TaggingOptions.WriteReleaseYearTag) { tfile.Tag.Year = UInt32.Parse(fileInfo.ReleaseDate.Substring(0, 4)); }
+
+                    // Release Date tag (use "TDRL" (release date) Frame for full date)
+                    if (Globals.TaggingOptions.WriteReleaseDateTag) { customId3v2.SetTextFrame("TDRL", fileInfo.ReleaseDate); }
 
                     // Genre tag
                     if (Globals.TaggingOptions.WriteGenreTag) { tfile.Tag.Genres = new string[] { fileInfo.Genre }; }
@@ -238,15 +237,11 @@ namespace QobuzDownloaderX.Shared
                     // InvolvedPeople tag
                     if (Globals.TaggingOptions.WriteInvolvedPeopleTag) { custom.SetField("INVOLVEDPEOPLE", fileInfo.InvolvedPeople); }
 
-                    // Original Release Date tag
-                    if (Globals.TaggingOptions.WriteReleaseYearTag) { custom.SetField("ORIGINALRELEASETIME", fileInfo.ReleaseDate); }
+                    // Release Year tag (The "tfile.Tag.Year" field actually writes to the DATE tag, so use custom tag)
+                    if (Globals.TaggingOptions.WriteReleaseYearTag) { custom.SetField("YEAR", fileInfo.ReleaseDate.Substring(0, 4)); }
 
-                    // Release Year tag
-                    if (Globals.TaggingOptions.WriteReleaseYearTag)
-                    {
-                        fileInfo.ReleaseDate = fileInfo.ReleaseDate.Substring(0, 4);
-                        tfile.Tag.Year = UInt32.Parse(fileInfo.ReleaseDate);
-                    }
+                    // Release Date tag
+                    if (Globals.TaggingOptions.WriteReleaseDateTag) { custom.SetField("DATE", fileInfo.ReleaseDate); }
 
                     // Genre tag
                     if (Globals.TaggingOptions.WriteGenreTag) { tfile.Tag.Genres = new string[] { fileInfo.Genre }; }
