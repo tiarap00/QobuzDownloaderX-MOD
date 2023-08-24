@@ -15,7 +15,7 @@ namespace QobuzDownloaderX
         private static void Main()
         {
             // Make the default settings class portable
-            PortableJsonSettingsProvider.SettingsDirectory = FileTools.GetInitializedSettingsDir();
+            PortableSettingsProviderBase.SettingsDirectory = FileTools.GetInitializedSettingsDir();
             PortableJsonSettingsProvider.ApplyProvider(Properties.Settings.Default);
 
             // Use en-US formatting everywhere for consistency
