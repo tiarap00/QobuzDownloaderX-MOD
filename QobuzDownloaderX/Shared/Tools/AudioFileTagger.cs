@@ -219,7 +219,11 @@ namespace QobuzDownloaderX.Shared
                     }
 
                     // Label tag
-                    if (Globals.TaggingOptions.WriteLabelTag) { tfile.Tag.Publisher = fileInfo.LabelName; }
+                    if (Globals.TaggingOptions.WriteLabelTag)
+                    {
+                        tfile.Tag.Publisher = fileInfo.LabelName; // Writes to the official ORGANIZATION field
+                        custom.SetField("LABEL", fileInfo.LabelName);
+                    }
 
                     // Producer tag
                     if (Globals.TaggingOptions.WriteProducerTag)
