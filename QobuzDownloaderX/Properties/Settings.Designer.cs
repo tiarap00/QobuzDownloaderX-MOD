@@ -606,5 +606,17 @@ namespace QobuzDownloaderX.Properties {
                 this["releaseDateTag"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool urlTag {
+            get {
+                return ((bool)(this["urlTag"]));
+            }
+            set {
+                this["urlTag"] = value;
+            }
+        }
     }
 }

@@ -125,6 +125,7 @@
             this.mergePerformersCheckBox = new System.Windows.Forms.CheckBox();
             this.mergeListsToolTip = new System.Windows.Forms.ToolTip(this.components);
             this.releaseDateCheckbox = new System.Windows.Forms.CheckBox();
+            this.urlCheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.albumArtPicBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.logoBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.profilePictureBox)).BeginInit();
@@ -1294,12 +1295,28 @@
             this.releaseDateCheckbox.UseVisualStyleBackColor = true;
             this.releaseDateCheckbox.CheckedChanged += new System.EventHandler(this.ReleaseDateCheckbox_CheckedChanged);
             // 
+            // urlCheckBox
+            // 
+            this.urlCheckBox.AutoSize = true;
+            this.urlCheckBox.Checked = true;
+            this.urlCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.urlCheckBox.FlatAppearance.BorderSize = 0;
+            this.urlCheckBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(92)))), ((int)(((byte)(102)))));
+            this.urlCheckBox.Location = new System.Drawing.Point(696, 567);
+            this.urlCheckBox.Name = "urlCheckBox";
+            this.urlCheckBox.Size = new System.Drawing.Size(48, 17);
+            this.urlCheckBox.TabIndex = 120;
+            this.urlCheckBox.Text = "URL";
+            this.urlCheckBox.UseVisualStyleBackColor = true;
+            this.urlCheckBox.CheckedChanged += new System.EventHandler(this.UrlCheckbox_CheckedChanged);
+            // 
             // QobuzDownloaderX
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.ClientSize = new System.Drawing.Size(938, 660);
+            this.Controls.Add(this.urlCheckBox);
             this.Controls.Add(this.mergePerformersCheckBox);
             this.Controls.Add(this.ListEndSeparatorLabel);
             this.Controls.Add(this.panel11);
@@ -1507,6 +1524,7 @@
         private System.Windows.Forms.CheckBox mergePerformersCheckBox;
         private System.Windows.Forms.ToolTip mergeListsToolTip;
         private System.Windows.Forms.CheckBox releaseDateCheckbox;
+        private System.Windows.Forms.CheckBox urlCheckBox;
     }
 }
 

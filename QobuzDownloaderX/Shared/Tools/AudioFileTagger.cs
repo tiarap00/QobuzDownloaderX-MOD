@@ -139,6 +139,9 @@ namespace QobuzDownloaderX.Shared
                     // Release Type tag
                     if (fileInfo.MediaType != null && Globals.TaggingOptions.WriteMediaTypeTag) { customId3v2.SetTextFrame("TMED", fileInfo.MediaType); }
 
+                    // Album store URL tag
+                    if (fileInfo.Url != null && Globals.TaggingOptions.WriteUrlTag) { customId3v2.SetTextFrame("WCOM", fileInfo.Url); }
+
                     // Save all selected tags to file
                     tfile.Save();
 
@@ -291,6 +294,9 @@ namespace QobuzDownloaderX.Shared
                     {
                         if (fileInfo.Advisory == true) { custom.SetField("ITUNESADVISORY", "1"); } else { custom.SetField("ITUNESADVISORY", "0"); }
                     }
+
+                    // Album store URL tag
+                    if (fileInfo.Url != null && Globals.TaggingOptions.WriteUrlTag) { custom.SetField("URL", fileInfo.Url); }
 
                     // Save all selected tags to file
                     tfile.Save();

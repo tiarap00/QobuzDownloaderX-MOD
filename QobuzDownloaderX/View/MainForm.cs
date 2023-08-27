@@ -124,7 +124,8 @@ namespace QobuzDownloaderX
                 WriteUpcTag = Settings.Default.upcTag,
                 WriteReleaseYearTag = Settings.Default.yearTag,
                 WriteReleaseDateTag = Settings.Default.releaseDateTag,
-                WriteCoverImageTag = Settings.Default.imageTag
+                WriteCoverImageTag = Settings.Default.imageTag,
+                WriteUrlTag = Settings.Default.urlTag
             };
 
             // Set saved settings to correct places.
@@ -153,6 +154,7 @@ namespace QobuzDownloaderX
             releasYearCheckbox.Checked = Settings.Default.yearTag;
             releaseDateCheckbox.Checked = Settings.Default.releaseDateTag;
             imageCheckbox.Checked = Settings.Default.imageTag;
+            urlCheckBox.Checked = Settings.Default.urlTag;
             mp3Checkbox.Checked = Settings.Default.quality1;
             flacLowCheckbox.Checked = Settings.Default.quality2;
             flacMidCheckbox.Checked = Settings.Default.quality3;
@@ -638,6 +640,13 @@ namespace QobuzDownloaderX
                 Settings.Default.Save();
                 Globals.TaggingOptions.ListEndSeparator = ListEndSeparatorTextbox.Text;
             }
+        }
+
+        private void UrlCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            Settings.Default.urlTag = urlCheckBox.Checked;
+            Settings.Default.Save();
+            Globals.TaggingOptions.WriteUrlTag = urlCheckBox.Checked;
         }
 
         private void flacHighCheckbox_CheckedChanged(object sender, EventArgs e)

@@ -42,6 +42,7 @@ namespace QobuzDownloaderX.Models
         public string FrontCoverImgTagUrl { get; set; }
         public string FrontCoverImgBoxUrl { get; set; }
         public string MediaType { get; set; }
+        public string Url { get; set; }
 
         // Info / Tagging numbers
         public int DiscNumber { get; set; }
@@ -74,6 +75,7 @@ namespace QobuzDownloaderX.Models
             ReleaseDate = null;
             Upc = null;
             MediaType = null;
+            Url = null;
 
             // Clear tag numbers
             TrackTotal = 0;
@@ -156,6 +158,7 @@ namespace QobuzDownloaderX.Models
             ReleaseDate = StringTools.FormatDateTimeOffset(qobuzAlbum.ReleaseDateStream);
             Upc = qobuzAlbum.Upc;
             MediaType = qobuzAlbum.ReleaseType;
+            Url = qobuzAlbum.Url;
 
             // Grab tag ints
             TrackTotal = qobuzAlbum.TracksCount.GetValueOrDefault();
