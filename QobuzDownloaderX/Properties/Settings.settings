@@ -134,10 +134,10 @@
     <Setting Name="mergePerformers" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="releaseDateTag" Type="System.Boolean" Scope="User">
+    <Setting Name="releaseDateTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="urlTag" Type="System.Boolean" Scope="User">
+    <Setting Name="urlTag" Roaming="true" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
