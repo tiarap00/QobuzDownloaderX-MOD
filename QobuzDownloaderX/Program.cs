@@ -16,6 +16,8 @@ namespace QobuzDownloaderX
         {
             // Make the default settings class portable
             PortableSettingsProviderBase.SettingsDirectory = FileTools.GetInitializedSettingsDir();
+            // Global override of every settings "Roaming" property.
+            PortableSettingsProviderBase.AllRoaming = true;
             PortableJsonSettingsProvider.ApplyProvider(Properties.Settings.Default);
 
             // Use en-US formatting everywhere for consistency
