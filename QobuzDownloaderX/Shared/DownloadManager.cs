@@ -38,7 +38,7 @@ namespace QobuzDownloaderX.Shared
 
         public bool CheckIfStreamable { get; set; }
 
-        public DownloadManager (DownloadLogger logger, UpdateAlbumTagsUi updateAlbumTagsUi, UpdateDownloadSpeed updateUiDownloadSpeed)
+        public DownloadManager(DownloadLogger logger, UpdateAlbumTagsUi updateAlbumTagsUi, UpdateDownloadSpeed updateUiDownloadSpeed)
         {
             Buzy = false;
             CheckIfStreamable = true;
@@ -133,7 +133,7 @@ namespace QobuzDownloaderX.Shared
                 {
                     long totalBytesRead = 0;
                     Stopwatch stopwatch = Stopwatch.StartNew();
-                    byte[] buffer = new byte[8192]; // Use an 8KB buffer size for copying data
+                    byte[] buffer = new byte[32768]; // Use a 32KB buffer size for copying data
                     bool firstBufferRead = false;
 
                     int bytesRead;
@@ -147,7 +147,7 @@ namespace QobuzDownloaderX.Shared
                         double speed = totalBytesRead / 1024d / 1024d / stopwatch.Elapsed.TotalSeconds;
 
                         // Update the downloadSpeedLabel with the current speed at download start and then max. every 100 ms, with 3 decimal places
-                        if (!firstBufferRead || stopwatch.ElapsedMilliseconds >= 100)
+                        if (!firstBufferRead || stopwatch.ElapsedMilliseconds >= 200)
                         {
                             UpdateUiDownloadSpeed.Invoke($"Downloading... {speed:F3} MB/s");
                         }
@@ -530,7 +530,8 @@ namespace QobuzDownloaderX.Shared
                     // Fetch next batch of releases
                     releasesOffset += releasesLimit;
                     releasesList = ExecuteApiCall(apiService => apiService.GetReleaseList(qobuzArtist.Id.ToString(), true, releaseType, "release_date", "desc", 0, releasesLimit, releasesOffset));
-                } else
+                }
+                else
                 {
                     continueDownload = false;
                 }
@@ -757,7 +758,7 @@ namespace QobuzDownloaderX.Shared
             {
                 // Initialise full Album list
                 QobuzApiSharp.Models.Content.Label qobuzLabel = null;
-                List <Album> labelAlbums = new List<Album>();
+                List<Album> labelAlbums = new List<Album>();
                 const int albumLimit = 500;
                 int albumsOffset = 0;
 
@@ -840,8 +841,8 @@ namespace QobuzDownloaderX.Shared
                     favoriteAlbums.AddRange(qobuzUserFavorites.Albums.Items);
 
                     // Exit loop when all albums are loaded
-                    if ((qobuzUserFavorites.Albums?.Total ?? 0) == favoriteAlbums.Count)  break;
-                    
+                    if ((qobuzUserFavorites.Albums?.Total ?? 0) == favoriteAlbums.Count) break;
+
                     albumsOffset += albumLimit;
                 }
 
@@ -969,7 +970,7 @@ namespace QobuzDownloaderX.Shared
                     // If API call failed, log and continue with next track
                     if (qobuzTrack == null) { noTrackErrorsOccured = false; continue; }
 
-                    if (! await DownloadTrackAsync(cancellationToken, qobuzTrack, favoriteTracksBasePath, true, false, true)) noTrackErrorsOccured = false;
+                    if (!await DownloadTrackAsync(cancellationToken, qobuzTrack, favoriteTracksBasePath, true, false, true)) noTrackErrorsOccured = false;
                 }
 
                 logger.LogFinishedDownloadJob(noTrackErrorsOccured);
