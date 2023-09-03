@@ -183,7 +183,15 @@ namespace QobuzDownloaderX
                 if (currentVersion.CompareTo(remoteVersion) < 0)
                 {
                     // Remote version is newer, propose update.
-                    DialogResult dialogResult = MessageBox.Show("New version of QBDLX is available!\r\n\r\nInstalled Version - " + currentVersionString + "\r\nLatest version - " + remoteVersionString + "\r\n\r\nChangelog Below\r\n==============\r\n" + changes.Replace("\\r\\n", "\r\n") + "\r\n==============\r\n\r\nWould you like to update?", "QBDLX | Update Available", MessageBoxButtons.YesNo);
+                    string updateDialogContents = "New version of QBDLX is available!\r\n\r\nInstalled Version - "
+                        + currentVersionString
+                        + "\r\nLatest version - "
+                        + remoteVersionString
+                        + "\r\n\r\nChangelog Below\r\n==============\r\n"
+                        + changes.Replace("\\r\\n", "\r\n")
+                        + "\r\n==============\r\n\r\nWould you like to update?";
+
+                    DialogResult dialogResult = FlexibleMessageBox.Show(updateDialogContents, "QBDLX | Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
                     if (dialogResult == DialogResult.Yes)
                     {
                         // If "Yes" is clicked, open GitHub page and close QBDLX.
