@@ -124,6 +124,7 @@ namespace QobuzDownloaderX
                 ThumbnailUrl = album.Image.Thumbnail,
                 Artist = album.Artist.Name,
                 Title = StringTools.DecodeEncodedNonAsciiCharacters(album.Version != null ? $"{album.Title.TrimEnd()} ({album.Version})" : album.Title.TrimEnd()),
+                Explicit = album.ParentalWarning.GetValueOrDefault(),
                 FormattedDuration = StringTools.FormatDurationInSeconds(album.Duration.GetValueOrDefault()),
                 FormattedQuality = $"{album.MaximumBitDepth}-Bit / {album.MaximumSamplingRate} kHz",
                 WebPlayerUrl = $"{Globals.WEBPLAYER_BASE_URL}/album/{album.Id}",
@@ -141,6 +142,7 @@ namespace QobuzDownloaderX
                 ThumbnailUrl = track.Album.Image.Thumbnail,
                 Artist = track.Performer.Name,
                 Title = StringTools.DecodeEncodedNonAsciiCharacters(track.Version != null ? $"{track.Title.TrimEnd()} ({track.Version})" : track.Title.TrimEnd()),
+                Explicit = track.ParentalWarning.GetValueOrDefault(),
                 FormattedDuration = StringTools.FormatDurationInSeconds(track.Duration.GetValueOrDefault()),
                 FormattedQuality = $"{track.MaximumBitDepth}-Bit / {track.MaximumSamplingRate} kHz",
                 WebPlayerUrl = $"{Globals.WEBPLAYER_BASE_URL}/track/{track.Id}",
@@ -202,53 +204,117 @@ namespace QobuzDownloaderX
 
         private TableLayoutPanel CreateReleaseInfoColumn(SearchResultRow result, Color rowColor)
         {
+            // Create fonts
             Font detailsFont = FontManager.CreateFont("Hanken Grotesk Medium", 10);
-            TextBox title = CreateTextBox(result.Title, true, rowColor, Color.White, FontManager.CreateFont("Hanken Grotesk ExtraBold", 13, FontStyle.Bold), BorderStyle.None);
-            TextBox duration = CreateTextBox(result.FormattedDuration, true, rowColor, Color.WhiteSmoke, detailsFont, BorderStyle.None, HorizontalAlignment.Right);
-            TextBox artist = CreateTextBox(result.Artist, true, rowColor, Color.WhiteSmoke, FontManager.CreateFont("Hanken Grotesk", 11, FontStyle.Bold | FontStyle.Italic), BorderStyle.None);
-            TextBox year = CreateTextBox(result.ReleaseDate, true, rowColor, Color.WhiteSmoke, detailsFont, BorderStyle.None, HorizontalAlignment.Right);
+            Font titleFont = FontManager.CreateFont("Hanken Grotesk ExtraBold", 13, FontStyle.Bold);
+            Font artistFont = FontManager.CreateFont("Hanken Grotesk", 11, FontStyle.Bold | FontStyle.Italic);
 
-            ResizeControlForText(title, 5);
-            ResizeControlForText(artist, 5);
+            // Create TextBox controls
+            TextBox titleTextBox = CreateTextBox(result.Title, true, rowColor, Color.White, titleFont, BorderStyle.None);
+            TextBox durationTextBox = CreateTextBox(result.FormattedDuration, true, rowColor, Color.WhiteSmoke, detailsFont, BorderStyle.None, HorizontalAlignment.Right);
+            TextBox artistTextBox = CreateTextBox(result.Artist, true, rowColor, Color.WhiteSmoke, artistFont, BorderStyle.None);
+            TextBox releaseDateTextBox = CreateTextBox(result.ReleaseDate, true, rowColor, Color.WhiteSmoke, detailsFont, BorderStyle.None, HorizontalAlignment.Right);
+            TextBox tracks = CreateTracksTextBox(result.TrackCount, rowColor, detailsFont);
 
-            TextBox tracks = null;
-            if (result.TrackCount > 0)
-            {
-                string trackText = result.TrackCount != 1 ? $"{result.TrackCount} Tracks" : $"{result.TrackCount} Track";
-                tracks = CreateTextBox(trackText, true, rowColor, Color.WhiteSmoke, detailsFont, BorderStyle.None, HorizontalAlignment.Right);
-            }
+            // Resize TextBox controls fitting text in given font (estimation)
+            ResizeControlForText(titleTextBox, 0, 500);
+            ResizeControlForText(artistTextBox, 5);
 
+            // Create titlePanel
+            FlowLayoutPanel titlePanel = CreateTitlePanel(titleTextBox, result.Explicit);
+
+            // Create storeLink and webLink
             LinkLabel storeLink = CreateLinkLabel("Preview in Store", result.StoreUrl, Color.FromArgb(0, 112, 239), Color.Blue, rowColor);
-            AddLinkLabelFunctionality(storeLink);
-
             LinkLabel webLink = CreateLinkLabel("Preview in Web Player", result.WebPlayerUrl, Color.FromArgb(0, 112, 239), Color.Blue, rowColor);
+
+            // Add storeLink and webLink functionality
+            AddLinkLabelFunctionality(storeLink);
             AddLinkLabelFunctionality(webLink);
 
+            // Create releaseInfoColumnPanel Control and add child Controls
+            return CreateReleaseInfoPanel(rowColor, titlePanel, durationTextBox, artistTextBox, releaseDateTextBox, tracks, webLink, storeLink);
+        }
+
+        private TextBox CreateTracksTextBox(int trackCount, Color rowColor, Font detailsFont)
+        {
+            if (trackCount > 0)
+            {
+                string trackText = trackCount != 1 ? $"{trackCount} Tracks" : $"{trackCount} Track";
+                return CreateTextBox(trackText, true, rowColor, Color.WhiteSmoke, detailsFont, BorderStyle.None, HorizontalAlignment.Right);
+            }
+            return null;
+        }
+
+        private FlowLayoutPanel CreateTitlePanel(TextBox titleTextBox, bool isExplicit)
+        {
+            FlowLayoutPanel titlePanel = new FlowLayoutPanel
+            {
+                AutoSize = true,
+                Margin = new Padding(0),
+                Controls = { titleTextBox },
+                //BorderStyle = BorderStyle.FixedSingle
+            };
+            ControlTools.SetDoubleBuffered(titlePanel);
+
+            if (isExplicit)
+            {
+                System.Windows.Forms.Label explicitLabel = CreateLabel("E", Color.FromArgb(75, 75, 75), Color.OrangeRed, FontManager.CreateFont("Hanken Grotesk ExtraBold", 8, FontStyle.Bold), BorderStyle.None, new Padding(5, 0, 0, 0), AnchorStyles.None);
+                
+                // Add tooltip for "Explicit"
+                ToolTip toolTip = new ToolTip();
+                toolTip.SetToolTip(explicitLabel, "Explicit");
+
+                // Resize titleTextBox to make room for "Explicit"
+                int finalExplicitLabelWidth = explicitLabel.GetPreferredSize(new Size(0, 0)).Width + explicitLabel.Margin.Left + explicitLabel.Margin.Right;
+                titleTextBox.Width = 500 - finalExplicitLabelWidth;
+                titlePanel.Controls.Add(explicitLabel);
+            }
+
+            return titlePanel;
+        }
+
+        private FlowLayoutPanel CreateLinksPanel(Color rowColor, LinkLabel webLink, LinkLabel storeLink)
+        {
+            FlowLayoutPanel linksPanel = new FlowLayoutPanel
+            {
+                BackColor = rowColor,
+                AutoSize = true,
+                Margin = new Padding(0),
+            };
+            ControlTools.SetDoubleBuffered(linksPanel);
+
+            if (webLink != null) linksPanel.Controls.Add(webLink);
+            if (storeLink != null) linksPanel.Controls.Add(storeLink);
+
+            return linksPanel;
+        }
+
+        private TableLayoutPanel CreateReleaseInfoPanel(Color rowColor, FlowLayoutPanel titlePanel, TextBox durationTextBox, TextBox artistTextBox, TextBox releaseDateTextBox, TextBox tracks, LinkLabel webLink, LinkLabel storeLink)
+        {
             TableLayoutPanel releaseInfoColumnPanel = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
                 BackColor = rowColor,
-                ColumnStyles = { new ColumnStyle(SizeType.Absolute, 490), new ColumnStyle(SizeType.Absolute, 90) }
+                ColumnStyles = { new ColumnStyle(SizeType.Absolute, 500), new ColumnStyle(SizeType.Absolute, 80) }
             };
             ControlTools.SetDoubleBuffered(releaseInfoColumnPanel);
-            releaseInfoColumnPanel.Controls.Add(title, 0, 0);
-            releaseInfoColumnPanel.Controls.Add(duration, 1, 0);
-            releaseInfoColumnPanel.Controls.Add(artist, 0, 1);
-            releaseInfoColumnPanel.Controls.Add(year, 1, 1);
-            if (tracks != null) releaseInfoColumnPanel.Controls.Add(tracks, 1, 2);
 
+            // Add controls to releaseInfoColumnPanel
+            releaseInfoColumnPanel.Controls.Add(titlePanel, 0, 0);
+            releaseInfoColumnPanel.Controls.Add(durationTextBox, 1, 0);
+            releaseInfoColumnPanel.Controls.Add(artistTextBox, 0, 1);
+            releaseInfoColumnPanel.Controls.Add(releaseDateTextBox, 1, 1);
+
+            // Add tracks TextBox if it exists
+            if (tracks != null)
+            {
+                releaseInfoColumnPanel.Controls.Add(tracks, 1, 2);
+            }
+
+            // Create linksPanel when at least 1 link exists
             if (webLink != null || storeLink != null)
             {
-                FlowLayoutPanel linksPanel = new FlowLayoutPanel
-                {
-                    BackColor = releaseInfoColumnPanel.BackColor,
-                    AutoSize = true
-                };
-                ControlTools.SetDoubleBuffered(linksPanel);
-
-                if (webLink != null) linksPanel.Controls.Add(webLink);
-                if (storeLink != null) linksPanel.Controls.Add(storeLink);
-
+                FlowLayoutPanel linksPanel = CreateLinksPanel(rowColor, webLink, storeLink);
                 releaseInfoColumnPanel.Controls.Add(linksPanel, 0, 2);
             }
 
@@ -302,17 +368,42 @@ namespace QobuzDownloaderX
                 TextAlign = ContentAlignment.MiddleCenter
             };
             downloadButton.FlatAppearance.BorderSize = 0;
-            downloadButton.Click += async (sender, e) =>
+            downloadButton.Click += (sender, e) =>
             {
-                // Copy selected download link to main form link field for convenience
-                Globals.QbdlxForm.downloadUrl.Invoke(new Action(() => Globals.QbdlxForm.downloadUrl.Text = webPlayerUrl));
-                this.Close();
-                // Start download from main form
-                await Globals.QbdlxForm.StartLinkItemDownloadAsync(webPlayerUrl);
+                _ = HandleDownloadAsync(webPlayerUrl);
             };
 
             return downloadButton;
         }
+
+        private async Task HandleDownloadAsync(string webPlayerUrl)
+        {
+            try
+            {
+                // Copy selected download link to the main form link field for convenience
+                Globals.QbdlxForm.downloadUrl.Invoke(new Action(() => Globals.QbdlxForm.downloadUrl.Text = webPlayerUrl));
+                this.Close();
+                // Start download from the main form
+                await Globals.QbdlxForm.StartLinkItemDownloadAsync(webPlayerUrl);
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (e.g., log it, show an error message, etc.)
+                List<string> errorLines = new List<string>
+                {
+                    $"Error starting download for {webPlayerUrl}",
+                    ex.ToString(),
+                    ""
+                };
+
+                // Write detailed info to log
+                System.IO.File.AppendAllLines(errorLog, errorLines);
+
+                // Show an error message to the user
+                MessageBox.Show($"Error starting download for {webPlayerUrl}\nlog saved to {errorLog}.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
 
         private TextBox CreateTextBox(string text, bool readOnly, Color backColor, Color foreColor, Font font, BorderStyle borderStyle, HorizontalAlignment textAlign = HorizontalAlignment.Left)
         {
@@ -324,9 +415,25 @@ namespace QobuzDownloaderX
                 ForeColor = foreColor,
                 Font = font,
                 BorderStyle = borderStyle,
-                Margin = new Padding(0, 0, 0, 0),
+                Margin = new Padding(0),
                 AutoSize = false,
                 TextAlign = textAlign
+            };
+        }
+
+        private System.Windows.Forms.Label CreateLabel(string text, Color backColor, Color foreColor, Font font, BorderStyle borderStyle, Padding margin = default, AnchorStyles anchor = AnchorStyles.None, ContentAlignment textAlign = ContentAlignment.TopLeft)
+        {
+            return new System.Windows.Forms.Label
+            {
+                Text = text,
+                BackColor = backColor,
+                ForeColor = foreColor,
+                Font = font,
+                BorderStyle = borderStyle,
+                Margin = margin,
+                Anchor = anchor,
+                TextAlign = textAlign,
+                AutoSize = true
             };
         }
 
@@ -369,10 +476,11 @@ namespace QobuzDownloaderX
             linkLabel.ContextMenu = contextMenu;
         }
 
-        private void ResizeControlForText(Control control, int extraMargin = 0)
+        private void ResizeControlForText(Control control, int extraMargin = 0, int fixedWidth = 0)
         {
             Size preferredSize = TextRenderer.MeasureText(control.Text, control.Font);
-            control.Size = new Size(preferredSize.Width + extraMargin, preferredSize.Height);
+            int newWidth = (fixedWidth == 0) ? preferredSize.Width + extraMargin : fixedWidth;
+            control.Size = new Size(newWidth, preferredSize.Height);
         }
 
         private void SearchButton_Click(object sender, EventArgs e)

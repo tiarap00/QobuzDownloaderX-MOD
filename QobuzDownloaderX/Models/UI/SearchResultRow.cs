@@ -5,6 +5,7 @@
         public string ThumbnailUrl { get; set; }
         public string Artist { get; set; }
         public string Title { get; set; }
+        public bool Explicit { get; set; }
         public string FormattedDuration { get; set; }
         public string WebPlayerUrl { get; set; }
         public string StoreUrl { get; set; }
