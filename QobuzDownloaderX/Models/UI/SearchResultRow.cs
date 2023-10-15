@@ -9,7 +9,7 @@
         public string WebPlayerUrl { get; set; }
         public string StoreUrl { get; set; }
         public int TrackCount { get; set; }
-        public string ReleaseYear { get; set; }
+        public string ReleaseDate { get; set; }
         public bool HiRes { get; set; }
         public string FormattedQuality { get; set; }
 

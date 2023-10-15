@@ -128,7 +128,7 @@ namespace QobuzDownloaderX
                 FormattedQuality = $"{album.MaximumBitDepth}-Bit / {album.MaximumSamplingRate} kHz",
                 WebPlayerUrl = $"{Globals.WEBPLAYER_BASE_URL}/album/{album.Id}",
                 StoreUrl = album.Url,
-                ReleaseYear = album.ReleaseDateOriginal.GetValueOrDefault().Year.ToString(),
+                ReleaseDate = album.ReleaseDateOriginal.GetValueOrDefault().ToString("yyyy-MM-dd"),
                 HiRes = album.Hires.GetValueOrDefault(),
                 TrackCount = album.TracksCount.GetValueOrDefault()
             });
@@ -145,7 +145,7 @@ namespace QobuzDownloaderX
                 FormattedQuality = $"{track.MaximumBitDepth}-Bit / {track.MaximumSamplingRate} kHz",
                 WebPlayerUrl = $"{Globals.WEBPLAYER_BASE_URL}/track/{track.Id}",
                 StoreUrl = track.Album.Url,
-                ReleaseYear = track.Album.ReleaseDateOriginal.GetValueOrDefault().Year.ToString(),
+                ReleaseDate = track.Album.ReleaseDateOriginal.GetValueOrDefault().ToString("yyyy-MM-dd"),
                 HiRes = track.Hires.GetValueOrDefault()
             });
         }
@@ -206,7 +206,7 @@ namespace QobuzDownloaderX
             TextBox title = CreateTextBox(result.Title, true, rowColor, Color.White, FontManager.CreateFont("Hanken Grotesk ExtraBold", 13, FontStyle.Bold), BorderStyle.None);
             TextBox duration = CreateTextBox(result.FormattedDuration, true, rowColor, Color.WhiteSmoke, detailsFont, BorderStyle.None, HorizontalAlignment.Right);
             TextBox artist = CreateTextBox(result.Artist, true, rowColor, Color.WhiteSmoke, FontManager.CreateFont("Hanken Grotesk", 11, FontStyle.Bold | FontStyle.Italic), BorderStyle.None);
-            TextBox year = CreateTextBox(result.ReleaseYear, true, rowColor, Color.WhiteSmoke, detailsFont, BorderStyle.None, HorizontalAlignment.Right);
+            TextBox year = CreateTextBox(result.ReleaseDate, true, rowColor, Color.WhiteSmoke, detailsFont, BorderStyle.None, HorizontalAlignment.Right);
 
             ResizeControlForText(title, 5);
             ResizeControlForText(artist, 5);
