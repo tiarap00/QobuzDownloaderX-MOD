@@ -30,6 +30,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+	<PackageReadmeFile>..\README.md</PackageReadmeFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -175,7 +176,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="README.md" />
     <None Include="Resources\Fonts\HankenGrotesk-Italic-VariableFont_wght.ttf" />
     <None Include="Resources\Fonts\HankenGrotesk-VariableFont_wght.ttf" />
     <None Include="Resources\Fonts\HKGrotesk-Bold.ttf" />
@@ -240,6 +240,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\qobuz_logo_store.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
