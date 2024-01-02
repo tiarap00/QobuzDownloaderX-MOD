@@ -175,6 +175,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="README.md" />
     <None Include="Resources\Fonts\HankenGrotesk-Italic-VariableFont_wght.ttf" />
     <None Include="Resources\Fonts\HankenGrotesk-VariableFont_wght.ttf" />
     <None Include="Resources\Fonts\HKGrotesk-Bold.ttf" />
@@ -230,7 +231,7 @@
       <Version>0.2.2</Version>
     </PackageReference>
     <PackageReference Include="QobuzApiSharp">
-      <Version>0.0.7</Version>
+      <Version>0.0.8</Version>
     </PackageReference>
     <PackageReference Include="TagLibSharp" Version="2.3.0" />
   </ItemGroup>
