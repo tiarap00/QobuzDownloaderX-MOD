@@ -268,7 +268,7 @@ namespace QobuzDownloaderX.Models
         }
 
         public string MergeFeaturedArtistsWithMainArtists(string[] mainArtists, string[] featuresArtists)
-        { 
+        {
             string mergedMainArtists = StringTools.MergeDoubleDelimitedList(mainArtists, Globals.TaggingOptions.PrimaryListSeparator, Globals.TaggingOptions.ListEndSeparator);
             string mergedFeaturedArtists = StringTools.MergeDoubleDelimitedList(featuresArtists, Globals.TaggingOptions.PrimaryListSeparator, Globals.TaggingOptions.ListEndSeparator);
 
