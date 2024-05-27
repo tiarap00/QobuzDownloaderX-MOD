@@ -936,6 +936,9 @@
             this.artSizeSelect.Items.AddRange(new object[] {
             "org",
             "max",
+            "1440",
+            "1200",
+            "1000",
             "600",
             "300",
             "150",
